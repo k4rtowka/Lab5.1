@@ -1,15 +1,15 @@
 package Models;
 
-public class Chapter implements Comparable<Chapter>{
+public class Chapter implements Comparable<Chapter> {
 
     //region Поля
     /**
      * Название части.
      * <p>
-     *     Поле не может быть null.
-     *     Строка не может быть пустой.
+     * Поле не может быть null.
+     * Строка не может быть пустой.
      * </p>
-    */
+     */
     private String name;
 
     /**
@@ -23,16 +23,24 @@ public class Chapter implements Comparable<Chapter>{
     private long marinesCount;
     //endregion
 
+    /**
+     * Создает главу с указанными параметрами
+     *
+     * @param name         Имя главы
+     * @param marinesCount Количество морпехов
+     */
     //region Конструкторы
-    public Chapter(String name, long marinesCount){
+    public Chapter(String name, long marinesCount) {
         this.setName(name);
         this.setMarinesCount(marinesCount);
     }
 
-    public Chapter(){}
+    public Chapter() {
+    }
     //endregion
 
     //region Сеттеры
+
     /**
      * Устанавливает название части.
      *
@@ -40,7 +48,7 @@ public class Chapter implements Comparable<Chapter>{
      * @throws IllegalArgumentException если name равно null или пустое.
      */
     public void setName(String name) {
-        if(name == null || name.isEmpty())
+        if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Имя не может быть null или пустым.");
         this.name = name;
     }
@@ -52,13 +60,14 @@ public class Chapter implements Comparable<Chapter>{
      * @throws IllegalArgumentException если marinesCount меньше 1 или больше 1000
      */
     public void setMarinesCount(long marinesCount) {
-        if(marinesCount < 1 || marinesCount > 1000)
+        if (marinesCount < 1 || marinesCount > 1000)
             throw new IllegalArgumentException("Marines");
         this.marinesCount = marinesCount;
     }
     //endregion
 
     //region Геттеры
+
     /**
      * Возвращает название части.
      *
@@ -82,7 +91,7 @@ public class Chapter implements Comparable<Chapter>{
     @Override
     public int compareTo(Chapter o) {
         int result = name.compareTo(o.getName());
-        if(result != 0)
+        if (result != 0)
             return result;
         return Long.compare(marinesCount, o.getMarinesCount());
     }
