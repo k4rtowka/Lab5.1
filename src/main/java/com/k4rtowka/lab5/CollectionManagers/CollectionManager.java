@@ -1,13 +1,11 @@
 package com.k4rtowka.lab5.CollectionManagers;
 
 import Models.SpaceMarine;
-import com.k4rtowka.lab5.CollectionManagers.ModeManager.noUserMode.XMLParser;
 
-import javax.xml.bind.annotation.*;
+
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-@XmlRootElement(name = "Models")
 public class CollectionManager{
 
     private static CollectionManager singletonPattern;
@@ -34,8 +32,7 @@ public class CollectionManager{
         }
     }
 
-    @XmlElement
-    @XmlElementWrapper(name = "SpaceMarines")
+
     public NavigableMap<Integer, SpaceMarine> getSpaceMarineMap() {
         return spaceMarineMap;
     }
@@ -45,9 +42,9 @@ public class CollectionManager{
     }
 
     public static void loadCollection(){
-        XMLParser parser = new XMLParser();
-        singletonPattern = parser.unmarshal("./test.xml");
-        System.out.println("Collection loaded");
+//        XMLParser parser = new XMLParser();
+//        singletonPattern = parser.unmarshal("./test.xml");
+//        System.out.println("Collection loaded");
     }
 
 

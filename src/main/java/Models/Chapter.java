@@ -1,30 +1,90 @@
 package Models;
 
-public class Chapter {
-    private String name;
-    private long marinesCount;
+public class Chapter implements Comparable<Chapter>{
 
+    //region Поля
+    /**
+     * Название части.
+     * <p>
+     *     Поле не может быть null.
+     *     Строка не может быть пустой.
+     * </p>
+    */
+    private String name;
+
+    /**
+     * Количество marines.
+     * <p>
+     * Поле не может быть null.
+     * Значение поля должно быть больше 0.
+     * Максимальное значение: 1000
+     * </p>
+     */
+    private long marinesCount;
+    //endregion
+
+    //region Конструкторы
     public Chapter(String name, long marinesCount){
-        this.name = name;
-        this.marinesCount = marinesCount;
+        this.setName(name);
+        this.setMarinesCount(marinesCount);
     }
 
     public Chapter(){}
+    //endregion
 
+    //region Сеттеры
+    /**
+     * Устанавливает название части.
+     *
+     * @param name название части.
+     * @throws IllegalArgumentException если name равно null или пустое.
+     */
     public void setName(String name) {
+        if(name == null || name.isEmpty())
+            throw new IllegalArgumentException("Имя не может быть null или пустым.");
         this.name = name;
     }
 
+    /**
+     * Устанавливает количество marines.
+     *
+     * @param marinesCount количество marines.
+     * @throws IllegalArgumentException если marinesCount меньше 1 или больше 1000
+     */
+    public void setMarinesCount(long marinesCount) {
+        if(marinesCount < 1 || marinesCount > 1000)
+            throw new IllegalArgumentException("Marines");
+        this.marinesCount = marinesCount;
+    }
+    //endregion
+
+    //region Геттеры
+    /**
+     * Возвращает название части.
+     *
+     * @return название части.
+     */
     public String getName() {
         return name;
     }
 
-    public void setMarinesCount(long marinesCount) {
-        this.marinesCount = marinesCount;
-    }
-
+    /**
+     * Возвращает количество marines
+     *
+     * @return количество marines.
+     */
     public long getMarinesCount() {
         return marinesCount;
+    }
+    //endregion
+
+    //region Методы
+    @Override
+    public int compareTo(Chapter o) {
+        int result = name.compareTo(o.getName());
+        if(result != 0)
+            return result;
+        return Long.compare(marinesCount, o.getMarinesCount());
     }
 
     @Override
@@ -33,4 +93,5 @@ public class Chapter {
                 "name = " + name +
                 ", marinesCount = " + marinesCount;
     }
+    //endregion
 }

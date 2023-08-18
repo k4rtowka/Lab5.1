@@ -1,46 +1,87 @@
 package Models;
 
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class Coordinates implements Comparable<Coordinates> {
 
-
-@XmlRootElement(name = "coordinates")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Coordinates {
-    @XmlElement(name = "xCoord", required = true)
+    //region Поля
+    /**
+     * Координата Х.
+     * <p>
+     * Значение поля должно быть больше -877.
+     * </p>
+     */
     private Double x;
-    @XmlElement(name = "yCoord", required = true)
-    private Integer y;
 
-    public Coordinates(Double x, Integer y){
-        this.x = x;
-        this.y = y;
+    /**
+     * Координата Y.
+     * <p>
+     * Поле не может быть null.
+     * </p>
+     */
+    private Integer y;
+    //endregion
+
+    //region Конструкторы
+    public Coordinates(Double x, Integer y) {
+        this.setX(x);
+        this.setY(y);
     }
 
-    public Coordinates(){
+    public Coordinates() {
         x = 0.0;
         y = 0;
     }
+    //endregion
 
+    //region Сеттеры
+
+    /**
+     * Устанавливает координату X.
+     *
+     * @param x координата X
+     * @throws IllegalArgumentException если X равен null или меньше -877
+     */
     public void setX(Double x) {
+        if(x == null || x < -877)
+            throw new IllegalArgumentException("X не может быть null или меньше -877");
         this.x = x;
     }
 
+    /**
+     * Устанавливает координату Y.
+     *
+     * @param y координата Y
+     * @throws IllegalArgumentException если Y равен null
+     */
     public void setY(Integer y) {
+        if(y == null)
+            throw new IllegalArgumentException("Y не может быть null");
         this.y = y;
     }
+    //endregion
 
+    //region Геттеры
+
+    /**
+     * Возвращает координату Х.
+     *
+     * @return координата Х
+     */
     public Double getX() {
         return x;
     }
 
+    /**
+     * Возвращает координату Y.
+     *
+     * @return координата Y
+     */
     public Integer getY() {
         return y;
     }
+    //endregion
 
+    //region Методы
     @Override
     public String toString() {
         return "Coordinates: " +
@@ -48,14 +89,15 @@ public class Coordinates {
                 ", y = " + y;
     }
 
+    @Override
     public int compareTo(Coordinates o) {
-        if (o == null) {
-            return 1;
-        }
+        //Сравнение по координате Х
         int result = Double.compare(this.x, o.x);
-        if (result == 0)
-            return Integer.compare(this.y, o.y);
-        return result;
+        if (result != 0) return result;
+
+        //Сравнение по координате Y
+        return Integer.compare(this.y, o.y);
     }
+    //endregion
 }
 

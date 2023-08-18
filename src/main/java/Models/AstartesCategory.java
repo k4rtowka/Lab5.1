@@ -5,5 +5,5 @@ public enum AstartesCategory {
     ASSAULT,
     TACTICAL,
     LIBRARIAN,
-    HELIX;
+    HELIX
 }

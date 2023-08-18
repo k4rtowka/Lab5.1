@@ -31,7 +31,7 @@ public class CommandManager {
         ModeManager<SpaceMarine> handler = null;
         switch (mode){
             case CLI_UserMode -> handler = new SpaceMarineCLIManager();
-            default -> System.out.println("change mode");
+            case NonUserMode -> System.out.println("change mode");
         }
         commandMap.put("insert", new AddCommand(handler));
         commandMap.put("update", new UpdateCommand(handler));

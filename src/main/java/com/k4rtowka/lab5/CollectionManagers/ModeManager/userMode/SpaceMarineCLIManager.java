@@ -49,8 +49,8 @@ public class SpaceMarineCLIManager implements ModeManager<SpaceMarine> {
             spaceMarine.setCoordinates(coordinatesCLIHandler.buildObject());
 
             //CreationDate
-            ZonedDateTime creationDate = ZonedDateTime.now();
-            spaceMarine.setCreationDate(creationDate);
+//            ZonedDateTime creationDate = ZonedDateTime.now();
+//            spaceMarine.setCreationDate(creationDate);
 
             //health
             Integer health;

@@ -1,7 +1,6 @@
 package com.k4rtowka.lab5.CommandManagers.icem;
 
 import Models.SpaceMarine;
-import com.k4rtowka.lab5.Collection.*;
 import com.k4rtowka.lab5.CollectionManagers.CollectionManager;
 import com.k4rtowka.lab5.CollectionManagers.ModeManager.ModeManager;
 import com.k4rtowka.lab5.CommandManagers.Command;

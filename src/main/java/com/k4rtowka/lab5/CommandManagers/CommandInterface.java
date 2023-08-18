@@ -2,7 +2,6 @@ package com.k4rtowka.lab5.CommandManagers;
 
 import com.k4rtowka.lab5.Exceptions.BuildObjectException;
 
-import javax.xml.bind.JAXBException;
 
 public interface CommandInterface {
     /**
