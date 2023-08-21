@@ -22,15 +22,18 @@ public class Coordinates implements Comparable<Coordinates> {
     //endregion
 
     //region Конструкторы
+    /**
+     * Создает координаты с указанными параметрами.
+     *
+     * @param x координата Х
+     * @param y координата Y
+     */
     public Coordinates(Double x, Integer y) {
         this.setX(x);
         this.setY(y);
     }
 
-    public Coordinates() {
-        x = 0.0;
-        y = 0;
-    }
+    public Coordinates() {}
     //endregion
 
     //region Сеттеры

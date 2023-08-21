@@ -1,9 +1,10 @@
 package IO;
 
-import Models.Chapter;
-import Models.Coordinates;
-import Models.SpaceMarine;
+import Models.*;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Date;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -27,19 +28,79 @@ public class InputReader {
      * Чтение из файла или нет
      */
     private boolean isReadFromFile;
+
+    /**
+     * Объект для управления коллекцией
+     */
+     private CollectionManager collectionManager;
+    //endregion
+
+    //region Сеттеры
+
+    public void setShowPrompt(boolean showPrompt) {
+        isShowPrompt = showPrompt;
+    }
+
+    //endregion
+
+    //region Конструктор
+
+    /**
+     * Конструктор, который инициализирует новый объект InputReader с CollectionManager и устанавливает
+     * переменную-счетчик равной максимальному значению ID в CollectionManager плюс 1.
+     *
+     * @param collectionManager CollectionManager, который будет содержать объекты SpaceMarine.
+     * @param scanner           Scanner, из которого будет считываться ввод.
+     * @param isShowPrompt      флаг, указывающий, нужно ли отображать инструкции по вводу в консоль.
+     */
+    public InputReader(CollectionManager collectionManager, Scanner scanner, boolean isReadFromFile, boolean isShowPrompt) {
+        this.isReadFromFile = isReadFromFile;
+        this.collectionManager = collectionManager;
+        this.scanner = scanner;
+        this.isShowPrompt = isShowPrompt;
+    }
+
+    /**
+     * Конструктор, который инициализирует новый объект InputReader с CollectionManager и устанавливает
+     * переменную-счетчик равной максимальному значению ID в CollectionManager плюс 1.
+     *
+     * @param collectionManager CollectionManager, который будет содержать объекты SpaceMarine.
+     * @param inputStream       InputStream, из которого будет считываться ввод.
+     * @param isShowPrompt      флаг, указывающий, нужно ли отображать инструкции по вводу в консоль.
+     */
+    public InputReader(CollectionManager collectionManager, InputStream inputStream, boolean isShowPrompt) {
+        this.isReadFromFile = inputStream instanceof FileInputStream;
+        this.collectionManager = collectionManager;
+        this.scanner = new Scanner(inputStream);
+        this.isShowPrompt = isShowPrompt;
+    }
     //endregion
 
     //region Методы
 
+    /**
+     * Вывод сообщения.
+     *
+     * @param message сообщения для вывода
+     */
     public void Print(String message) {
         if (this.isShowPrompt)
             System.out.println(message);
     }
 
+    /**
+     * Получение значения.
+     *
+     * @param message сообщение перед получением значения
+     * @param errorMessage сообщение об ошибке
+     * @param parser String или <T>.parse
+     * @param <T> - тип получаемого значения
+     * @return правильно введенное значение
+     */
     private <T> T GetValue(String message, String errorMessage, Function<String, T> parser) {
         try {
             Print(message);
-            return parser.apply(scanner.nextLine());
+            return parser.apply(this.scanner.nextLine());
         } catch (Exception e) {
             Print(errorMessage != null ? errorMessage : e.getMessage());
             if (this.isReadFromFile)
@@ -48,6 +109,16 @@ public class InputReader {
         }
     }
 
+    /**
+     * Получить значение.
+     * При неправильном вводе пишется ошибка.
+     *
+     * @param message сообщение перед вводом значения
+     * @param typeClass тип значения
+     * @param <T> тип получаемого значения
+     * @return правильно введенное значение
+     * @throws IllegalArgumentException если получен не известный тип данных
+     */
     public <T> T GetValue(String message, Class<T> typeClass) throws IllegalArgumentException {
         if (typeClass == String.class) {
             return typeClass.cast(GetValue(message, "Ошибка! Введите строку заново:", String::new));
@@ -81,7 +152,7 @@ public class InputReader {
     /**
      * Получает значение перечисления из указанного класса перечисления на основе ввода пользователя.
      * Пользователь может ввести либо номер, либо название одного из перечислений.
-     * Если указанное значение не существует в перечислении, будет запрошено повторное ввод.
+     * Если указанное значение не существует в перечислении, будет запрошен повторный ввод.
      *
      * @param <E>       тип перечисления
      * @param enumClass класс перечисления
@@ -156,7 +227,15 @@ public class InputReader {
      */
     public SpaceMarine GetSpaceMarine() {
         try {
-            //TODO: заполнить морпеха
+            return new SpaceMarine(0,
+                    GetValue("Введите имя: ", String.class),
+                    GetCoordinates(),
+                    new Date(),
+                    GetValue("Введите здоровье: ", Integer.class),
+                    GetValue("Введите количество сердец: ", Long.class),
+                    GetEnumValue(AstartesCategory.class),
+                    GetEnumValue(MeleeWeapon.class),
+                    GetChapter());
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             if (this.isReadFromFile)
