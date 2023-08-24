@@ -1,6 +1,12 @@
 package Models;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "coordinates")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Coordinates implements Comparable<Coordinates> {
 
     //region Поля
@@ -10,6 +16,7 @@ public class Coordinates implements Comparable<Coordinates> {
      * Значение поля должно быть больше -877.
      * </p>
      */
+    @XmlElement(required = true)
     private Double x;
 
     /**
@@ -18,6 +25,7 @@ public class Coordinates implements Comparable<Coordinates> {
      * Поле не может быть null.
      * </p>
      */
+    @XmlElement(required = true)
     private Integer y;
     //endregion
 

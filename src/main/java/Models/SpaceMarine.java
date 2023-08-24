@@ -1,7 +1,13 @@
 package Models;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlRootElement(name = "spaceMarine")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SpaceMarine implements Comparable<SpaceMarine> {
 
     //region Поля
@@ -14,6 +20,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Значение этого поля должно генерироваться автоматически.
      * </p>
      */
+    @XmlElement(required = true)
     private Integer id;
 
     /**
@@ -23,6 +30,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Строка не может быть пустой.
      * </p>
      */
+    @XmlElement(required = true)
     private String name;
 
     /**
@@ -31,6 +39,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Поле не может быть null.
      * </p>
      */
+    @XmlElement(required = true)
     private Coordinates coordinates;
 
     /**
@@ -40,6 +49,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Значение этого поля должно генерироваться автоматически.
      * </p>
      */
+    @XmlElement(required = true)
     private Date creationDate;
 
     /**
@@ -49,6 +59,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Значение поля должно быть больше 0.
      * </p>
      */
+    @XmlElement(required = true)
     private Integer health;
 
     /**
@@ -58,6 +69,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Максимальное значение поля: 3.
      * </p>
      */
+    @XmlElement(required = true)
     private long heartCount;
 
     /**
@@ -66,6 +78,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Поле не может быть null.
      * </p>
      */
+    @XmlElement(required = true)
     private AstartesCategory category;
 
     /**
@@ -74,6 +87,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Поле может быть null.
      * </p>
      */
+    @XmlElement(required = true)
     private MeleeWeapon meleeWeapon;
 
     /**
@@ -82,6 +96,7 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
      * Поле может быть null.
      * </p>
      */
+    @XmlElement(required = true)
     private Chapter chapter;
     //endregion
 

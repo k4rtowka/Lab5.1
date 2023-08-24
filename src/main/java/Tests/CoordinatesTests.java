@@ -22,6 +22,11 @@ public class CoordinatesTests {
     }
 
     @Test
+    public void setX_InvalidX(){
+        assertThrows(IllegalArgumentException.class, () -> coordinates.setX(-1000.0));
+    }
+
+    @Test
     public void setY_validY(){
         coordinates.setY(2);
         assertEquals(2, coordinates.getY());

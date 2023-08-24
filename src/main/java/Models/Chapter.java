@@ -1,5 +1,12 @@
 package Models;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "chapter")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Chapter implements Comparable<Chapter> {
 
     //region Поля
@@ -10,6 +17,7 @@ public class Chapter implements Comparable<Chapter> {
      * Строка не может быть пустой.
      * </p>
      */
+    @XmlElement(required = true)
     private String name;
 
     /**
@@ -20,6 +28,7 @@ public class Chapter implements Comparable<Chapter> {
      * Максимальное значение: 1000
      * </p>
      */
+    @XmlElement(required = true)
     private long marinesCount;
     //endregion
 

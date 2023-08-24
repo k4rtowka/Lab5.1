@@ -1,11 +1,12 @@
 package Tests;
 
 import IO.InputReader;
-import Models.CollectionManager;
+import Models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +30,7 @@ class InputReaderTest {
     //endregion
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         this.manager = new CollectionManager(TEST_FILENAME);
         this.reader = new InputReader(this.manager, System.in, true);
     }
@@ -175,22 +176,54 @@ class InputReaderTest {
     }
     //endregion
 
-    //TODO: дописать тесты для проверки ввода соответсвующих объектов, переименовать  regions
-    //region Description
+    //region Chapter
     @Test
-    void getChapter() {
+    void getChapterValue_ValidInput_ReturnCorrectChapter() {
+        SetSystemInStream("First\n2");
+        Chapter testChapter = reader.GetChapter();
+        assertEquals("First", testChapter.getName());
+        assertEquals(2, testChapter.getMarinesCount());
+    }
+
+    @Test
+    void getChapterValue_InvalidInput_PromptsAgain(){
+        SetSystemInStream("First\n1001\nFirst\n2");
+        Chapter testChapter = reader.GetChapter();
+        assertEquals("First", testChapter.getName());
+        assertEquals(2, testChapter.getMarinesCount());
     }
     //endregion
 
-    //region Description
+    //region Coordinates
     @Test
-    void getCoordinates() {
+    void getCoordinatesValue_ValidXInput_ReturnCorrectCoordinates() {
+        SetSystemInStream("4\n2");
+        Coordinates coordinates = reader.GetCoordinates();
+        assertEquals(4.0, coordinates.getX());
+        assertEquals(2, coordinates.getY());
+    }
+
+    @Test
+    void getCoordinatesValue_InvalidXInput_PromptsAgain() {
+        SetSystemInStream("-1000\n4\n5.0\n2");
+        Coordinates coordinates = reader.GetCoordinates();
+        assertEquals(5.0, coordinates.getX());
+        assertEquals(2, coordinates.getY());
     }
     //endregion
 
-    //region Description
+    //region SpaceMarine
     @Test
     void getSpaceMarine() {
+        SetSystemInStream("Maren\n4.0\n2\n100\n2\n1\nCHAIN_SWORD\nfirst\n2");
+        SpaceMarine spaceMarine = reader.GetSpaceMarine();
+        assertEquals("Maren", spaceMarine.getName());
+        assertEquals(new Coordinates(4.0,2).toString(), spaceMarine.getCoordinates().toString());
+        assertEquals(100, spaceMarine.getHealth());
+        assertEquals(2, spaceMarine.getHeartCount());
+        assertEquals(AstartesCategory.DREADNOUGHT, spaceMarine.getCategory());
+        assertEquals(MeleeWeapon.CHAIN_SWORD, spaceMarine.getMeleeWeapon());
+        assertEquals(new Chapter("first",2).toString(), spaceMarine.getChapter().toString());
     }
     //endregion
 

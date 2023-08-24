@@ -32,7 +32,6 @@ public class CollectionManager{
         }
     }
 
-
     public NavigableMap<Integer, SpaceMarine> getSpaceMarineMap() {
         return spaceMarineMap;
     }
@@ -46,7 +45,6 @@ public class CollectionManager{
 //        singletonPattern = parser.unmarshal("./test.xml");
 //        System.out.println("Collection loaded");
     }
-
 
     @Override
     public String toString() {

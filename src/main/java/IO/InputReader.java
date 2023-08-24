@@ -219,6 +219,53 @@ public class InputReader {
         }
     }
 
+    private SpaceMarine GetSpaceMarine(SpaceMarine marine, int step) {
+        try {
+            if(step==1) {
+                String name = GetValue("", String.class);
+                marine.setName(name);
+                step++;
+            }
+            if(step==2){
+                Coordinates coordinates = GetCoordinates();
+                marine.setCoordinates(coordinates);
+                step++;
+            }
+            marine.setCreationDate(new Date());
+            if(step==3){
+                Integer health = GetValue("Введите здоровье: ", Integer.class);
+                marine.setHealth(health);
+                step++;
+            }
+            if(step==4){
+                Long heartCount = GetValue("Введите количество сердец: ", Long.class);
+                marine.setHeartCount(heartCount);
+                step++;
+            }
+            if(step==5){
+                AstartesCategory category = GetEnumValue(AstartesCategory.class);
+                marine.setCategory(category);
+                step++;
+            }
+            if(step==6){
+                MeleeWeapon meleeWeapon = GetEnumValue(MeleeWeapon.class);
+                marine.setMeleeWeapon(meleeWeapon);
+                step++;
+            }
+            if(step==7){
+                Chapter chapter = GetChapter();
+                marine.setChapter(chapter);
+                step++;
+            }
+            return marine;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            if (this.isReadFromFile)
+                return null;
+            return GetSpaceMarine(marine, step);
+        }
+    }
+
     /**
      * Получает объект SpaceMarine на основе ввода пользователя.
      * Значения полей запрашиваются с помощью других вспомогательных методов.
@@ -226,8 +273,9 @@ public class InputReader {
      * @return объект SpaceMarine, созданный на основе ввода пользователя
      */
     public SpaceMarine GetSpaceMarine() {
-        try {
-            return new SpaceMarine(0,
+        return GetSpaceMarine(new SpaceMarine(), 1);
+       /* try {
+            return new SpaceMarine(1,
                     GetValue("Введите имя: ", String.class),
                     GetCoordinates(),
                     new Date(),
@@ -236,12 +284,13 @@ public class InputReader {
                     GetEnumValue(AstartesCategory.class),
                     GetEnumValue(MeleeWeapon.class),
                     GetChapter());
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             if (this.isReadFromFile)
                 return null;
             return GetSpaceMarine();
-        }
+        }*/
     }
 
     //endregion

@@ -1,87 +1,326 @@
 package Models;
 
+import Tests.Data.LocalDateAdapter;
+
+import javax.xml.bind.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class CollectionManager {
+@XmlRootElement(name = "collectionManager")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CollectionManager implements Comparable<CollectionManager> {
     //region Поля
     /**
      * Коллекция объектов
      */
+    @XmlElement(name = "marines")
     TreeMap<Integer, SpaceMarine> marines;
     /**
      * Дата инициализации
      */
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate initializationDate;
     /**
      * Файл с данными
      */
+    @XmlElement
     private File dataFile;
     /**
      * Последний вставленный ID
      */
+    @XmlElement
     private int lastId = 0;
     /**
      * Скрипты выполняемые в данный момента командами execute_script
      */
+    @XmlElement(name = "executedScripts")
     private HashSet<String> executedScripts;
     //endregion
 
+    //region Геттеры
+    public TreeMap<Integer, SpaceMarine> getMarines() {
+        return marines;
+    }
+    //endregion
+
+    //region Сеттеры
+    public void setMarines(TreeMap<Integer, SpaceMarine> marines) {
+        this.marines = marines;
+    }
+
+    public void setDataFile(File dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    public void setLastId(int lastId) {
+        this.lastId = lastId;
+    }
+
+    public void setExecutedScripts(HashSet<String> executedScripts) {
+        this.executedScripts = executedScripts;
+    }
+
+    public void setInitializationDate(LocalDate initializationDate) {
+        this.initializationDate = initializationDate;
+    }
+
+    //endregion
+
     //region Конструкторы
+
+    /**
+     * Конструктор с параметром.
+     *
+     * @param filename путь к файлу
+     * @throws Exception если не правильный путь к файлу.
+     */
     public CollectionManager(String filename) throws Exception {
         executedScripts = new HashSet<>();
-        marines  = new TreeMap<>();
+        marines = new TreeMap<>();
         dataFile = new File(filename);
         initializationDate = LocalDate.now();
-        loadFromFile();
+        if (dataFile.exists())
+            load();
+    }
+
+    public CollectionManager() throws Exception {
+        executedScripts = new HashSet<>();
+        marines = new TreeMap<>();
+        dataFile = null;
+        initializationDate = LocalDate.now();
+        //load();
     }
     //endregion
 
     //region Методы
-    public void add(SpaceMarine s){
-        if(spaceMarineMap != null){
-            spaceMarineMap.put(s.getId(), s);
-        }else{
-            TreeMap<Integer, SpaceMarine> spaceMarines = new TreeMap<>();
-            spaceMarines.put(s.getId(), s);
-            com.k4rtowka.lab5.CollectionManagers.CollectionManager.getInstance().setSpaceMarineMap(spaceMarines);
+
+
+    /**
+     * Добавить новый элемент с заданным ключом
+     *
+     * @param marine готовый объект SpaceMarine
+     */
+    public void insert(SpaceMarine marine) {
+        if (marine != null) {
+            lastId++;  // увеличиваем ID на 1
+            marines.put(lastId, marine);
+        } else {
+            throw new IllegalArgumentException("SpaceMarine не может быть null.");
         }
     }
+
+    /**
+     * Обновить значение элемента коллекции, id которого равен заданному
+     *
+     * @param id     ID элемента, который нужно обновить
+     * @param marine Новый объект SpaceMarine для замены текущего
+     */
+    public void update(int id, SpaceMarine marine) {
+        if (marine == null) {
+            throw new IllegalArgumentException("SpaceMarine не может быть null.");
+        }
+        if (marines.containsKey(id)) {
+            marines.put(id, marine);
+        } else {
+            throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
+        }
+    }
+
+    /**
+     * Удалить элемент из коллекции по его ключу
+     *
+     * @param id ID элемента, который нужно удалить
+     */
+    public void removeKey(int id) {
+        if (marines.containsKey(id)) {
+            marines.remove(id);
+        } else {
+            throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
+        }
+    }
+
+    /**
+     * Очистить коллекцию
+     */
+    public void clear() {
+        this.marines.clear();
+    }
+
+
+    /**
+     * Удалить из коллекции все элементы, меньшие, чем заданный
+     *
+     * @param marine элемент для сравнения
+     */
+    public void removeLower(SpaceMarine marine) {
+        this.marines.entrySet().removeIf(x -> x.getValue().compareTo(marine) < 0);
+    }
+
+
+    /**
+     * Заменить значение по ключу, если новое значение меньше старого
+     *
+     * @param key       ключ элемента, который нужно заменить
+     * @param newMarine новое значение
+     */
+    public void replaceIfLower(Integer key, SpaceMarine newMarine) {
+        SpaceMarine currentMarine = marines.get(key);
+        if (currentMarine != null && newMarine.compareTo(currentMarine) < 0) {
+            marines.put(key, newMarine);
+        }
+    }
+
+    /**
+     * Удалить из коллекции все элементы, ключ которых превышает заданный
+     *
+     * @param key ключ элемента, который нужно заменить
+     */
+    public void removeGreaterKey(Integer key) {
+        this.marines.entrySet().removeIf(entry -> entry.getKey() > key);
+    }
+
+    /**
+     * Возвращает количество элементов в коллекции, у которых значение поля {@code heartCount} равно заданному.
+     *
+     * @param heartCount Значение поля {@code heartCount} для сравнения.
+     * @return Количество элементов, соответствующих заданному условию.
+     */
+    public Long countByHeartCount(Integer heartCount) {
+        return marines.values().stream().filter(marine -> marine.getHeartCount() == heartCount).count();
+    }
+
+    /**
+     * Возвращает список элементов в коллекции, у которых значение поля {@code category} равно заданному.
+     *
+     * @param category Значение поля {@code category} для фильтрации.
+     * @return Список элементов, соответствующих заданному условию.
+     */
+    public List<SpaceMarine> filterByCategory(AstartesCategory category) {
+        return marines.values().stream().filter(marines -> marines.getCategory() == category).collect(Collectors.toList());
+    }
+
+    /**
+     * Возвращает информацию о коллекции (тип, дата инициализации,
+     * количество элементов и т.д.) в виде строки.
+     *
+     * @return строка с информацией о коллекции.
+     */
+    public String info() {
+        return "Информация о коллекции:"
+                + "\nТип коллекции: " + marines.getClass().getSimpleName()
+                + "\nДата инициализации: " + initializationDate
+                + "\nКоличество элементов: " + marines.size()
+                + "\nПоследний вставленный ID: " + lastId;
+    }
+
+
+    /**
+     * Возвращает все элементы коллекции в строковом представлении.
+     *
+     * @return строка со всеми элементами коллекции.
+     */
+    public String show() {
+        StringBuilder result = new StringBuilder("Элементы коллекции:\n");
+
+        for (SpaceMarine marine : this.marines.values()) {
+            result.append(marine.toString()).append("\n");
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * Вывести элементы коллекции в порядке убывания
+     */
+    public String printDescending() {
+        return marines.values().stream()
+                .sorted(Comparator.reverseOrder()).map(SpaceMarine::toString)
+                .collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * Сохранить коллекцию в файл
+     */
+    public void save() {
+        try {
+            JAXBContext context = JAXBContext.newInstance(CollectionManager.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); // Для красивого форматирования XML
+            // Удаляем файл, если он существует
+            if (this.dataFile.exists()) {
+                this.dataFile.delete();
+            }
+
+            marshaller.marshal(this, dataFile);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Загрузка из файла
      */
-    private void loadFromFile() throws Exception {
-//        try (Reader reader = new InputStreamReader(new FileInputStream(dataFile))) {
-//            marines = gson.fromJson(reader, new TypeToken<LinkedList<SpaceMarine>>() {
-//            }.getType());
-//
-//            //region Генерация ID и проверка на дубликаты
-//            for (SpaceMarine marine : marines) {
-//                if (marine.getId() <= lastId) {
-//                    marine.setId(++lastId);
-//                } else {
-//                    lastId = marine.getId();
-//                }
-//            }
-//            //endregion
-//
-//            //region Проверка полей на правильность заполнения
-//            LinkedList<SpaceMarine> marinesTemp = new LinkedList<SpaceMarine>();
-//            for (SpaceMarine marine : marines) {
-//                try {
-//                    marinesTemp.add(new SpaceMarine(marine));
-//                } catch (Exception ex) {
-//                    System.out.println(String.format("Элемент не был загружен, его описание:'%s'", marine));
-//                }
-//            }
-//            //endregion
-//
-//        } catch (IOException e) {
-//            System.err.println("Не удалось загрузить файл: " + e.getMessage());
-//        }
+    public void load() throws Exception {
+        try {
+            JAXBContext context = JAXBContext.newInstance(CollectionManager.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            // Загружаем данные из файла
+            CollectionManager loadedManager = (CollectionManager) unmarshaller.unmarshal(dataFile);
+            // Копирование данных из загруженного объекта в текущий
+            this.marines = loadedManager.marines;
+            this.initializationDate = loadedManager.initializationDate;
+            this.lastId = loadedManager.lastId;
+            this.dataFile = loadedManager.dataFile;
+            this.executedScripts = loadedManager.executedScripts;
+
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            System.out.println("Ошибка при загрузке данных из XML файла.");
+        }
     }
+
+    @Override
+    public int compareTo(CollectionManager other) {
+        int result = initializationDate.compareTo(other.initializationDate);
+        if (result != 0) return result;
+        result = dataFile.compareTo(other.dataFile);
+        if (result != 0) return result;
+        result = Integer.compare(lastId, other.lastId);
+        if (result != 0) return result;
+        // Сравнение коллекций (по содержимому)
+        Iterator<Map.Entry<Integer, SpaceMarine>> thisIterator = this.marines.entrySet().iterator();
+        Iterator<Map.Entry<Integer, SpaceMarine>> otherIterator = other.marines.entrySet().iterator();
+        while (thisIterator.hasNext() && otherIterator.hasNext()) {
+            Map.Entry<Integer, SpaceMarine> thisEntry = thisIterator.next();
+            Map.Entry<Integer, SpaceMarine> otherEntry = otherIterator.next();
+            // Сравниваем ключи (ID)
+            result = thisEntry.getKey().compareTo(otherEntry.getKey());
+            if (result != 0) {
+                return result;
+            }
+            // Сравниваем значения (SpaceMarines)
+            result = thisEntry.getValue().compareTo(otherEntry.getValue());
+            if (result != 0) {
+                return result;
+            }
+        }
+        // Если одна из коллекций длиннее другой
+        if (thisIterator.hasNext()) {
+            return 1;
+        } else if (otherIterator.hasNext()) {
+            return -1;
+        }
+        return 0;
+    }
+
     //endregion
+
 }
