@@ -99,7 +99,14 @@ public class Chapter implements Comparable<Chapter> {
     //region Методы
     @Override
     public int compareTo(Chapter o) {
-        int result = name.compareTo(o.getName());
+        int result = 0;
+        if (this.name != null & o.name != null) {
+            result = name.compareTo(o.getName());
+        }else if(this.name == null & o.name != null){
+            result = -1;
+        }else if(this.name != null)
+            result = 1;
+
         if (result != 0)
             return result;
         return Long.compare(marinesCount, o.getMarinesCount());

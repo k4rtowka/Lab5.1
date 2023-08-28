@@ -108,13 +108,14 @@ public class CollectionManager implements Comparable<CollectionManager> {
      *
      * @param marine готовый объект SpaceMarine
      */
-    public void insert(SpaceMarine marine) {
+    public Integer insert(SpaceMarine marine) {
         if (marine != null) {
             lastId++;  // увеличиваем ID на 1
             marines.put(lastId, marine);
         } else {
             throw new IllegalArgumentException("SpaceMarine не может быть null.");
         }
+        return lastId;
     }
 
     /**
@@ -122,13 +123,15 @@ public class CollectionManager implements Comparable<CollectionManager> {
      *
      * @param id     ID элемента, который нужно обновить
      * @param marine Новый объект SpaceMarine для замены текущего
+     * @throws NoSuchElementException если элемента с таким id не существует
      */
-    public void update(int id, SpaceMarine marine) {
+    public Boolean update(int id, SpaceMarine marine) {
         if (marine == null) {
             throw new IllegalArgumentException("SpaceMarine не может быть null.");
         }
         if (marines.containsKey(id)) {
             marines.put(id, marine);
+            return true;
         } else {
             throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
         }
@@ -138,10 +141,12 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * Удалить элемент из коллекции по его ключу
      *
      * @param id ID элемента, который нужно удалить
+     * @throws NoSuchElementException если элемента с таким id не существует
      */
-    public void removeKey(int id) {
+    public Boolean removeKey(int id) {
         if (marines.containsKey(id)) {
             marines.remove(id);
+            return true;
         } else {
             throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
         }

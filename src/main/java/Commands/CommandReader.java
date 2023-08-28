@@ -1,4 +1,4 @@
-package IO;
+package Commands;
 
 public class CommandReader {
 }
