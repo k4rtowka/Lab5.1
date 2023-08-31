@@ -101,7 +101,11 @@ public class CollectionManager implements Comparable<CollectionManager> {
     //endregion
 
     //region Методы
-
+    public Integer GetSize() {
+        if (this.marines == null)
+            return 0;
+        return this.marines.size();
+    }
 
     /**
      * Добавить новый элемент с заданным ключом

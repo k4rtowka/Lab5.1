@@ -5,7 +5,7 @@ import Models.CollectionManager;
 public class CommandInfo extends Command {
 
     public CommandInfo(CollectionManager collectionManager) {
-        super(Titles.info, Descriptions.info, collectionManager);
+        super(Titles.info, Descriptions.info, collectionManager, 0);
     }
 
     /**

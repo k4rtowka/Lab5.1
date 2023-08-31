@@ -9,9 +9,10 @@ public class CommandExit extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        System.out.println("Выход из программы!");
-        //System.exit(0);
-        Thread.currentThread().interrupt();
+        if (this.CheckParams(params, 0)) {
+            System.out.println("Выход из программы!");
+            Thread.currentThread().interrupt();
+        }
         return null;
     }
 }

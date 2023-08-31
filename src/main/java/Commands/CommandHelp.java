@@ -25,12 +25,12 @@ public class CommandHelp extends Command {
         commands.add(new CommandSave(this.collectionManager));
         //commands.add(new CommandExecuteScript(this.collectionManager));
         commands.add(new CommandExit(this.collectionManager));
-        commands.add(new CommandRemoveHead(this.collectionManager));
-        commands.add(new CommandAddIfMin(this.collectionManager));
-        commands.add(new CommandHistory(this.collectionManager));
-        commands.add(new CommandCountLessThanHealth(this.collectionManager));
-        commands.add(new CommandFilterContainsName(this.collectionManager));
-        commands.add(new CommandPrintFieldDescendingWeaponType(this.collectionManager));
+        commands.add(new CommandRemoveLower(this.collectionManager));
+        commands.add(new CommandReplaceIfLower(this.collectionManager));
+        commands.add(new CommandRemoveGreaterKey(this.collectionManager));
+        commands.add(new CommandCountByHeartCount(this.collectionManager));
+        commands.add(new CommandFilterByCategory(this.collectionManager));
+        commands.add(new CommandPrintDescending(this.collectionManager));
     }
 
     public ArrayList<Command> GetCommands() {
@@ -53,9 +53,11 @@ public class CommandHelp extends Command {
     @Override
     protected Object execute(Object[] params) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        for (Command command : this.commands) {
-            stringBuilder.append(command);
-            stringBuilder.append("\n");
+        if (this.CheckParams(params, 0)) {
+            for (Command command : this.commands) {
+                stringBuilder.append(command);
+                stringBuilder.append("\n");
+            }
         }
         return stringBuilder.toString();
     }

@@ -80,7 +80,7 @@ public abstract class Command {
         this.name = name;
         this.description = description;
         this.collectionManager = collectionManager;
-        this.expectedParamsCount = expectedParamsCount
+        this.expectedParamsCount = expectedParamsCount;
     }
     //endregion
 
@@ -97,8 +97,8 @@ public abstract class Command {
      *
      * @param params              входные параметры
      * @param expectedParamsCount ожидаемое число входных параметров
-     * @return
-     * @throws Exception
+     * @return <b>true</b> если количество параметров правильное, <b>false</b> если неправильно.
+     * @throws Exception если неправильно число параметров
      */
     public boolean CheckParams(Object[] params, int expectedParamsCount) throws Exception {
         if (expectedParamsCount == 0) {
@@ -108,13 +108,17 @@ public abstract class Command {
         }
         if (expectedParamsCount < 0)
             throw new Exception("Ожидаемое число параметров у команды не может быть меньше нуля!");
-        return params != null && params.length == expectedParamsCount;
+        if(params==null && expectedParamsCount>0)
+            throw new Exception(String.format("Не переданы параметры, ожидаемое число параметров %d", expectedParamsCount));
+        if(expectedParamsCount != params.length)
+            throw new Exception(String.format("Ожидаемое число параметров %d, переданное число параметров %d", expectedParamsCount, params.length));
+        return true;
     }
 
     /**
      * Возвращает имя команды
      *
-     * @return
+     * @return название команды
      */
     public String getName() {
         return this.name;
@@ -123,7 +127,7 @@ public abstract class Command {
     /**
      * Устанавливает имя команды
      *
-     * @param name
+     * @param name название команды
      */
     public void setName(String name) {
         this.name = name;

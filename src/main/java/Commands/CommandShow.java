@@ -4,7 +4,7 @@ import Models.CollectionManager;
 
 public class CommandShow extends Command {
     public CommandShow(CollectionManager collectionManager) {
-        super(Titles.show, Descriptions.show, collectionManager);
+        super(Titles.show, Descriptions.show, collectionManager, 0);
     }
 
     @Override

@@ -9,7 +9,9 @@ public class CommandClear extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        collectionManager.clear();
+        if (this.CheckParams(params, 0)) {
+            collectionManager.clear();
+        }
         return true;
     }
 }

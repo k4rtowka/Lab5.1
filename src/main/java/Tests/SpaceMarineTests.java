@@ -82,9 +82,24 @@ public class SpaceMarineTests {
     //region Heart Count
     @Test
     public void setHeartCount_validCount() {
-        marine.setHeartCount(2);
-        assertEquals(2, marine.getHeartCount());
+        for (int i = 1; i < 4; i++) {
+            marine.setHeartCount(i);
+            assertEquals(i, marine.getHeartCount());
+        }
     }
+
+    @Test
+    public void setHeartCount_invalidCount() {
+        for(int i = -100; i < 101; i++) {
+            if(i > 0 && i < 4) continue;
+            int finalI = i;
+            Exception exception = assertThrows(Exception.class, () -> {
+                marine.setHeartCount(finalI);
+            });
+            assertEquals("Количество сердец должно быть от 1 до 3 включительно.", exception.getMessage());
+        }
+    }
+
 //endregion
 
     //region Category
