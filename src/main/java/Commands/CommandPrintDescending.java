@@ -9,6 +9,9 @@ public class CommandPrintDescending extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        return collectionManager.printDescending();
+        if(this.CheckParams(params, 0)){
+            return collectionManager.printDescending();
+        }
+        return null;
     }
 }

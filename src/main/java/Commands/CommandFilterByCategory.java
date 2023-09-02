@@ -10,8 +10,9 @@ public class CommandFilterByCategory extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if(params[0] == null)
-            throw new Exception("Не указана категория!");
-        return collectionManager.filterByCategory((AstartesCategory) params[0]);
+        if (this.CheckParams(params, 1) && this.CheckType(params[0], AstartesCategory.class)) {
+            return collectionManager.filterByCategory((AstartesCategory) params[0]);
+        }
+        return null;
     }
 }

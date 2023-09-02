@@ -9,6 +9,10 @@ public class CommandShow extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        return collectionManager.show();
+        if(this.CheckParams(params, 0)){
+            return collectionManager.show();
+
+        }
+        return null;
     }
 }

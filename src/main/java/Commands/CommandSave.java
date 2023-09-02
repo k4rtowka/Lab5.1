@@ -9,7 +9,9 @@ public class CommandSave extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        collectionManager.save();
+        if(this.CheckParams(params, 0)){
+            collectionManager.save();
+        }
         return null;
     }
 }

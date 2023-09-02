@@ -1,5 +1,6 @@
 package Commands;
 
+import Common.Strings;
 import Models.CollectionManager;
 
 /**
@@ -104,16 +105,29 @@ public abstract class Command {
         if (expectedParamsCount == 0) {
             if (params == null || params.length == 0)
                 return true;
-            throw new Exception("У команды нет входных параметров!");
+            throw new Exception(Strings.Errors.Commands.expectingNoParams);
         }
         if (expectedParamsCount < 0)
-            throw new Exception("Ожидаемое число параметров у команды не может быть меньше нуля!");
-        if(params==null && expectedParamsCount>0)
+            throw new Exception(Strings.Errors.Commands.expectingPositiveParamsCount);
+        if (params == null && expectedParamsCount > 0)
             throw new Exception(String.format("Не переданы параметры, ожидаемое число параметров %d", expectedParamsCount));
-        if(expectedParamsCount != params.length)
+        if (expectedParamsCount != params.length)
             throw new Exception(String.format("Ожидаемое число параметров %d, переданное число параметров %d", expectedParamsCount, params.length));
         return true;
     }
+
+    public boolean CheckType(Object param, Class<?> expectedType) throws Exception {
+        if (param == null) {
+            throw new Exception(Strings.Errors.Commands.expectingNotNull);
+        }
+
+        if (!expectedType.isInstance(param)) {
+            throw new Exception(String.format("Ожидался тип %s, но получен %s!",
+                    expectedType.getSimpleName(), param.getClass().getSimpleName()));
+        }
+        return true;
+    }
+
 
     /**
      * Возвращает имя команды

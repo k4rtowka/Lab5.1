@@ -19,7 +19,7 @@ public class BaseTest {
     private static final List<AstartesCategory> CATEGORIES = Arrays.asList(AstartesCategory.values());
     private static final List<MeleeWeapon> MELEE_WEAPONS = Arrays.asList(MeleeWeapon.values());
 
-    public static SpaceMarine generateRandomSpaceMarine(int id) {
+    public  SpaceMarine generateRandomSpaceMarine(int id) {
         SpaceMarine marine = new SpaceMarine();
 
         marine.setId(id);
@@ -38,7 +38,7 @@ public class BaseTest {
         return marine;
     }
 
-    public static List<SpaceMarine> generateSpaceMarines(int count) {
+    public  List<SpaceMarine> generateSpaceMarines(int count) {
         List<SpaceMarine> marines = new ArrayList<>();
         for (int i = 1; i <= count; i++) {
             marines.add(generateRandomSpaceMarine(i));

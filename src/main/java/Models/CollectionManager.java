@@ -49,6 +49,10 @@ public class CollectionManager implements Comparable<CollectionManager> {
     public TreeMap<Integer, SpaceMarine> getMarines() {
         return marines;
     }
+
+    public LocalDate getInitializationDate() {
+        return this.initializationDate;
+    }
     //endregion
 
     //region Сеттеры
@@ -237,13 +241,15 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * @return строка со всеми элементами коллекции.
      */
     public String show() {
-        StringBuilder result = new StringBuilder("Элементы коллекции:\n");
-
-        for (SpaceMarine marine : this.marines.values()) {
-            result.append(marine.toString()).append("\n");
+        if (marines.size() == 0)
+            return "Коллекция пуста!";
+        else {
+            StringBuilder result = new StringBuilder("Элементы коллекции:\n");
+            for (SpaceMarine marine : this.marines.values()) {
+                result.append(marine.toString()).append("\n");
+            }
+            return result.toString();
         }
-
-        return result.toString();
     }
 
     /**

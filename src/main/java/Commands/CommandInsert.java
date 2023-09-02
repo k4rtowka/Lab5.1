@@ -1,5 +1,6 @@
 package Commands;
 
+import Models.AstartesCategory;
 import Models.CollectionManager;
 import Models.SpaceMarine;
 
@@ -10,8 +11,9 @@ public class CommandInsert extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if(params[0] == null)
-            throw new Exception("Не указан Морпех!");
-        return collectionManager.insert((SpaceMarine) params[0]);
+        if (this.CheckParams(params, 1) && this.CheckType(params[0], SpaceMarine.class)) {
+            return collectionManager.insert((SpaceMarine) params[0]);
+        }
+        return null;
     }
 }

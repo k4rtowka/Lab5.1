@@ -10,11 +10,13 @@ public class CommandReplaceIfLower extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if (params[0] == null)
-            throw new Exception("Не указан ID!");
-        if (params[1] == null)
-            throw new Exception("Не указан Морпех!");
-        collectionManager.replaceIfLower((Integer) params[0], (SpaceMarine) params[1]);
+        if(this.CheckParams(params, 2)
+                && this.CheckType(params[0], Integer.class)
+                && this.CheckType(params[1], SpaceMarine.class)
+        ){
+            collectionManager.replaceIfLower((Integer) params[0], (SpaceMarine) params[1]);
+        }
+
         return null;
     }
 }

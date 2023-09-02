@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 
 
-public class SpaceMarineTests {
+public class SpaceMarineTests extends  BaseTest {
     private SpaceMarine marine;
 
     @BeforeEach
@@ -55,33 +55,54 @@ public class SpaceMarineTests {
 
     //region Coordinates
     @Test
-    public void setCoordinate_validCoordinates() {
+    public void setCoordinate_ValidCoordinates() {
         Coordinates coordinates = new Coordinates(2.3, 4);
         marine.setCoordinates(coordinates);
         assertEquals(coordinates, marine.getCoordinates());
     }
-//endregion
+
+    @Test
+    public void setCoordinate_InvalidCoordinates() {
+        Exception exception = assertThrows(Exception.class,
+                () -> marine.setCoordinates(null));
+        assertEquals("Координаты не могут быть null.", exception.getMessage());
+    }
+    //endregion
 
     //region Date
     @Test
-    public void setDate_validDate() {
+    public void setDate_ValidDate() {
         Date date = new Date();
         marine.setCreationDate(date);
         assertEquals(date, marine.getCreationDate());
     }
-//endregion
+
+    @Test
+    public void setDate_InvalidDate() {
+        Exception exception = assertThrows(Exception.class,
+                () -> marine.setCreationDate(null));
+        assertEquals("Дата создания не может быть null.", exception.getMessage());
+    }
+    //endregion
 
     //region Health
     @Test
-    public void setHealth_validHealth() {
+    public void setHealth_ValidHealth() {
         marine.setHealth(100);
         assertEquals(100, marine.getHealth());
     }
-//endregion
+
+    @Test
+    public void setHealth_InvalidHealth() {
+        Exception exception = assertThrows(Exception.class,
+                () -> marine.setHealth(-100));
+        assertEquals("Здоровье, если указано, должно быть больше 0.", exception.getMessage());
+    }
+    //endregion
 
     //region Heart Count
     @Test
-    public void setHeartCount_validCount() {
+    public void setHeartCount_ValidCount() {
         for (int i = 1; i < 4; i++) {
             marine.setHeartCount(i);
             assertEquals(i, marine.getHeartCount());
@@ -89,9 +110,9 @@ public class SpaceMarineTests {
     }
 
     @Test
-    public void setHeartCount_invalidCount() {
-        for(int i = -100; i < 101; i++) {
-            if(i > 0 && i < 4) continue;
+    public void setHeartCount_InvalidCount() {
+        for (int i = -100; i < 101; i++) {
+            if (i > 0 && i < 4) continue;
             int finalI = i;
             Exception exception = assertThrows(Exception.class, () -> {
                 marine.setHeartCount(finalI);
@@ -108,7 +129,14 @@ public class SpaceMarineTests {
         marine.setCategory(AstartesCategory.ASSAULT);
         assertEquals(AstartesCategory.ASSAULT, marine.getCategory());
     }
-//endregion
+
+    @Test
+    public void setCategory_InvalidCategory() {
+        Exception exception = assertThrows(Exception.class,
+                () -> marine.setCategory(null));
+        assertEquals("Категория Astartes не может быть null.", exception.getMessage());
+    }
+    //endregion
 
     //region Weapon
     @Test
@@ -116,7 +144,8 @@ public class SpaceMarineTests {
         marine.setMeleeWeapon(MeleeWeapon.POWER_BLADE);
         assertEquals(MeleeWeapon.POWER_BLADE, marine.getMeleeWeapon());
     }
-//endregion
+
+    //endregion
 
     //region Chapter
     @Test
@@ -126,5 +155,12 @@ public class SpaceMarineTests {
         assertEquals(chapter, marine.getChapter());
     }
 //endregion
+
+    //region ToString
+    @Test
+    void toString_Test() {
+        assertEquals("",this.generateRandomSpaceMarine(1));
+    }
+    //endregion
 
 }

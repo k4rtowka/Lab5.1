@@ -105,22 +105,24 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
     /**
      * Конструктор SpaceMarine без параметров.
      */
-    public SpaceMarine(){}
+    public SpaceMarine() {
+    }
 
     /**
-     *Конструктор SpaceMarine со всеми параметрами.
-     * @param id идентификационный номер
-     * @param name название
-     * @param coordinates координаты
+     * Конструктор SpaceMarine со всеми параметрами.
+     *
+     * @param id           идентификационный номер
+     * @param name         название
+     * @param coordinates  координаты
      * @param creationDate дата создания
-     * @param health здоровье
-     * @param heartCount количество сердец
-     * @param category категория Astartes
-     * @param meleeWeapon оружие ближнего боя
-     * @param chapter глава
+     * @param health       здоровье
+     * @param heartCount   количество сердец
+     * @param category     категория Astartes
+     * @param meleeWeapon  оружие ближнего боя
+     * @param chapter      глава
      */
     public SpaceMarine(int id, String name, Coordinates coordinates, Date creationDate,
-                       Integer health, long heartCount, AstartesCategory category, MeleeWeapon meleeWeapon, Chapter chapter){
+                       Integer health, long heartCount, AstartesCategory category, MeleeWeapon meleeWeapon, Chapter chapter) {
         this.setId(id);
         this.setName(name);
         this.setCoordinates(coordinates);
@@ -333,20 +335,19 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
 
     //region Методы
 
-    @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("[");
-        result.append("SpaceMarine id: ").append(id).append('\n');
-        result.append("SpaceMarine name: ").append(name).append('\n');
-        result.append("SpaceMarine coordinates: ").append(coordinates).append('\n');
-        result.append("SpaceMarine creation date: ").append(creationDate).append('\n');
-        result.append("SpaceMarine health: ").append((health == null) ? "not currently set" : health).append('\n');
-        result.append("SpaceMarine heartCount: ").append(heartCount).append('\n');
-        result.append("SpaceMarine AstartesCategory: ").append(category).append('\n');
-        result.append("SpaceMarine MeleeWeapon: ").append((meleeWeapon == null) ? "not currently set" : meleeWeapon).append('\n');
-        result.append("SpaceMarine Chapter: ").append((chapter == null) ? "not currently set" : chapter).append('\n');
-        result.append("]");
+        result.append("{");
+        result.append("\"SpaceMarine id\": ").append(id).append(", ");
+        result.append("\"SpaceMarine name\": \"").append(name).append("\", ");
+        result.append("\"SpaceMarine coordinates\": ").append(coordinates).append(", ");
+        result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", ");
+        result.append("\"SpaceMarine health\": ").append((health == null) ? "\"not currently set\"" : health).append(", ");
+        result.append("\"SpaceMarine heartCount\": ").append(heartCount).append(", ");
+        result.append("\"SpaceMarine AstartesCategory\": \"").append(category).append("\", ");
+        result.append("\"SpaceMarine MeleeWeapon\": ").append((meleeWeapon == null) ? "\"not currently set\"" : "\"" + meleeWeapon + "\"").append(", ");
+        result.append("\"SpaceMarine Chapter\": ").append((chapter == null) ? "\"not currently set\"" : "\"" + chapter + "\"");
+        result.append("}");
         return result.toString();
     }
 

@@ -87,8 +87,7 @@ public class CommandReader {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
 
 //        //region Ничего не возвращают
-//        if (commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.info) ||
-//                commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit) ||
+//        if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit) ||
 //                commandName.equals(Command.Titles.removeHead))
 //            currentCommand.Execute(null);
 //        if (commandName.equals(Command.Titles.executeScript)) {
@@ -96,7 +95,8 @@ public class CommandReader {
 //        }
 //        //endregion
 //        //region Возвращают строку
-//        if (commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.history))
+//        if (commandName.equals(Command.Titles.info) || commandName.equals(Command.Titles.help)
+//                || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending))
 //            return currentCommand.Execute(null);
 //        //endregion
 //        //region Возвращают число

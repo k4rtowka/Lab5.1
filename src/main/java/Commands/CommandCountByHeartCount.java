@@ -1,5 +1,6 @@
 package Commands;
 
+import Models.AstartesCategory;
 import Models.CollectionManager;
 
 public class CommandCountByHeartCount extends Command {
@@ -9,9 +10,7 @@ public class CommandCountByHeartCount extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 1)) {
-            if (params[0] == null)
-                throw new Exception("Не указано количество сердец!");
+        if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
             return collectionManager.countByHeartCount((Integer) params[0]);
         }
         return null;

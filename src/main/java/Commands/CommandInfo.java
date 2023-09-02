@@ -16,6 +16,9 @@ public class CommandInfo extends Command {
      */
     @Override
     protected Object execute(Object[] params) throws Exception {
-        return this.collectionManager.info();
+        if(this.CheckParams(params,0)){
+            return this.collectionManager.info();
+        }
+        return null;
     }
 }

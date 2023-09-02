@@ -10,9 +10,9 @@ public class CommandRemoveLower extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if(params[0] == null)
-            throw new Exception("Не указан Морпех!");
-        collectionManager.removeLower((SpaceMarine) params[0]);
+        if (this.CheckParams(params, 1) && this.CheckType(params[0], SpaceMarine.class)) {
+            collectionManager.removeLower((SpaceMarine) params[0]);
+        }
         return null;
     }
 }
