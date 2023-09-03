@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -349,7 +350,44 @@ public class CommandsTests extends BaseTest {
     @Test
     public void test_Help_ExecuteWithValidParams() throws Exception {
         CommandHelp help = new CommandHelp(this.collectionManager);
-        //System.out.println(help.Execute());
+
+        StringBuilder result = new StringBuilder();
+        result.append(Command.Titles.help).append(" - ").append(Command.Descriptions.help).append("\n");
+        result.append(Command.Titles.info).append(" - ").append(Command.Descriptions.info).append("\n");
+        result.append(Command.Titles.show).append(" - ").append(Command.Descriptions.show).append("\n");
+        result.append(Command.Titles.insert).append(" - ").append(Command.Descriptions.insert).append("\n");
+        result.append(Command.Titles.update).append(" - ").append(Command.Descriptions.update).append("\n");
+        result.append(Command.Titles.removeKey).append(" - ").append(Command.Descriptions.removeKey).append("\n");
+        result.append(Command.Titles.clear).append(" - ").append(Command.Descriptions.clear).append("\n");
+        result.append(Command.Titles.save).append(" - ").append(Command.Descriptions.save).append("\n");
+        result.append(Command.Titles.executeScript).append(" - ").append(Command.Descriptions.executeScript).append("\n");
+        result.append(Command.Titles.exit).append(" - ").append(Command.Descriptions.exit).append("\n");
+        result.append(Command.Titles.removeLower).append(" - ").append(Command.Descriptions.removeLower).append("\n");
+        result.append(Command.Titles.replaceIfLower).append(" - ").append(Command.Descriptions.replaceIfLower).append("\n");
+        result.append(Command.Titles.removeGreaterKey).append(" - ").append(Command.Descriptions.removeGreaterKey).append("\n");
+        result.append(Command.Titles.countByHeartCount).append(" - ").append(Command.Descriptions.countByHeartCount).append("\n");
+        result.append(Command.Titles.filterByCategory).append(" - ").append(Command.Descriptions.filterByCategory).append("\n");
+        result.append(Command.Titles.printDescending).append(" - ").append(Command.Descriptions.printDescending).append("\n");
+
+        assertEquals(result.toString(), help.Execute());
+    }
+
+    @Test
+    public void test_Help_ExecuteWithInvalidParams(){
+        CommandHelp command = new CommandHelp(collectionManager);
+        Object[] params = new Object[]{"some"};
+
+        Exception exception = assertThrows(Exception.class, () ->
+                command.Execute(params));
+        assertEquals(Strings.Errors.Commands.expectingNoParams, exception.getMessage());
+    }
+
+    @Test
+    public void test_Help_GetCommand() throws Exception {
+        CommandHelp command = new CommandHelp(collectionManager);
+        for(Command value : command.GetCommands()){
+            assertEquals(value.toString(), command.GetCommand(value.getName()).toString());
+        }
         this.ThrowNotImplemented();
     }
     //endregion
@@ -365,12 +403,66 @@ public class CommandsTests extends BaseTest {
                 + "\nПоследний вставленный ID: " + this.collectionManager.GetSize();
         assertEquals(expected, command.Execute());
     }
+
+    @Test
+    public void test_Info_ExecuteWithInvalidParams(){
+        CommandInfo command = new CommandInfo(collectionManager);
+        Object[] params = new Object[]{"some"};
+
+        Exception exception = assertThrows(Exception.class, () ->
+                command.Execute(params));
+        assertEquals(Strings.Errors.Commands.expectingNoParams, exception.getMessage());
+
+    }
     //endregion
 
     //region PrintDescending
     @Test
     public void test_PrintDescending_ExecuteWithValidParams() throws Exception {
-        this.ThrowNotImplemented();
+
+        //region Для пустой коллекции
+        this.collectionManager.clear();
+        CommandPrintDescending command = new CommandPrintDescending(collectionManager);
+        assertEquals(Strings.Messages.Collection.emptyCollection, command.Execute());
+        //endregion
+
+        List<SpaceMarine> testMarines = this.generateSpaceMarines(3);
+        for(int i = 0; i < 3;i++) {
+            collectionManager.insert(testMarines.get(i));
+        }
+
+        testMarines = testMarines.stream().sorted(Comparator.reverseOrder()).toList();
+        StringBuilder result = new StringBuilder();
+        SpaceMarine marine = new SpaceMarine();
+        for (int i = 0; i < 3; i++){
+            marine = testMarines.get(i);
+
+            result.append("{");
+            result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
+            result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
+            result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
+            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", ");
+            result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
+            result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
+            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", ");
+            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
+            result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
+            result.append("}");
+            result.append("\n");
+
+
+        }
+        assertEquals(result.toString(), command.Execute() + "\n");
+    }
+
+    @Test
+    public void test_PrintDescending_ExecuteWithInvalidParams(){
+        CommandPrintDescending command = new CommandPrintDescending(collectionManager);
+        Object[] params = new Object[]{"some"};
+
+        Exception exception = assertThrows(Exception.class, () ->
+                command.Execute(params));
+        assertEquals(Strings.Errors.Commands.expectingNoParams, exception.getMessage());
     }
     //endregion
 
@@ -380,12 +472,45 @@ public class CommandsTests extends BaseTest {
         //region Для пустой коллекции
         this.collectionManager.clear();
         CommandShow show = new CommandShow(collectionManager);
-        assertEquals("", show.Execute());
+        assertEquals(Strings.Messages.Collection.emptyCollection, show.Execute());
         //endregion
-        List<SpaceMarine> testMarines = this.generateSpaceMarines(3);
-        //for(...)
-        //this.collectionManager.insert(testMarines[i]);
 
+        List<SpaceMarine> testMarines = this.generateSpaceMarines(3);
+        SpaceMarine marine;
+        StringBuilder result = new StringBuilder();
+        result.append("Элементы коллекции:\n");
+        for(int i = 0; i < 3;i++) {
+            marine = testMarines.get(i);
+            this.collectionManager.insert(marine);
+
+
+            result.append("{");
+            result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
+            result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
+            result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
+            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", ");
+            result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
+            result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
+            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", ");
+            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
+            result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
+            result.append("}");
+            result.append("\n");
+
+        }
+
+        assertEquals(result.toString(), show.Execute());
+
+    }
+
+    @Test
+    public void test_Show_ExecuteWithInvalidParams(){
+        CommandShow command = new CommandShow(collectionManager);
+        Object[] params = new Object[]{"some"};
+
+        Exception exception = assertThrows(Exception.class, () ->
+                command.Execute(params));
+        assertEquals(Strings.Errors.Commands.expectingNoParams, exception.getMessage());
     }
     //endregion
 

@@ -156,11 +156,5 @@ public class SpaceMarineTests extends  BaseTest {
     }
 //endregion
 
-    //region ToString
-    @Test
-    void toString_Test() {
-        assertEquals("",this.generateRandomSpaceMarine(1));
-    }
-    //endregion
 
 }

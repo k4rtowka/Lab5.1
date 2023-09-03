@@ -2,7 +2,9 @@ package Common;
 
 public class Strings {
     public class Messages {
-
+        public class Collection{
+            public static String emptyCollection = "Коллекция пуста!";
+        }
     }
 
     public class Errors {

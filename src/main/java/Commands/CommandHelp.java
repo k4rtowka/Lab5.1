@@ -23,7 +23,7 @@ public class CommandHelp extends Command {
         commands.add(new CommandRemoveKey(this.collectionManager));
         commands.add(new CommandClear(this.collectionManager));
         commands.add(new CommandSave(this.collectionManager));
-        //commands.add(new CommandExecuteScript(this.collectionManager));
+        commands.add(new CommandExecuteScript(this.collectionManager));
         commands.add(new CommandExit(this.collectionManager));
         commands.add(new CommandRemoveLower(this.collectionManager));
         commands.add(new CommandReplaceIfLower(this.collectionManager));

@@ -1,5 +1,6 @@
 package Models;
 
+import Common.Strings;
 import Tests.Data.LocalDateAdapter;
 
 import javax.xml.bind.*;
@@ -242,7 +243,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      */
     public String show() {
         if (marines.size() == 0)
-            return "Коллекция пуста!";
+            return Strings.Messages.Collection.emptyCollection;
         else {
             StringBuilder result = new StringBuilder("Элементы коллекции:\n");
             for (SpaceMarine marine : this.marines.values()) {
@@ -256,9 +257,13 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * Вывести элементы коллекции в порядке убывания
      */
     public String printDescending() {
-        return marines.values().stream()
-                .sorted(Comparator.reverseOrder()).map(SpaceMarine::toString)
-                .collect(Collectors.joining("\n"));
+        if(marines.size() == 0){
+            return Strings.Messages.Collection.emptyCollection;
+        }else {
+            return marines.values().stream()
+                    .sorted(Comparator.reverseOrder()).map(SpaceMarine::toString)
+                    .collect(Collectors.joining("\n"));
+        }
     }
 
     /**
