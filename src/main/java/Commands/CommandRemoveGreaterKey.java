@@ -11,7 +11,7 @@ public class CommandRemoveGreaterKey extends Command {
     @Override
     protected Object execute(Object[] params) throws Exception {
         if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
-            collectionManager.removeGreaterKey((Integer) params[0]);
+            return collectionManager.removeGreaterKey((Integer) params[0]);
         }
         return null;
     }

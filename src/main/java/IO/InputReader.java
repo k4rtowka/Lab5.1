@@ -222,7 +222,7 @@ public class InputReader {
     private SpaceMarine GetSpaceMarine(SpaceMarine marine, int step) {
         try {
             if(step==1) {
-                String name = GetValue("", String.class);
+                String name = GetValue("Введите имя: ", String.class);
                 marine.setName(name);
                 step++;
             }

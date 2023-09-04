@@ -101,11 +101,25 @@ public class CollectionManager implements Comparable<CollectionManager> {
         marines = new TreeMap<>();
         dataFile = null;
         initializationDate = LocalDate.now();
-        //load();
     }
     //endregion
 
     //region Методы
+
+    //region Исполняемые скриптыы
+    public void AddExecuteScript(String fileName) {
+        this.executedScripts.add(fileName);
+    }
+
+    public void RemoveExecuteScript(String fileName) {
+        this.executedScripts.remove(fileName);
+    }
+
+    public boolean CheckExecuteScript(String fileName) {
+        return this.executedScripts.contains(fileName);
+    }
+    //endregion
+
     public Integer GetSize() {
         if (this.marines == null)
             return 0;
@@ -174,8 +188,8 @@ public class CollectionManager implements Comparable<CollectionManager> {
      *
      * @param marine элемент для сравнения
      */
-    public void removeLower(SpaceMarine marine) {
-        this.marines.entrySet().removeIf(x -> x.getValue().compareTo(marine) < 0);
+    public Boolean removeLower(SpaceMarine marine) {
+        return this.marines.entrySet().removeIf(x -> x.getValue().compareTo(marine) < 0);
     }
 
 
@@ -185,11 +199,13 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * @param key       ключ элемента, который нужно заменить
      * @param newMarine новое значение
      */
-    public void replaceIfLower(Integer key, SpaceMarine newMarine) {
+    public Boolean replaceIfLower(Integer key, SpaceMarine newMarine) {
         SpaceMarine currentMarine = marines.get(key);
         if (currentMarine != null && newMarine.compareTo(currentMarine) < 0) {
             marines.put(key, newMarine);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -197,8 +213,8 @@ public class CollectionManager implements Comparable<CollectionManager> {
      *
      * @param key ключ элемента, который нужно заменить
      */
-    public void removeGreaterKey(Integer key) {
-        this.marines.entrySet().removeIf(entry -> entry.getKey() > key);
+    public Boolean removeGreaterKey(Integer key) {
+        return this.marines.entrySet().removeIf(entry -> entry.getKey() > key);
     }
 
     /**
@@ -257,9 +273,9 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * Вывести элементы коллекции в порядке убывания
      */
     public String printDescending() {
-        if(marines.size() == 0){
+        if (marines.size() == 0) {
             return Strings.Messages.Collection.emptyCollection;
-        }else {
+        } else {
             return marines.values().stream()
                     .sorted(Comparator.reverseOrder()).map(SpaceMarine::toString)
                     .collect(Collectors.joining("\n"));

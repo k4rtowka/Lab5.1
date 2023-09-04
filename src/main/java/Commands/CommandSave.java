@@ -11,6 +11,7 @@ public class CommandSave extends Command {
     protected Object execute(Object[] params) throws Exception {
         if(this.CheckParams(params, 0)){
             collectionManager.save();
+            return true;
         }
         return null;
     }

@@ -1,10 +1,13 @@
 package Commands;
 
 import IO.InputReader;
+import Models.AstartesCategory;
 import Models.CollectionManager;
+import Models.SpaceMarine;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
 
 public class CommandReader {
@@ -35,6 +38,7 @@ public class CommandReader {
     //endregion
 
     //region Конструкторы
+
     /**
      * Конструктор CommandReader.
      *
@@ -51,11 +55,12 @@ public class CommandReader {
     //endregion
 
     //region Методы
+
     /**
      * Выводит указанное сообщение
      *
      * @param message      сообщение
-     * @param isShowPrompt выводить в консоль или нет (отключается при рабрте с файлами)
+     * @param isShowPrompt выводить в консоль или нет (отключается при работе с файлами)
      */
     public void Print(Object message, boolean isShowPrompt) {
         if (isShowPrompt)
@@ -86,98 +91,118 @@ public class CommandReader {
     public Object Execute(String commandName, String params) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
 
-//        //region Ничего не возвращают
-//        if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit) ||
-//                commandName.equals(Command.Titles.removeHead))
-//            currentCommand.Execute(null);
-//        if (commandName.equals(Command.Titles.executeScript)) {
-//            currentCommand.Execute(params);
-//        }
-//        //endregion
-//        //region Возвращают строку
-//        if (commandName.equals(Command.Titles.info) || commandName.equals(Command.Titles.help)
-//                || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending))
-//            return currentCommand.Execute(null);
-//        //endregion
-//        //region Возвращают число
-//        if (commandName.equals(Command.Titles.add)) {
-//            this.UpdateReader();
-//            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine());
-//            if (result == null)
-//                return "Не удалось добавить объект";
-//            else
-//                return String.format("Объект добавлен, его ID в коллекции:%d", result);
-//        }
-//        if (commandName.equals(Command.Titles.countLessThanHealth)) {
-//            Object result = currentCommand.Execute(params);
-//            if (result == null)
-//                return "Не удалось найти значение";
-//            else
-//                return String.format("Число объектов со здоровьем меньше указанного:%d", result);
-//        }
-//        //endregion
-//        //region Возвращают булевское значение
-//        if (commandName.equals(Command.Titles.save)) {
-//            Object result = currentCommand.Execute(null);
-//            if (result == null || !(boolean) result)
-//                return "Не удалось сохранить коллекцию";
-//            else
-//                return "Коллекция сохранена";
-//        }
-//        if (commandName.equals(Command.Titles.update)) {
-//            this.UpdateReader();
-//            Object result = currentCommand.Execute(new Object[]{params, this.inputReader.GetSpaceMarine()});
-//            if (result == null || !(boolean) result)
-//                return "Не удалось обновить указанный элемент";
-//            else
-//                return "Объект успешно обновлен";
-//        }
-//        if (commandName.equals(Command.Titles.removeById)) {
-//            Object result = currentCommand.Execute(params);
-//            if (result == null || !(boolean) result)
-//                return "Не удалось удалить указанный элемент";
-//            else
-//                return "Объект успешно удален";
-//        }
-//        if (commandName.equals(Command.Titles.addIfMin)) {
-//            this.UpdateReader();
-//            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarineWithId());
-//            if (result == null || !(boolean) result)
-//                return "Не удалось добавить указанный элемент";
-//            else
-//                return "Объект успешно добавлен";
-//        }
-//        //endregion
-//        //region Возвращает список
-//        if (commandName.equals(Command.Titles.printFieldDescendingWeaponType)) {
-//            List<WeaponType> weaponTypes = (List<WeaponType>) currentCommand.Execute();
-//            StringBuilder result = new StringBuilder();
-//            for (int i = 0; i < weaponTypes.size(); i++) {
-//                result.append((i + 1)).append(". ").append(weaponTypes.get(i)).append("\n");
-//            }
-//            return result.toString();
-//        }
-//        if (commandName.equals(Command.Titles.filterContainsName)) {
-//            List<SpaceMarine> marines = (List<SpaceMarine>) currentCommand.Execute(params);
-//            StringBuilder result = new StringBuilder();
-//            for (SpaceMarine marine : marines) {
-//                result.append(marine).append("\n");
-//            }
-//            return result.toString();
-//        }
-//        //endregion
+        //region Ничего не возвращают
+        if (commandName.equals(Command.Titles.save)) {
+            Object result = currentCommand.Execute(null);
+            if (result == null)
+                return "Не удалось сохранить коллекцию";
+            else
+                return "Коллекция сохранена";
+        }
+        if (commandName.equals(Command.Titles.update)) {
+            this.UpdateReader();
+            Object result = currentCommand.Execute(
+                    new Object[]{
+                            params,
+                            this.inputReader.GetSpaceMarine()
+                    });
+            if (result == null)
+                return "Не удалось обновить указанный элемент";
+            else
+                return "Объект успешно обновлен";
+        }
+        if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit)) {
+            currentCommand.Execute(null);
+        }
+        if (commandName.equals(Command.Titles.executeScript)) {
+            currentCommand.Execute(params);
+            return null;
+        }
+        //endregion
+        //region Возвращают строку
+        if (commandName.equals(Command.Titles.info) || commandName.equals(Command.Titles.help)
+                || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending))
+            return currentCommand.Execute(null);
+        //endregion
+        //region Возвращают число
+        if (commandName.equals(Command.Titles.insert)) {
+            this.UpdateReader();
+            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine());
+            if (result == null)
+                return "Не удалось добавить объект";
+            else
+                return String.format("Объект добавлен, его ID в коллекции:%d", (Integer) result);
+        }
+        if (commandName.equals(Command.Titles.countByHeartCount)) {
+            Object result = currentCommand.Execute(params);
+            if (result == null)
+                return "Не удалось найти значение";
+            else
+                return String.format("Число объектов со здоровьем меньше указанного:%d", (Integer) result);
+        }
+        //endregion
+        //region Возвращают булевское значение
+        if (commandName.equals(Command.Titles.removeGreaterKey)) {
+            Object result = currentCommand.Execute(params);
+            if (result == null || !(boolean) result)
+                return "Не удалось удалить указанный элемент";
+            else
+                return "Объект успешно удален";
+        }
+        if (commandName.equals(Command.Titles.removeKey)) {
+            Object result = currentCommand.Execute(params);
+            if (result == null || !(boolean) result)
+                return "Не удалось удалить указанный элемент";
+            else
+                return "Объект успешно удален";
+        }
+        if (commandName.equals(Command.Titles.removeLower)) {
+            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine());
+            if (result == null || !(boolean) result)
+                return "Не удалось удалить указанный элемент";
+            else
+                return "Объект успешно удален";
+        }
+        if (commandName.equals(Command.Titles.replaceIfLower)) {
+            this.UpdateReader();
+            Object result = currentCommand.Execute(
+                    new Object[]{
+                            params,
+                            this.inputReader.GetSpaceMarine()
+                    });
+            if (result == null || !(boolean) result)
+                return "Не удалось добавить указанный элемент";
+            else
+                return "Объект успешно добавлен";
+        }
+        //endregion
+        //region Возвращает список
+        if (commandName.equals(Command.Titles.filterByCategory)) {
+            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(AstartesCategory.class));
+            if (list instanceof List<?>) {
+                List<SpaceMarine> marines = (List<SpaceMarine>) list;
+                StringBuilder result = new StringBuilder();
+                for (SpaceMarine marine : marines) {
+                    result.append(marine).append("\n");
+                }
+                return result.toString();
+            } else {
+                throw new Exception("Команда не вернул список морпехов!");
+            }
+        }
+        //endregion
 
-        return null;
+        return "Неизвестная команда!";
     }
 
 
     /**
-     * Выбполняет команду с несколькими параметрами в виде объектов
+     * Выполняет команду с несколькими параметрами в виде объектов
      *
      * @param commandName имя команды
      * @param params      параметры
      * @return Объект с результатом
-     * @throws Exception
+     * @throws Exception Ошибка
      */
     public Object Execute(String commandName, Object[] params) throws Exception {
         throw new Exception("Метод не реализован");
@@ -187,13 +212,17 @@ public class CommandReader {
         try {
             while (true) {
                 this.Print("Введите команду:", !this.isReadFromFile);
+                if (!scanner.hasNext()) {
+                    break;
+                }
                 String command = scanner.nextLine();
                 String[] splitCommand = command.split(" ", 2);
                 try {
-                    Execute(splitCommand[0], splitCommand.length > 1 ? splitCommand[1] : null);
+                    System.out.println(Execute(splitCommand[0], splitCommand.length > 1 ? splitCommand[1] : null));
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
+
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -388,7 +388,6 @@ public class CommandsTests extends BaseTest {
         for(Command value : command.GetCommands()){
             assertEquals(value.toString(), command.GetCommand(value.getName()).toString());
         }
-        this.ThrowNotImplemented();
     }
     //endregion
 

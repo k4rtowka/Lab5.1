@@ -14,7 +14,7 @@ public class CommandReplaceIfLower extends Command {
                 && this.CheckType(params[0], Integer.class)
                 && this.CheckType(params[1], SpaceMarine.class)
         ){
-            collectionManager.replaceIfLower((Integer) params[0], (SpaceMarine) params[1]);
+            return collectionManager.replaceIfLower((Integer) params[0], (SpaceMarine) params[1]);
         }
 
         return null;

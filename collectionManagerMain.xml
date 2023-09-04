@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<collectionManager>
+    <marines>
+        <entry>
+            <key>1</key>
+            <value>
+                <name>adsasd</name>
+                <coordinates>
+                    <x>1.0</x>
+                    <y>1</y>
+                </coordinates>
+                <creationDate>2023-09-04T21:04:14.685+03:00</creationDate>
+                <health>1</health>
+                <heartCount>2</heartCount>
+                <category>DREADNOUGHT</category>
+                <meleeWeapon>POWER_SWORD</meleeWeapon>
+                <chapter>
+                    <name>asdasdas</name>
+                    <marinesCount>1</marinesCount>
+                </chapter>
+            </value>
+        </entry>
+    </marines>
+    <initializationDate>2023-09-04</initializationDate>
+    <dataFile>collectionManagerMain.xml</dataFile>
+    <lastId>1</lastId>
+</collectionManager>
