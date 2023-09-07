@@ -91,7 +91,7 @@ class InputReaderTest {
     public void testGetStringValue() {
         String expectedValue = "testString";
         SetSystemInStream(expectedValue); // подменяем стандартный ввод
-        String actualValue = reader.GetValue("Enter string: ", String.class);
+        String actualValue = reader.GetValue("Enter string: ", String.class, false);
         assertEquals(expectedValue, actualValue);
     }
 
@@ -99,7 +99,7 @@ class InputReaderTest {
     public void testGetIntegerValue() {
         String expectedValue = "12345";
         SetSystemInStream(expectedValue); // подменяем стандартный ввод
-        Integer result = reader.GetValue("Enter integer: ", Integer.class);
+        Integer result = reader.GetValue("Enter integer: ", Integer.class, false);
         assertEquals(Integer.valueOf(expectedValue), result);
     }
 
@@ -107,7 +107,7 @@ class InputReaderTest {
     public void testGetDoubleValue() {
         String expectedValue = "123.456";
         SetSystemInStream(expectedValue); // подменяем стандартный ввод
-        Double result = reader.GetValue("Enter double: ", Double.class);
+        Double result = reader.GetValue("Enter double: ", Double.class, false);
         assertEquals(Double.valueOf(expectedValue), result);
     }
 
@@ -115,7 +115,7 @@ class InputReaderTest {
     public void testGetFloatValue() {
         String expectedValue = "123.45";
         SetSystemInStream(expectedValue); // подменяем стандартный ввод
-        Float result = reader.GetValue("Enter float: ", Float.class);
+        Float result = reader.GetValue("Enter float: ", Float.class, false);
         assertEquals(Float.valueOf(expectedValue), result);
     }
 
@@ -123,7 +123,7 @@ class InputReaderTest {
     public void testGetLongValue() {
         String expectedValue = "1234567890";
         SetSystemInStream(expectedValue);
-        Long result = reader.GetValue("Enter long: ", Long.class);
+        Long result = reader.GetValue("Enter long: ", Long.class, false);
         assertEquals(Long.valueOf(expectedValue), result);
     }
 
@@ -131,13 +131,13 @@ class InputReaderTest {
     public void testGetBooleanValue() {
         String expectedValue = "true";
     SetSystemInStream(expectedValue);
-    Boolean result = reader.GetValue("Enter boolean: ", Boolean.class);
+    Boolean result = reader.GetValue("Enter boolean: ", Boolean.class, false);
         assertTrue(result);
     }
 
     @Test
     public void testGetInvalidTypeValue() {
-        assertThrows(IllegalArgumentException.class, () -> reader.GetValue("Some message", Character.class));
+        assertThrows(IllegalArgumentException.class, () -> reader.GetValue("Some message", Character.class, false));
     }
     //endregion
 
@@ -148,14 +148,14 @@ class InputReaderTest {
     void getEnumValue_ValidNumberInput_ReturnsCorrectEnum() {
         // Пользователь вводит "2", ожидается SECOND_OPTION
         SetSystemInStream("2");
-        TestEnum result = reader.GetEnumValue(TestEnum.class);
+        TestEnum result = reader.GetEnumValue(TestEnum.class, false);
         assertEquals(TestEnum.SECOND_OPTION, result);
     }
     @Test
     void getEnumValue_ValidNameInput_ReturnsCorrectEnum() {
         // Пользователь вводит "FIRST_OPTION", ожидается FIRST_OPTION
         SetSystemInStream("FIRST_OPTION");
-        TestEnum result = reader.GetEnumValue(TestEnum.class);
+        TestEnum result = reader.GetEnumValue(TestEnum.class, false);
         assertEquals(TestEnum.FIRST_OPTION, result);
     }
 
@@ -163,7 +163,7 @@ class InputReaderTest {
     void getEnumValue_InvalidNumberInput_PromptsAgain() {
         // Пользователь вводит "5", затем "1", ожидается FIRST_OPTION
         SetSystemInStream("5\n1");
-        TestEnum result = reader.GetEnumValue(TestEnum.class);
+        TestEnum result = reader.GetEnumValue(TestEnum.class, false);
         assertEquals(TestEnum.FIRST_OPTION, result);
     }
 
@@ -171,7 +171,7 @@ class InputReaderTest {
     void getEnumValue_InvalidNameInput_PromptsAgain() {
         // Пользователь вводит "INVALID_NAME", затем "SECOND_OPTION", ожидается SECOND_OPTION
         SetSystemInStream("INVALID_NAME\nSECOND_OPTION");
-        TestEnum result = reader.GetEnumValue(TestEnum.class);
+        TestEnum result = reader.GetEnumValue(TestEnum.class, false);
         assertEquals(TestEnum.SECOND_OPTION, result);
     }
     //endregion

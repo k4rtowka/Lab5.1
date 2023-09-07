@@ -20,8 +20,21 @@
                 </chapter>
             </value>
         </entry>
+        <entry>
+            <key>2</key>
+            <value>
+                <name>1</name>
+                <coordinates>
+                    <x>1.0</x>
+                    <y>1</y>
+                </coordinates>
+                <creationDate>2023-09-07T14:50:07.600+03:00</creationDate>
+                <heartCount>1</heartCount>
+                <category>DREADNOUGHT</category>
+            </value>
+        </entry>
     </marines>
     <initializationDate>2023-09-04</initializationDate>
     <dataFile>collectionManagerMain.xml</dataFile>
-    <lastId>1</lastId>
+    <lastId>2</lastId>
 </collectionManager>

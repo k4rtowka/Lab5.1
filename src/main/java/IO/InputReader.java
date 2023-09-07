@@ -97,15 +97,20 @@ public class InputReader {
      * @param <T> - тип получаемого значения
      * @return правильно введенное значение
      */
-    private <T> T GetValue(String message, String errorMessage, Function<String, T> parser) {
+    private <T> T GetValue(String message, String errorMessage, Function<String, T> parser, boolean canBeNull) {
         try {
             Print(message);
-            return parser.apply(this.scanner.nextLine());
+
+            String value = this.scanner.nextLine();
+            if(canBeNull && (value == null || value.isEmpty() || value.isBlank()))
+                return null;
+
+            return parser.apply(value);
         } catch (Exception e) {
             Print(errorMessage != null ? errorMessage : e.getMessage());
             if (this.isReadFromFile)
                 return null;
-            return GetValue(message, errorMessage, parser);
+            return GetValue(message, errorMessage, parser, canBeNull);
         }
     }
 
@@ -119,19 +124,19 @@ public class InputReader {
      * @return правильно введенное значение
      * @throws IllegalArgumentException если получен не известный тип данных
      */
-    public <T> T GetValue(String message, Class<T> typeClass) throws IllegalArgumentException {
+    public <T> T GetValue(String message, Class<T> typeClass, boolean canBeNull) throws IllegalArgumentException {
         if (typeClass == String.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите строку заново:", String::new));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите строку заново:", String::new, canBeNull));
         } else if (typeClass == Integer.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите целое число заново:", Integer::parseInt));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите целое число заново:", Integer::parseInt,canBeNull));
         } else if (typeClass == Double.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите число с плавающей запятой заново:", Double::parseDouble));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите число с плавающей запятой заново:", Double::parseDouble,canBeNull));
         } else if (typeClass == Float.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите число с плавающей запятой заново:", Float::parseFloat));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите число с плавающей запятой заново:", Float::parseFloat,canBeNull));
         } else if (typeClass == Long.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите длинное целое число заново:", Long::parseLong));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите длинное целое число заново:", Long::parseLong,canBeNull));
         } else if (typeClass == Boolean.class) {
-            return typeClass.cast(GetValue(message, "Ошибка! Введите true или false заново:", Boolean::parseBoolean));
+            return typeClass.cast(GetValue(message, "Ошибка! Введите true или false заново:", Boolean::parseBoolean,canBeNull));
         }
         throw new IllegalArgumentException("Неизвестный тип данных.");
     }
@@ -158,11 +163,18 @@ public class InputReader {
      * @param enumClass класс перечисления
      * @return значение перечисления, введенное пользователем
      */
-    public <E extends Enum<E>> E GetEnumValue(Class<E> enumClass) {
+    public <E extends Enum<E>> E GetEnumValue(Class<E> enumClass, boolean canBeNull) {
         try {
             PrintEnumValues(enumClass);
             String value = this.scanner.nextLine();
             E[] enumConstants = enumClass.getEnumConstants();
+
+            //region Если значение может быть null
+            if(canBeNull && value.isEmpty()){
+                return null;
+            }
+            //endregion
+
             //region Проверяем, является ли введенная строка числом
             if (value.matches("\\d+")) {
                 int enumIndex = Integer.parseInt(value) - 1;
@@ -177,9 +189,11 @@ public class InputReader {
             return Enum.valueOf(enumClass, value);
             //endregion
 
+
+
         } catch (IllegalArgumentException | NoSuchElementException e) {
             System.out.println("Некорректный ввод. Пожалуйста, введите значение из списка или его номер:");
-            return this.GetEnumValue(enumClass);
+            return this.GetEnumValue(enumClass, canBeNull);
         }
     }
 
@@ -190,10 +204,14 @@ public class InputReader {
      */
     public Chapter GetChapter() {
         try {
-            return new Chapter(
-                    GetValue("Введите название главы: ", String.class),
-                    GetValue("Введите число морпехов: ", Long.class)
-            );
+            Chapter chapter = new Chapter();
+            chapter.setName(GetValue("Введите название главы: ", String.class, true));
+            if(chapter.getName() == null || chapter.getName().isEmpty() || chapter.getName().isBlank())
+                return null;
+            else{
+                chapter.setMarinesCount(GetValue("Введите число морпехов: ", Long.class, false));
+            }
+            return chapter;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return GetChapter();
@@ -208,8 +226,8 @@ public class InputReader {
     public Coordinates GetCoordinates() {
         try {
             return new Coordinates(
-                    GetValue("Введите координату X: ", Double.class),
-                    GetValue("Введите координату Y: ", Integer.class)
+                    GetValue("Введите координату X: ", Double.class, false),
+                    GetValue("Введите координату Y: ", Integer.class, false)
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -222,7 +240,7 @@ public class InputReader {
     private SpaceMarine GetSpaceMarine(SpaceMarine marine, int step) {
         try {
             if(step==1) {
-                String name = GetValue("Введите имя: ", String.class);
+                String name = GetValue("Введите имя: ", String.class, false);
                 marine.setName(name);
                 step++;
             }
@@ -233,22 +251,22 @@ public class InputReader {
             }
             marine.setCreationDate(new Date());
             if(step==3){
-                Integer health = GetValue("Введите здоровье: ", Integer.class);
+                Integer health = GetValue("Введите здоровье: ", Integer.class, true);
                 marine.setHealth(health);
                 step++;
             }
             if(step==4){
-                Long heartCount = GetValue("Введите количество сердец: ", Long.class);
+                Long heartCount = GetValue("Введите количество сердец: ", Long.class, false);
                 marine.setHeartCount(heartCount);
                 step++;
             }
             if(step==5){
-                AstartesCategory category = GetEnumValue(AstartesCategory.class);
+                AstartesCategory category = GetEnumValue(AstartesCategory.class, false);
                 marine.setCategory(category);
                 step++;
             }
             if(step==6){
-                MeleeWeapon meleeWeapon = GetEnumValue(MeleeWeapon.class);
+                MeleeWeapon meleeWeapon = GetEnumValue(MeleeWeapon.class, true);
                 marine.setMeleeWeapon(meleeWeapon);
                 step++;
             }

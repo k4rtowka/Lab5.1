@@ -120,11 +120,11 @@ public abstract class Command {
         if (param == null) {
             throw new Exception(Strings.Errors.Commands.expectingNotNull);
         }
-
         if (!expectedType.isInstance(param)) {
             throw new Exception(String.format("Ожидался тип %s, но получен %s!",
                     expectedType.getSimpleName(), param.getClass().getSimpleName()));
         }
+
         return true;
     }
 

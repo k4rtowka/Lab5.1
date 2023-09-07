@@ -12,6 +12,7 @@ public class CommandExit extends Command {
         if (this.CheckParams(params, 0)) {
             System.out.println("Выход из программы!");
             Thread.currentThread().interrupt();
+            System.exit(0);
         }
         return null;
     }

@@ -341,10 +341,10 @@ public class SpaceMarine implements Comparable<SpaceMarine> {
         result.append("\"SpaceMarine id\": ").append(id).append(", ");
         result.append("\"SpaceMarine name\": \"").append(name).append("\", ");
         result.append("\"SpaceMarine coordinates\": ").append(coordinates).append(", ");
-        result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", ");
+        result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", \n");
         result.append("\"SpaceMarine health\": ").append((health == null) ? "\"not currently set\"" : health).append(", ");
         result.append("\"SpaceMarine heartCount\": ").append(heartCount).append(", ");
-        result.append("\"SpaceMarine AstartesCategory\": \"").append(category).append("\", ");
+        result.append("\"SpaceMarine AstartesCategory\": \"").append(category).append("\", \n");
         result.append("\"SpaceMarine MeleeWeapon\": ").append((meleeWeapon == null) ? "\"not currently set\"" : "\"" + meleeWeapon + "\"").append(", ");
         result.append("\"SpaceMarine Chapter\": ").append((chapter == null) ? "\"not currently set\"" : "\"" + chapter + "\"");
         result.append("}");

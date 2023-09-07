@@ -57,8 +57,6 @@ public class Chapter implements Comparable<Chapter> {
      * @throws IllegalArgumentException если name равно null или пустое.
      */
     public void setName(String name) {
-        if (name == null || name.isEmpty())
-            throw new IllegalArgumentException("Имя не может быть null или пустым.");
         this.name = name;
     }
 

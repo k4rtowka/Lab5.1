@@ -112,11 +112,11 @@ public class CommandReader {
                 return "Объект успешно обновлен";
         }
         if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit)) {
-            currentCommand.Execute(null);
+            return currentCommand.Execute(null);
         }
         if (commandName.equals(Command.Titles.executeScript)) {
             currentCommand.Execute(params);
-            return null;
+            return "Команда выполнена!";
         }
         //endregion
         //region Возвращают строку
@@ -178,7 +178,7 @@ public class CommandReader {
         //endregion
         //region Возвращает список
         if (commandName.equals(Command.Titles.filterByCategory)) {
-            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(AstartesCategory.class));
+            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(AstartesCategory.class, false));
             if (list instanceof List<?>) {
                 List<SpaceMarine> marines = (List<SpaceMarine>) list;
                 StringBuilder result = new StringBuilder();
