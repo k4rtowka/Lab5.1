@@ -11,7 +11,7 @@ public class CommandCountByHeartCount extends Command {
     @Override
     protected Object execute(Object[] params) throws Exception {
         if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
-            return collectionManager.countByHeartCount((Integer) params[0]);
+            return collectionManager.countByHeartCount(Integer.parseInt(params[0].toString()));
         }
         return null;
     }

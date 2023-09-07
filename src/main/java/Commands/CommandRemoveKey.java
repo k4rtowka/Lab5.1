@@ -11,7 +11,7 @@ public class CommandRemoveKey extends Command {
     @Override
     protected Object execute(Object[] params) throws Exception {
         if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
-            return collectionManager.removeKey((Integer) params[0]);
+            return collectionManager.removeKey(Integer.parseInt(params[0].toString()));
         }
         return null;
     }

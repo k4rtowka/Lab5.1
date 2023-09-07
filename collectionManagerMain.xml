@@ -2,39 +2,27 @@
 <collectionManager>
     <marines>
         <entry>
-            <key>1</key>
+            <key>4</key>
             <value>
-                <name>adsasd</name>
+                <id>4</id>
+                <name>First</name>
                 <coordinates>
                     <x>1.0</x>
                     <y>1</y>
                 </coordinates>
-                <creationDate>2023-09-04T21:04:14.685+03:00</creationDate>
+                <creationDate>2023-09-07T15:59:46.227+03:00</creationDate>
                 <health>1</health>
-                <heartCount>2</heartCount>
-                <category>DREADNOUGHT</category>
-                <meleeWeapon>POWER_SWORD</meleeWeapon>
-                <chapter>
-                    <name>asdasdas</name>
-                    <marinesCount>1</marinesCount>
-                </chapter>
-            </value>
-        </entry>
-        <entry>
-            <key>2</key>
-            <value>
-                <name>1</name>
-                <coordinates>
-                    <x>1.0</x>
-                    <y>1</y>
-                </coordinates>
-                <creationDate>2023-09-07T14:50:07.600+03:00</creationDate>
                 <heartCount>1</heartCount>
                 <category>DREADNOUGHT</category>
+                <meleeWeapon>CHAIN_SWORD</meleeWeapon>
+                <chapter>
+                    <name>1</name>
+                    <marinesCount>1</marinesCount>
+                </chapter>
             </value>
         </entry>
     </marines>
     <initializationDate>2023-09-04</initializationDate>
     <dataFile>collectionManagerMain.xml</dataFile>
-    <lastId>2</lastId>
+    <lastId>4</lastId>
 </collectionManager>

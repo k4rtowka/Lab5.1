@@ -135,6 +135,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
         if (marine != null) {
             lastId++;  // увеличиваем ID на 1
             marines.put(lastId, marine);
+            marine.setId(lastId);
         } else {
             throw new IllegalArgumentException("SpaceMarine не может быть null.");
         }
@@ -154,6 +155,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
         }
         if (marines.containsKey(id)) {
             marines.put(id, marine);
+            marine.setId(id);
             return true;
         } else {
             throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
@@ -180,6 +182,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      */
     public void clear() {
         this.marines.clear();
+        this.lastId = 0;
     }
 
 

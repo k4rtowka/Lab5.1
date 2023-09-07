@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="SpaceMarineTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-08-16T11:02:05" hostname="Daniils-MacBook-Air.local" time="0.011">
+<testsuite name="SpaceMarineTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-09-07T12:22:40" hostname="Daniils-MacBook-Air.local" time="0.022">
   <properties/>
-  <testcase name="getMeleeWeapon()" classname="SpaceMarineTest" time="0.008"/>
+  <testcase name="getMeleeWeapon()" classname="SpaceMarineTest" time="0.017"/>
   <testcase name="setId_noValidId()" classname="SpaceMarineTest" time="0.001"/>
-  <testcase name="setId_validId_setsId()" classname="SpaceMarineTest" time="0.0"/>
+  <testcase name="setId_validId_setsId()" classname="SpaceMarineTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

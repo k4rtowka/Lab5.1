@@ -138,7 +138,7 @@ public class CommandReader {
             if (result == null)
                 return "Не удалось найти значение";
             else
-                return String.format("Число объектов со здоровьем меньше указанного:%d", (Integer) result);
+                return String.format("Число объектов с указанным здоровьем:%d", (Long) result);
         }
         //endregion
         //region Возвращают булевское значение

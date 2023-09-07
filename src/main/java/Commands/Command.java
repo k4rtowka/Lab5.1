@@ -120,6 +120,15 @@ public abstract class Command {
         if (param == null) {
             throw new Exception(Strings.Errors.Commands.expectingNotNull);
         }
+
+        if(expectedType.getSimpleName().equals("Integer")){
+         try{
+             int i = Integer.parseInt(param.toString());
+             return true;
+         }catch (Exception e){
+             throw new Exception("ops.");
+         }
+        }
         if (!expectedType.isInstance(param)) {
             throw new Exception(String.format("Ожидался тип %s, но получен %s!",
                     expectedType.getSimpleName(), param.getClass().getSimpleName()));
