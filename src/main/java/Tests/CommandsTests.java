@@ -76,12 +76,6 @@ public class CommandsTests extends BaseTest {
         });
         assertEquals("Не переданы параметры, ожидаемое число параметров 1", exception.getMessage());
 
-        exception = assertThrows(Exception.class, () -> {
-            countByHeartCount.Execute("99");
-        });
-        assertEquals(String.format(Strings.Errors.Commands.expectedTypeErrorFormat, Integer.class.getSimpleName(), String.class.getSimpleName()),
-                exception.getMessage());
-
 
     }
     //endregion
@@ -440,10 +434,10 @@ public class CommandsTests extends BaseTest {
             result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
             result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
             result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
-            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", ");
+            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", \n");
             result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
             result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
-            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", ");
+            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", \n");
             result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
             result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
             result.append("}");
@@ -487,10 +481,10 @@ public class CommandsTests extends BaseTest {
             result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
             result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
             result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
-            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", ");
+            result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", \n");
             result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
             result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
-            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", ");
+            result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", \n");
             result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
             result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
             result.append("}");

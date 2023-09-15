@@ -12,7 +12,6 @@ public class Main {
             CollectionManager collectionManager = new CollectionManager(path);
             CommandReader inputReader = new CommandReader(collectionManager, System.in);
             inputReader.Start();
-
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

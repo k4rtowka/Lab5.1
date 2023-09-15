@@ -126,7 +126,8 @@ public abstract class Command {
              int i = Integer.parseInt(param.toString());
              return true;
          }catch (Exception e){
-             throw new Exception("ops.");
+             throw new Exception(String.format("Ожидался тип %s, но получен %s!",
+                     expectedType.getSimpleName(), param.getClass().getSimpleName()));
          }
         }
         if (!expectedType.isInstance(param)) {
