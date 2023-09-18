@@ -3,8 +3,10 @@ package Commands;
 import Models.CollectionManager;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 
 public class CommandExecuteScript extends Command {
+    private String path = System.getenv("SCRIPT_PATH");
     public CommandExecuteScript(CollectionManager collectionManager) {
         super(Titles.executeScript, Descriptions.executeScript, collectionManager, 1);
     }
@@ -14,7 +16,7 @@ public class CommandExecuteScript extends Command {
         try {
             String fileName = params[0].toString();
 
-            FileInputStream fileInputStream = new FileInputStream(fileName);
+            FileInputStream fileInputStream = new FileInputStream(path+fileName);
             if (this.collectionManager.CheckExecuteScript(fileName)) {
                 this.collectionManager.RemoveExecuteScript(fileName);
                 throw new Exception("Обнаружен рекурсивный вызов");
@@ -23,8 +25,8 @@ public class CommandExecuteScript extends Command {
             CommandReader commandReader = new CommandReader(this.collectionManager, fileInputStream);
             commandReader.Start();
             this.collectionManager.RemoveExecuteScript(fileName);
-        }catch (Exception e){
-            throw new Exception("Не правильный формат!");
+        }catch (IOException e){
+            throw new Exception("Отсутствует файл!");
         }
         return null;
     }

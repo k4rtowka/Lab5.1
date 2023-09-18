@@ -3,14 +3,16 @@ package Models;
 import Common.Strings;
 import Tests.Data.LocalDateAdapter;
 
-import javax.xml.bind.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,7 +94,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
         marines = new TreeMap<>();
         dataFile = new File(filename);
         initializationDate = LocalDate.now();
-        if (dataFile.exists())
+        if (dataFile.exists() && dataFile.length() != 0L)
             load();
     }
 
@@ -106,7 +108,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
 
     //region Методы
 
-    //region Исполняемые скриптыы
+    //region Исполняемые скрипты
     public void AddExecuteScript(String fileName) {
         this.executedScripts.add(fileName);
     }
