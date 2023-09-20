@@ -3,10 +3,12 @@ package Commands;
 import Common.Strings;
 import Models.CollectionManager;
 
+import java.io.Serializable;
+
 /**
  * Базовый класс команды
  */
-public abstract class Command {
+public abstract class Command implements Serializable {
 
     //region Свойства для команд: имена и описания
     public static class Titles {

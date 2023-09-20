@@ -88,6 +88,14 @@ public class CommandReader {
         return this.Execute(commandName, "");
     }
 
+
+    /**
+     * Выполняет команду с несколькими параметрами в виде строк
+     * @param commandName имя команды
+     * @param params параметры команды
+     * @return объект, который возвращает команда, после выполнения
+     * @throws Exception
+     */
     public Object Execute(String commandName, String params) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
 
