@@ -22,6 +22,7 @@ public abstract class Command implements Serializable {
         public static String save = "save";
         public static String executeScript = "execute_script";
         public static String exit = "exit";
+        public static String wait = "wait";
         public static String removeLower = "remove_lower";
         public static String replaceIfLower = "replace_if_lower";
         public static String removeGreaterKey = "remove_greater_key";
@@ -41,6 +42,7 @@ public abstract class Command implements Serializable {
         public static String save = "сохранить коллекцию в файл";
         public static String executeScript = "считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.";
         public static String exit = "завершить программу (без сохранения в файл)";
+        public static String wait = "поставить текущий поток на паузу на указанное число миллисекунд";
         public static String removeLower = "удалить из коллекции все элементы, меньшие, чем заданный";
         public static String replaceIfLower = "заменить значение по ключу, если новое значение меньше старого";
         public static String removeGreaterKey = "удалить из коллекции все элементы, ключ которых превышает заданный";
@@ -123,14 +125,14 @@ public abstract class Command implements Serializable {
             throw new Exception(Strings.Errors.Commands.expectingNotNull);
         }
 
-        if(expectedType.getSimpleName().equals("Integer")){
-         try{
-             int i = Integer.parseInt(param.toString());
-             return true;
-         }catch (Exception e){
-             throw new Exception(String.format("Ожидался тип %s, но получен %s!",
-                     expectedType.getSimpleName(), param.getClass().getSimpleName()));
-         }
+        if (expectedType.getSimpleName().equals("Integer")) {
+            try {
+                int i = Integer.parseInt(param.toString());
+                return true;
+            } catch (Exception e) {
+                throw new Exception(String.format("Ожидался тип %s, но получен %s!",
+                        expectedType.getSimpleName(), param.getClass().getSimpleName()));
+            }
         }
         if (!expectedType.isInstance(param)) {
             throw new Exception(String.format("Ожидался тип %s, но получен %s!",

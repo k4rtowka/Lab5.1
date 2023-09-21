@@ -5,9 +5,11 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serializable;
+
 @XmlRootElement(name = "coordinates")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Coordinates implements Comparable<Coordinates> {
+public class Coordinates implements Comparable<Coordinates>, Serializable {
 
     //region Поля
     /**

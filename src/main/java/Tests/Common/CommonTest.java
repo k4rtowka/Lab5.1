@@ -1,36 +1,45 @@
-package Tests;
+package Tests.Common;
 
 import Client.TCPClient;
 import Server.TCPServer;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class ClientServerTests {
-    private Thread CreateServer() {
+public class CommonTest {
+    protected Thread CreateServer(String commands, int port) {
         Thread serverThread = new Thread(() -> {
             try {
-                TCPServer server = new TCPServer();
+                InputStream in;
+                if (commands != null && commands.length() > 0) {
+                    in = new ByteArrayInputStream(commands.getBytes());
+
+                } else {
+                    in = System.in;
+                }
+                Thread thread = Thread.currentThread();
+                TCPServer server = new TCPServer(in, port);
                 server.Start();
+
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
+
         serverThread.start();
         return serverThread;
     }
 
-    private Thread CreateClient(String commands) {
+    protected Thread CreateClient(String commands, int port) {
         try {
-            Thread.sleep(500);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         Thread clientThread = new Thread(() -> {
             try {
                 InputStream in = new ByteArrayInputStream(commands.getBytes());
-                TCPClient client = new TCPClient(in, "localhost", 8080);
+                TCPClient client = new TCPClient(in, "localhost", port);
                 client.Start();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -40,15 +49,4 @@ public class ClientServerTests {
         clientThread.start();
         return clientThread;
     }
-
-    @Test
-    public void TestSendHelpCommand() throws InterruptedException {
-        Thread serverThread = CreateServer();
-
-        Thread clientThread = CreateClient("insert\nObjectScript\n100\n100\n100\n1\n1\n1\nChapterScript\n1\nhelp\nshow\nexit\n");
-
-        serverThread.join();
-        clientThread.join();
-    }
-
 }

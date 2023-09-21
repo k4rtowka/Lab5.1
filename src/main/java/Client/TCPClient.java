@@ -22,6 +22,7 @@ public class TCPClient {
     private final int port;
     private SocketChannel socketChannel;
     private boolean isStarted;
+
     // Конструкторы
     public TCPClient() {
         this(System.in, "localhost", 8080);
@@ -39,7 +40,7 @@ public class TCPClient {
         System.out.println(object);
     }
 
-    private void Send(SocketChannel socketChannel,Data data) throws IOException {
+    private void Send(SocketChannel socketChannel, Data data) throws IOException {
         // Сериализация объекта
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -81,13 +82,18 @@ public class TCPClient {
 
                 if (key.isReadable()) {
                     buffer.clear();
-                    socketChannel.read(buffer);
+                    int bytesRead = socketChannel.read(buffer);
+                    // Проверка, что данные были действительно прочитаны
+                    if (bytesRead <= 0) {
+                        continue;
+                    }
                     buffer.flip();
 
                     ByteArrayInputStream byteStream = new ByteArrayInputStream(buffer.array());
                     ObjectInputStream objStream = new ObjectInputStream(byteStream);
 
-                    String response = (String) objStream.readObject();
+                   // String response = objStream.readObject() == null? "null":objStream.readObject().toString();
+                    String response = objStream.readObject().toString();
                     System.out.println("Получен ответ от сервера: " + response);
                     keys.remove();
                     return;
@@ -114,12 +120,13 @@ public class TCPClient {
                 if (words.length > 1) {
                     String[] params = new String[words.length - 1];
                     System.arraycopy(words, 1, params, 0, words.length - 1);
-                    Send(this.socketChannel,(Data) this.commandReader.Execute(words[0], params));
+                    Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
                 }
 
                 Receive(socketChannel);
             } catch (Exception ex) {
                 this.Print(ex.getMessage());
+                ex.printStackTrace();
             }
         }
         socketChannel.close();

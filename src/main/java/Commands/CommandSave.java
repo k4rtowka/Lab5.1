@@ -9,8 +9,10 @@ public class CommandSave extends Command {
 
     @Override
     protected Object execute(Object[] params) throws Exception {
-        if(this.CheckParams(params, 0)){
+        if (this.CheckParams(params, 0)) {
+            collectionManager.ClearExecuteScripts();
             collectionManager.save();
+
             return true;
         }
         return null;

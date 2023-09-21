@@ -117,6 +117,11 @@ public class CollectionManager implements Comparable<CollectionManager> {
         this.executedScripts.remove(fileName);
     }
 
+    public void ClearExecuteScripts() {
+        this.executedScripts.clear();
+    }
+
+
     public boolean CheckExecuteScript(String fileName) {
         return this.executedScripts.contains(fileName);
     }

@@ -5,9 +5,11 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+import java.io.Serializable;
+
 @XmlRootElement(name = "chapter")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Chapter implements Comparable<Chapter> {
+public class Chapter implements Comparable<Chapter>, Serializable {
 
     //region Поля
     /**

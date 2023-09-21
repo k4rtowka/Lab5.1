@@ -14,7 +14,7 @@ public class Main {
 //            CollectionManager collectionManager = new CollectionManager(path);
 //            CommandReader inputReader = new CommandReader(collectionManager, System.in);
 //            inputReader.Start();
-            TCPServer server = new TCPServer(8080);
+            TCPServer server = new TCPServer(System.in,8080);
             server.Start();
             TCPClient client = new TCPClient();
             client.Start();

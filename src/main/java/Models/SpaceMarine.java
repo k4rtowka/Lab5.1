@@ -4,11 +4,13 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @XmlRootElement(name = "spaceMarine")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SpaceMarine implements Comparable<SpaceMarine> {
+public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
 
     //region Поля
     /**

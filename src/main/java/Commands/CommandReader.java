@@ -35,6 +35,11 @@ public class CommandReader {
      * Чтение из файла или нет
      */
     protected boolean isReadFromFile;
+
+    /**
+     * Буфер для хранения ответов команд
+     */
+    private String commandsBuffer;
     //endregion
 
     //region Конструкторы
@@ -51,8 +56,17 @@ public class CommandReader {
         this.scanner = new Scanner(inputStream);
         this.inputReader = new InputReader(collectionManager, inputStream, true);
         this.commandHelp = new CommandHelp(this.collectionManager);
+        this.commandsBuffer = "";
     }
+
     //endregion
+    void ClearCommandsBuffer() {
+        this.commandsBuffer = "";
+    }
+
+    String GetCommandsBuffer() {
+        return commandsBuffer;
+    }
 
     //region Методы
 
@@ -91,8 +105,9 @@ public class CommandReader {
 
     /**
      * Выполняет команду с несколькими параметрами в виде строк
+     *
      * @param commandName имя команды
-     * @param params параметры команды
+     * @param params      параметры команды
      * @return объект, который возвращает команда, после выполнения
      * @throws Exception
      */
@@ -124,13 +139,21 @@ public class CommandReader {
         }
         if (commandName.equals(Command.Titles.executeScript)) {
             currentCommand.Execute(params);
-            return "Команда выполнена!";
+
+            String buffer = this.commandsBuffer;
+            this.ClearCommandsBuffer();
+            return buffer;
         }
         //endregion
         //region Возвращают строку
         if (commandName.equals(Command.Titles.info) || commandName.equals(Command.Titles.help)
-                || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending))
-            return currentCommand.Execute(null);
+                || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending)) {
+
+            Object result = currentCommand.Execute(null);
+            if (this.isReadFromFile)
+                this.commandsBuffer += result.toString();
+            return result;
+        }
         //endregion
         //region Возвращают число
         if (commandName.equals(Command.Titles.insert)) {

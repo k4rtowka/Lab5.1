@@ -1,5 +1,7 @@
 package Server;
 
+import Commands.Command;
+import Commands.CommandHelp;
 import Models.CollectionManager;
 import Models.Data;
 
@@ -15,7 +17,11 @@ import java.util.*;
 
 public class TCPServer {
     //region Поля
+    /**
+     * Сканер для чтения команд из консоли.
+     */
     private Scanner scanner;
+    private InputStream inputStream;
     private Map<SocketAddress, Integer> clientAddresses;
     private ServerSocketChannel serverSocketChannel;
     private String dataFilePath;
@@ -27,22 +33,24 @@ public class TCPServer {
     //endregion
 
     //region Конструкторы
-    public TCPServer(int port) {
+    public TCPServer(InputStream inputStream, int port) {
         try {
             this.port = port;
             this.dataFilePath = "data.xml";
-            this.scanner = new Scanner(System.in);
+            this.inputStream = inputStream;
+            this.scanner = new Scanner(inputStream);
             this.CheckFile(this.dataFilePath);
             this.collectionManager = new CollectionManager(this.dataFilePath);
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
             this.clientAddresses = Collections.synchronizedMap(new HashMap<>());
+            this.commandReader.SetCurrentThread(Thread.currentThread());
         } catch (Exception ex) {
             this.Print(ex.getMessage());
         }
     }
 
     public TCPServer() {
-        this(8080);
+        this(System.in, 8080);
     }
     //endregion
 
@@ -79,23 +87,26 @@ public class TCPServer {
     private Object Receive(SocketChannel clientAddress, Data data) {
         try {
             Print(String.format("Получена команда от клиента %s(%s):\n%s", clientAddresses.get(clientAddress.getRemoteAddress()), clientAddress, data));
-            return this.commandReader.Execute(data.command.getName(), data.data);
+            Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+            //this.commandReader.Execute(Command.Titles.save,new Object[]{});
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void Send(SocketChannel clientChannel, Object data) throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
+        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+             ObjectOutputStream objStream = new ObjectOutputStream(byteStream)) {
+            objStream.writeObject(data);
+            objStream.flush();
 
-        objStream.writeObject(data);
-        objStream.flush();
-
-        ByteBuffer sendBuffer = ByteBuffer.wrap(byteStream.toByteArray());
-        while (sendBuffer.hasRemaining()) {
-            clientChannel.write(sendBuffer);
+            ByteBuffer sendBuffer = ByteBuffer.wrap(byteStream.toByteArray());
+            while (sendBuffer.hasRemaining()) {
+                clientChannel.write(sendBuffer);
+            }
         }
+
     }
 
     public void Start() {
@@ -108,26 +119,25 @@ public class TCPServer {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             Print("Сервер запущен...");
-
+            this.isStarted = true;
             ByteBuffer buffer = ByteBuffer.allocate(16384);
-            while (!isStarted) {
-                //region Чтение команд с клавиатуры
-                if (System.in.available() > 0) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                    String input = reader.readLine();
-                    switch (input) {
-                        case "exit": {
-                            System.out.println("Программа завершена");
-                            isStarted = false;
-                            return;
-                        }
-                        case "save": {
-                            collectionManager.save();
-                            System.out.println("Данные сохранены");
-                        }
+            while (isStarted && !Thread.currentThread().isInterrupted()) {
+                try {
+                    //region Чтение команд с клавиатуры
+
+                    if (this.inputStream.available() > 0) {
+                        String command = this.scanner.nextLine().trim();
+                        String[] commandItems = command.split("\\s+");
+                        command = commandItems[0];
+                        String[] params = Arrays.stream(commandItems).skip(1).toArray(String[]::new);
+                        Object result = this.commandReader.Execute(command, params);
+                        Print(result);
                     }
+                    //endregion
+                } catch (Exception ex) {
+                    Print(ex.getMessage());
+                    ex.printStackTrace();
                 }
-                //endregion
                 //region Обработка сообщений от клиентов
                 if (selector.selectNow() == 0) continue;
                 Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
@@ -151,6 +161,7 @@ public class TCPServer {
                                     Data clientData = (Data) objStream.readObject();
                                     Object result = Receive(client, clientData);
                                     Send(client, result);
+
                                 } catch (StreamCorruptedException ex) {
                                     // Explanation for the sleep, if necessary
                                     Thread.sleep(100);
@@ -163,11 +174,14 @@ public class TCPServer {
                 //endregion
             }
             Print("Остановка сервера...");
-        } catch (IOException ex) {
+        } catch (IOException e) {
             System.out.println("Host is busy.Try Later");
+            e.printStackTrace();
             // Consider logging the exception, not just exiting
         } catch (Exception e) {
             // Log or handle other exceptions if needed
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 serverSocketChannel.close();

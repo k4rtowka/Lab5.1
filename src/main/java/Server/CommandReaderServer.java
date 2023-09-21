@@ -9,6 +9,10 @@ import java.io.InputStream;
 
 public class CommandReaderServer extends CommandReader {
 
+    //region Поля
+    Thread currentThread;
+    //endregion
+
     //region Конструкторы
 
     /**
@@ -19,6 +23,16 @@ public class CommandReaderServer extends CommandReader {
      */
     public CommandReaderServer(CollectionManager collectionManager, InputStream inputStream) {
         super(collectionManager, inputStream);
+    }
+    //endregion
+
+    //region Сеттеры/геттеры
+    Thread GetCurrentThread() {
+        return this.currentThread;
+    }
+
+    void SetCurrentThread(Thread thread) {
+        this.currentThread = thread;
     }
     //endregion
 
@@ -38,28 +52,46 @@ public class CommandReaderServer extends CommandReader {
         if (currentCommand == null) {
             throw new Exception("Получена несуществующая команда");
         }
-        if(commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.show)){
-            return  currentCommand.Execute(null);
+        if (commandName.equals(Command.Titles.exit)) {
+            return currentCommand.Execute(this.currentThread);
         }
-        if(commandName.equals(Command.Titles.insert)){
+        if (commandName.equals(Command.Titles.wait)) {
+            return currentCommand.Execute(new Object[]{this.currentThread, params[0]});
+        }
+        if (commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.show)
+                || commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.info)
+                || commandName.equals(Command.Titles.printDescending)) {
+            this.collectionManager.save();
+            return currentCommand.Execute(null);
+        }
+        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.removeKey)
+                || commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeLower)
+                || commandName.equals(Command.Titles.countByHeartCount)) {
+            this.collectionManager.save();
             return currentCommand.Execute(params[0]);
         }
-//        //region Ничего не возвращают
-//        if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.removeHead) || commandName.equals(Command.Titles.exit))
-//            currentCommand.Execute(null);
-//        if (commandName.equals(Command.Titles.executeScript)) {
-//            if (params == null || params.length == 0)
-//                throw new Exception("Передано неверное число аргументов");
+        if (commandName.equals(Command.Titles.replaceIfLower) || commandName.equals(Command.Titles.update)) {
+            this.collectionManager.save();
+            return currentCommand.Execute(params);
+        }
+        if (commandName.equals(Command.Titles.save)) {
+            return currentCommand.Execute();
+        }
+
+        if (commandName.equals(Command.Titles.executeScript)) {
 //            Thread thread = new Thread(() -> {
 //                try {
-//                    currentCommand.Execute(params);
+//                    Object obj = currentCommand.Execute(params);
 //                } catch (Exception e) {
 //                    Print(e.getMessage());
 //                }
 //            });
 //            thread.start();
-//        }
-        return null;
+            this.collectionManager.save();
+            return currentCommand.Execute(params);
+        }
+
+        return "null";
     }
 
     /**
