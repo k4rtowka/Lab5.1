@@ -29,7 +29,7 @@ public class CommandExecuteScript extends Command {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             CommandReader commandReader = new CommandReader(this.collectionManager, fileInputStream);
             commandReader.Start();
-            return  commandReader.GetCommandsBuffer();
+            return commandReader.GetCommandsBuffer() + "\nКоманда выполнена!";
         } catch (IOException e) {
             throw new Exception("Ошибка при чтении файла!");
         } finally {

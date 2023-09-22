@@ -56,6 +56,8 @@ public class CommandHelp extends Command {
         StringBuilder stringBuilder = new StringBuilder();
         if (this.CheckParams(params, 0)) {
             for (Command command : this.commands) {
+                if(command.getName().compareTo(Titles.save) == 0 || command.getName().compareTo(Titles.wait) == 0)
+                    continue;
                 stringBuilder.append(command);
                 stringBuilder.append("\n");
             }

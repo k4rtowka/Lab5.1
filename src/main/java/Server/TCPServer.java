@@ -87,6 +87,9 @@ public class TCPServer {
     private Object Receive(SocketChannel clientAddress, Data data) {
         try {
             Print(String.format("Получена команда от клиента %s(%s):\n%s", clientAddresses.get(clientAddress.getRemoteAddress()), clientAddress, data));
+            if(data.command == null){
+                return "Получена не существующая команда!";
+            }
             Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
             //this.commandReader.Execute(Command.Titles.save,new Object[]{});
             return result;

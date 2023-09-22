@@ -74,7 +74,7 @@ public class CommandReaderClient extends CommandReader {
             this.UpdateReader();
             return new Data(currentCommand, this.inputReader.GetEnumValue(AstartesCategory.class, false));
         }
-        return null;
+        return new Data(currentCommand, null);
     }
 
     /**
