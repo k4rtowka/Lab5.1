@@ -126,7 +126,6 @@ public class TCPClient {
                 Receive(socketChannel);
             } catch (Exception ex) {
                 this.Print(ex.getMessage());
-                ex.printStackTrace();
             }
         }
         socketChannel.close();

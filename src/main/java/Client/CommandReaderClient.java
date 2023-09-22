@@ -60,13 +60,12 @@ public class CommandReaderClient extends CommandReader {
             return new Data(currentCommand, null);
         }
         if (commandName.equals(Command.Titles.executeScript) || commandName.equals(Command.Titles.countByHeartCount) ||
-                commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeKey) ||
-                commandName.equals(Command.Titles.removeLower)
-
+                commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeKey)
         ) {
             return new Data(currentCommand, params[0]);
         }
-        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower)) {
+        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower)  ||
+                commandName.equals(Command.Titles.removeLower)) {
             this.UpdateReader();
             return new Data(currentCommand, this.inputReader.GetSpaceMarine());
         }
