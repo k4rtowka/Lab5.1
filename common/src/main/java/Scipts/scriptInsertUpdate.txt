@@ -1,0 +1,23 @@
+clear
+insert
+ObjectScript
+100
+100
+100
+1
+1
+1
+ChapterScript
+1
+update 1
+ObjectScript2
+100
+100
+100
+1
+1
+1
+ChapterScript2
+1
+show
+info
