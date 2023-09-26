@@ -61,6 +61,7 @@ public class TCPClient {
 
     private void Receive(SocketChannel socketChannel) throws Exception {
         ByteBuffer buffer = ByteBuffer.allocate(16384);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         Selector selector = socketChannel.provider().openSelector();
 
         int interestSet = SelectionKey.OP_READ;
@@ -88,16 +89,89 @@ public class TCPClient {
                         continue;
                     }
                     buffer.flip();
-                    ByteArrayInputStream byteStream = new ByteArrayInputStream(buffer.array());
-                    ObjectInputStream objStream = new ObjectInputStream(byteStream);
-                    String response = objStream.readObject().toString();
-                    System.out.println("Получен ответ от сервера: " + response);
+                    byte[] data = new byte[bytesRead];
+                    buffer.get(data);
+                    byteStream.write(data, 0, bytesRead);
+
+
+                    //ObjectInputStream objStream = new ObjectInputStream(byteStream);
+                    //objStream.read(data);
+                    //String response = objStream.readObject().toString();
+                    //System.out.println("Получен ответ от сервера: " + response);
+                    byte[] completeData = byteStream.toByteArray();
                     keys.remove();
                     return;
                 }
             }
+
+            // Теперь все данные собраны в byteStream
+
+        }
+
+
+    }
+
+    private Object Receive_2(SocketChannel socketChannel) throws Exception {
+        ByteBuffer buffer = ByteBuffer.allocate(16384);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        Selector selector = socketChannel.provider().openSelector();
+
+        int interestSet = SelectionKey.OP_READ;
+        socketChannel.register(selector, interestSet);
+
+        while (true) {
+            if (selector.select(5000) == 0) {
+                //throw new SocketTimeoutException("Тайм-аут: сервер недоступен или не отвечает");
+                Print("Тайм-аут: сервер недоступен или не отвечает");
+                Thread.sleep(1000);
+            }
+
+            Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
+
+            while (keys.hasNext()) {
+                SelectionKey key = keys.next();
+
+                if (!key.isValid()) {
+                    continue;
+                }
+
+                if (key.isReadable()) {
+                    buffer.clear();
+                    int bytesRead = socketChannel.read(buffer);
+
+                    if (bytesRead == -1) {
+                        // Конец потока достигнут
+                        break;
+                    }
+
+                    buffer.flip();
+                    byte[] data = new byte[bytesRead];
+                    buffer.get(data);
+                    byteStream.write(data, 0, bytesRead);
+
+                    keys.remove();
+                }
+            }
+
+            try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
+                Object obj =  objStream.readObject();
+                System.out.println(obj);
+            }
+            catch (Exception ex){
+
+            }
+            // Если вы вышли из внутреннего цикла из-за конца потока, выходите из внешнего цикла
+            if (buffer.position() == 0 && buffer.limit() == 0) {
+                break;
+            }
+        }
+
+        // Теперь все данные собраны в byteStream, десериализовать объект
+        try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
+            return objStream.readObject();
         }
     }
+
 
     public void Start() throws Exception {
         this.socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
@@ -120,7 +194,8 @@ public class TCPClient {
                     Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
                 }
 
-                Receive(socketChannel);
+                //Receive(socketChannel);
+                Receive_2(socketChannel);
             } catch (Exception ex) {
                 this.Print(ex.getMessage());
                 ex.printStackTrace();

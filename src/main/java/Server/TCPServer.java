@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.*;
 
 public class TCPServer {
@@ -95,10 +96,25 @@ public class TCPServer {
         }
     }
 
+//    private byte[] serializeObject(Object obj) throws IOException {
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+//        objectOutputStream.writeObject(obj);
+//        objectOutputStream.flush();
+//        return byteArrayOutputStream.toByteArray();
+//    }
+//
+//    private void Send(SocketChannel socketChannel, Object data) throws IOException {
+//        byte[] serializedData = serializeObject(data);
+//        Send(socketChannel, serializedData);
+//    }
+
+
     private void Send(ObjectOutputStream output, Object data) throws IOException {
         output.writeObject(data);
+        //output.writeObject("LOL_KEK_1234");
+        //output.write("LOL_KEK_1234".getBytes());
         output.flush();
-
     }
 
     private void send(Object data, Socket socket) throws IOException {
