@@ -59,7 +59,7 @@ public class TCPClient {
         byteArrayOutputStream.close();
     }
 
-    private void Receive(SocketChannel socketChannel) throws IOException, ClassNotFoundException {
+    private void Receive(SocketChannel socketChannel) throws Exception {
         ByteBuffer buffer = ByteBuffer.allocate(16384);
         Selector selector = socketChannel.provider().openSelector();
 
@@ -88,11 +88,8 @@ public class TCPClient {
                         continue;
                     }
                     buffer.flip();
-
                     ByteArrayInputStream byteStream = new ByteArrayInputStream(buffer.array());
                     ObjectInputStream objStream = new ObjectInputStream(byteStream);
-
-                   // String response = objStream.readObject() == null? "null":objStream.readObject().toString();
                     String response = objStream.readObject().toString();
                     System.out.println("Получен ответ от сервера: " + response);
                     keys.remove();
@@ -126,6 +123,7 @@ public class TCPClient {
                 Receive(socketChannel);
             } catch (Exception ex) {
                 this.Print(ex.getMessage());
+                ex.printStackTrace();
             }
         }
         socketChannel.close();

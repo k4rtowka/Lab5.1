@@ -14,7 +14,7 @@ public class ClientServerTests extends CommonTest {
     //SCRIPT_PATH=./src/main/java/Scipts/
     @Test
     public void TestSendHelpCommand() throws InterruptedException {
-        int port = 8080;
+        int port =this.GetRandomRegisteredPort();
         Thread serverThread = this.CreateServer("wait 1000\nexit\n", port);
         Thread clientThread = this.CreateClient("help\nshow\nexit\n", port);
 
@@ -32,6 +32,7 @@ public class ClientServerTests extends CommonTest {
         serverThread.join();
         clientThread.join();
     }
+
     @Test
     public void TestExecuteMultiScripts() throws InterruptedException {
         int port = 8080;
@@ -41,6 +42,7 @@ public class ClientServerTests extends CommonTest {
         serverThread.join();
         clientThread.join();
     }
+
     @Test
     public void TestExecuteRecursiveScripts() throws InterruptedException {
         int port = 8080;
@@ -50,6 +52,7 @@ public class ClientServerTests extends CommonTest {
         serverThread.join();
         clientThread.join();
     }
+
     @Test
     public void TestExecuteUpdateScripts() throws InterruptedException {
         int port = 8080;

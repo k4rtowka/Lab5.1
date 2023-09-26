@@ -5,6 +5,7 @@ import Models.Data;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -28,6 +29,7 @@ public class TCPServer {
     private CommandReaderServer commandReader;
     private Selector selector;
     private int port;
+    private ServerSocket serverSocket;
     //endregion
 
     //region Конструкторы
@@ -129,12 +131,13 @@ public class TCPServer {
      */
     public void Start() {
         try {
-            serverSocketChannel = ServerSocketChannel.open();
-            serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.bind(new InetSocketAddress(this.port));
-
-            selector = Selector.open();
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+//            serverSocketChannel = ServerSocketChannel.open();
+//            serverSocketChannel.configureBlocking(false);
+//            serverSocketChannel.bind(new InetSocketAddress(this.port));
+//
+//            selector = Selector.open();
+//            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            serverSocket = new ServerSocket(this.port);
 
             Print("Сервер запущен...");
             this.isStarted = true;
@@ -142,7 +145,6 @@ public class TCPServer {
             while (isStarted && !Thread.currentThread().isInterrupted()) {
                 try {
                     //region Чтение команд с клавиатуры
-
                     if (this.inputStream.available() > 0) {
                         String command = this.scanner.nextLine().trim();
                         String[] commandItems = command.split("\\s+");
