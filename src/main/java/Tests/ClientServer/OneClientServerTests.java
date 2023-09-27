@@ -1,22 +1,26 @@
 package Tests.ClientServer;
 
-import Client.TCPClient;
-import Server.TCPServer;
 import Tests.Common.CommonTest;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-public class ClientServerTests extends CommonTest {
+public class OneClientServerTests extends CommonTest {
 
     //SCRIPT_PATH=./src/main/java/Scipts/
     @Test
     public void TestSendHelpCommand() throws InterruptedException {
-        int port =this.GetRandomRegisteredPort();
+        int port = this.GetRandomRegisteredPort();
         Thread serverThread = this.CreateServer("wait 1000\nexit\n", port);
         Thread clientThread = this.CreateClient("help\nshow\nexit\n", port);
+
+        serverThread.join();
+        clientThread.join();
+    }
+
+    @Test
+    public void TestSaveCommand() throws InterruptedException {
+        int port = this.GetRandomRegisteredPort();
+        Thread serverThread = this.CreateServer("wait 1000\nexit\n", port);
+        Thread clientThread = this.CreateClient("save\nexit\n", port);
 
         serverThread.join();
         clientThread.join();

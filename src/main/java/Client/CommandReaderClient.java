@@ -40,7 +40,9 @@ public class CommandReaderClient extends CommandReader {
     @Override
     public Object Execute(String commandName, Object[] params) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
-
+        if (commandName.equals(Command.Titles.save) || commandName.equals(Command.Titles.wait)) {
+            throw new Exception("Команда запрещена на стороне клиента");
+        }
 
         if (commandName.equals(Command.Titles.exit)) {
             currentCommand.Execute();
@@ -64,7 +66,7 @@ public class CommandReaderClient extends CommandReader {
         ) {
             return new Data(currentCommand, params[0]);
         }
-        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower)  ||
+        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower) ||
                 commandName.equals(Command.Titles.removeLower)) {
             this.UpdateReader();
             return new Data(currentCommand, this.inputReader.GetSpaceMarine());

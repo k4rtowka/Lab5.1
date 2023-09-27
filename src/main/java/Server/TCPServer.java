@@ -1,6 +1,8 @@
 package Server;
 
 import Commands.CommandHelp;
+import Common.Settings;
+import Common.TCPUnit;
 import Models.CollectionManager;
 import Models.Data;
 
@@ -11,37 +13,28 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 
-public class TCPServer {
+public class TCPServer extends TCPUnit {
     //region Поля
-    /**
-     * Сканер для чтения команд из консоли.
-     */
-    private Scanner scanner;
-    private InputStream inputStream;
+
     private Map<SocketAddress, Integer> clientAddresses;
     private String dataFilePath;
-    private boolean isStarted = false;
     private CollectionManager collectionManager;
     private CommandReaderServer commandReader;
-    private Selector selector;
-    private int port;
     private ServerSocket serverSocket;
     //endregion
 
     //region Конструкторы
     public TCPServer(InputStream inputStream, int port) {
+        super(inputStream, port, false, Settings.isDebug);
         try {
-            this.port = port;
             this.dataFilePath = "data.xml";
-            this.inputStream = inputStream;
-            this.scanner = new Scanner(inputStream);
             this.CheckFile(this.dataFilePath);
             this.collectionManager = new CollectionManager(this.dataFilePath);
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
             this.clientAddresses = Collections.synchronizedMap(new HashMap<>());
             this.commandReader.SetCurrentThread(Thread.currentThread());
         } catch (Exception ex) {
-            this.Print(ex.getMessage());
+            this.Print(ex);
         }
     }
 
@@ -52,14 +45,6 @@ public class TCPServer {
 
     //region Методы
 
-    /**
-     * Выводит указанный объект в консоль.
-     *
-     * @param object Объект для вывода.
-     */
-    void Print(Object object) {
-        System.out.println(object);
-    }
 
     /**
      * Метод для проверки наличия файла и его создания при отсутствии.
@@ -96,20 +81,6 @@ public class TCPServer {
         }
     }
 
-//    private byte[] serializeObject(Object obj) throws IOException {
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-//        objectOutputStream.writeObject(obj);
-//        objectOutputStream.flush();
-//        return byteArrayOutputStream.toByteArray();
-//    }
-//
-//    private void Send(SocketChannel socketChannel, Object data) throws IOException {
-//        byte[] serializedData = serializeObject(data);
-//        Send(socketChannel, serializedData);
-//    }
-
-
     private void Send(ObjectOutputStream output, Object data) throws IOException {
         output.writeObject(data);
         //output.writeObject("LOL_KEK_1234");
@@ -117,20 +88,13 @@ public class TCPServer {
         output.flush();
     }
 
-    private void send(Object data, Socket socket) throws IOException {
-        try (ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream())) {
-            output.writeObject(data);
-            output.flush();
-        }
-    }
-
-
     public void Start() throws Exception {
         try {
             serverSocket = new ServerSocket(this.port);
+            serverSocket.setSoTimeout(3000);
             Print("Сервер запущен...");
             this.isStarted = true;
-
+            Socket client = null;
             while (isStarted && !Thread.currentThread().isInterrupted()) {
                 //region Чтение команд с клавиатуры
                 if (this.inputStream.available() > 0) {
@@ -142,9 +106,10 @@ public class TCPServer {
                     Print(result);
                 }
                 //endregion
-
                 //region Обработка сообщений от клиентов
-                try (Socket client = serverSocket.accept()) {
+
+                try {
+                     client = serverSocket.accept();
                     InetAddress clientAddress = client.getInetAddress();
                     int clientPort = client.getPort();
                     SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
@@ -161,8 +126,9 @@ public class TCPServer {
                     } catch (ClassNotFoundException e) {
                         Print("Error reading data from client: " + e.getMessage());
                     }
-                } catch (IOException e) {
-                    Print("Error accepting client connection: " + e.getMessage());
+                } catch (Exception e) {
+                    Print(e);
+                    //Print("Error accepting client connection: " + e.getMessage());
                 }
                 //endregion
             }
@@ -170,7 +136,8 @@ public class TCPServer {
             Print("Остановка сервера...");
         } catch (IOException e) {
             Print("Host is busy. Try Later");
-            e.printStackTrace();
+            Print(e);
+            //e.printStackTrace();
         } finally {
             try {
                 if (serverSocket != null && !serverSocket.isClosed()) {
@@ -178,6 +145,7 @@ public class TCPServer {
                 }
             } catch (IOException e) {
                 Print("Error closing server socket.");
+                Print(e);
             }
         }
     }

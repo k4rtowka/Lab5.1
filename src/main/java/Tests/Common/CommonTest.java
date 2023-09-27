@@ -27,7 +27,6 @@ public class CommonTest {
                 } else {
                     in = System.in;
                 }
-                Thread thread = Thread.currentThread();
                 TCPServer server = new TCPServer(in, port);
                 server.Start();
 

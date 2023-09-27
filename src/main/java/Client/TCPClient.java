@@ -1,12 +1,13 @@
 package Client;
 
 import Commands.Command;
-import Common.Strings;
+import Common.Settings;
+import Common.TCPUnit;
 import Models.Data;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -14,32 +15,34 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Scanner;
 
-public class TCPClient {
-    // Поля
-    private Scanner scanner;
+public class TCPClient extends TCPUnit {
+
+    //region Поля
     private CommandReaderClient commandReader;
     private final String host;
-    private final int port;
     private SocketChannel socketChannel;
-    private boolean isStarted;
+    //endregion
 
-    // Конструкторы
+    //region Конструкторы
     public TCPClient() {
         this(System.in, "localhost", 8080);
     }
 
     public TCPClient(InputStream inputStream, String host, int port) {
-        this.scanner = new Scanner(inputStream);
+        super(inputStream, port, false, Settings.isDebug);
         this.commandReader = new CommandReaderClient(inputStream);
         this.host = host;
-        this.port = port;
     }
+    //endregion
 
-    // Методы
-    void Print(Object object) {
-        System.out.println(object);
-    }
+    //region Методы
 
+
+    /**
+     * @param socketChannel
+     * @param data
+     * @throws IOException
+     */
     private void Send(SocketChannel socketChannel, Data data) throws IOException {
         // Сериализация объекта
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -59,7 +62,11 @@ public class TCPClient {
         byteArrayOutputStream.close();
     }
 
-    private void Receive(SocketChannel socketChannel) throws Exception {
+    /**
+     * @param socketChannel
+     * @throws Exception
+     */
+    private Object Receive(SocketChannel socketChannel) throws Exception {
         ByteBuffer buffer = ByteBuffer.allocate(16384);
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         Selector selector = socketChannel.provider().openSelector();
@@ -69,59 +76,6 @@ public class TCPClient {
 
         while (true) {
             if (selector.select(5000) == 0) {
-                throw new SocketTimeoutException("Тайм-аут: сервер недоступен или не отвечает");
-            }
-
-            Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
-
-            while (keys.hasNext()) {
-                SelectionKey key = keys.next();
-
-                if (!key.isValid()) {
-                    continue;
-                }
-
-                if (key.isReadable()) {
-                    buffer.clear();
-                    int bytesRead = socketChannel.read(buffer);
-                    // Проверка, что данные были действительно прочитаны
-                    if (bytesRead <= 0) {
-                        continue;
-                    }
-                    buffer.flip();
-                    byte[] data = new byte[bytesRead];
-                    buffer.get(data);
-                    byteStream.write(data, 0, bytesRead);
-
-
-                    //ObjectInputStream objStream = new ObjectInputStream(byteStream);
-                    //objStream.read(data);
-                    //String response = objStream.readObject().toString();
-                    //System.out.println("Получен ответ от сервера: " + response);
-                    byte[] completeData = byteStream.toByteArray();
-                    keys.remove();
-                    return;
-                }
-            }
-
-            // Теперь все данные собраны в byteStream
-
-        }
-
-
-    }
-
-    private Object Receive_2(SocketChannel socketChannel) throws Exception {
-        ByteBuffer buffer = ByteBuffer.allocate(16384);
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        Selector selector = socketChannel.provider().openSelector();
-
-        int interestSet = SelectionKey.OP_READ;
-        socketChannel.register(selector, interestSet);
-
-        while (true) {
-            if (selector.select(5000) == 0) {
-                //throw new SocketTimeoutException("Тайм-аут: сервер недоступен или не отвечает");
                 Print("Тайм-аут: сервер недоступен или не отвечает");
                 Thread.sleep(1000);
             }
@@ -151,33 +105,32 @@ public class TCPClient {
 
                     keys.remove();
                 }
-            }
 
-            try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
-                Object obj =  objStream.readObject();
-                System.out.println(obj);
-            }
-            catch (Exception ex){
+                try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
+                    return objStream.readObject();
+                } catch (Exception ex) {
 
+                }
             }
-            // Если вы вышли из внутреннего цикла из-за конца потока, выходите из внешнего цикла
-            if (buffer.position() == 0 && buffer.limit() == 0) {
-                break;
-            }
-        }
-
-        // Теперь все данные собраны в byteStream, десериализовать объект
-        try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
-            return objStream.readObject();
         }
     }
 
-
+    /**
+     * @throws Exception
+     */
     public void Start() throws Exception {
-        this.socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
-        this.socketChannel.configureBlocking(false);
         this.isStarted = true;
-        System.out.println("Клиент запущен...");
+        Print("Клиент запущен...");
+        while (this.isStarted) {
+            try {
+                this.socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
+                this.socketChannel.configureBlocking(false);
+                break;
+            } catch (ConnectException ex) {
+                Print("Ошибка подключения, повторное подключение");
+                Thread.sleep(1000);
+            }
+        }
         while (this.isStarted) {
             try {
                 System.out.println("Введите команду или 'exit', чтобы выйти:");
@@ -193,15 +146,15 @@ public class TCPClient {
                     System.arraycopy(words, 1, params, 0, words.length - 1);
                     Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
                 }
-
-                //Receive(socketChannel);
-                Receive_2(socketChannel);
+                Print(Receive(socketChannel));
             } catch (Exception ex) {
-                this.Print(ex.getMessage());
-                ex.printStackTrace();
+                this.Print(ex);
             }
         }
         socketChannel.close();
 
     }
+
+    //endregion
+
 }
