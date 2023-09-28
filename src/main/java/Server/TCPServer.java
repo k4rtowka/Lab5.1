@@ -94,7 +94,6 @@ public class TCPServer extends TCPUnit {
             serverSocket.setSoTimeout(3000);
             Print("Сервер запущен...");
             this.isStarted = true;
-            Socket client = null;
             while (isStarted && !Thread.currentThread().isInterrupted()) {
                 //region Чтение команд с клавиатуры
                 if (this.inputStream.available() > 0) {
@@ -107,9 +106,7 @@ public class TCPServer extends TCPUnit {
                 }
                 //endregion
                 //region Обработка сообщений от клиентов
-
-                try {
-                     client = serverSocket.accept();
+                try (Socket client = serverSocket.accept()) {
                     InetAddress clientAddress = client.getInetAddress();
                     int clientPort = client.getPort();
                     SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
@@ -121,15 +118,13 @@ public class TCPServer extends TCPUnit {
                         Data clientData = (Data) input.readObject();
                         Object result = Receive(client, clientData);
                         Send(output, result);
-                        //send(result,client);
-
                     } catch (ClassNotFoundException e) {
                         Print("Error reading data from client: " + e.getMessage());
                     }
                 } catch (Exception e) {
                     Print(e);
-                    //Print("Error accepting client connection: " + e.getMessage());
                 }
+
                 //endregion
             }
 

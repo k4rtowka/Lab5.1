@@ -8,6 +8,7 @@ import Models.Data;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -60,6 +61,7 @@ public class TCPClient extends TCPUnit {
 
         objectOutputStream.close();
         byteArrayOutputStream.close();
+
     }
 
     /**
@@ -106,7 +108,8 @@ public class TCPClient extends TCPUnit {
                     keys.remove();
                 }
 
-                try (ObjectInputStream objStream = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()))) {
+                try (ObjectInputStream objStream = new ObjectInputStream(
+                        new ByteArrayInputStream(byteStream.toByteArray()))) {
                     return objStream.readObject();
                 } catch (Exception ex) {
 
@@ -150,6 +153,7 @@ public class TCPClient extends TCPUnit {
             } catch (Exception ex) {
                 this.Print(ex);
             }
+
         }
         socketChannel.close();
 
