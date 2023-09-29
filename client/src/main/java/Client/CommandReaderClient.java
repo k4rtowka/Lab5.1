@@ -3,9 +3,12 @@ package Client;
 import Commands.Command;
 import Commands.CommandReader;
 import Models.AstartesCategory;
+import Models.CollectionManager;
 import Models.Data;
+import Models.SpaceMarine;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Менеджер команд для клиента
@@ -60,7 +63,7 @@ public class CommandReaderClient extends CommandReader {
         ) {
             return new Data(currentCommand, params[0]);
         }
-        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower)  ||
+        if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower) ||
                 commandName.equals(Command.Titles.removeLower)) {
             this.UpdateReader();
             return new Data(currentCommand, this.inputReader.GetSpaceMarine());
@@ -69,7 +72,6 @@ public class CommandReaderClient extends CommandReader {
             this.UpdateReader();
             return new Data(currentCommand, this.inputReader.GetEnumValue(AstartesCategory.class, false));
         }
-
         return new Data(currentCommand, null);
     }
 

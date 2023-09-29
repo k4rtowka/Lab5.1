@@ -1,7 +1,8 @@
 package Tests.Common;
 
 import Client.TCPClient;
-import Server.TCPServer;
+import Server.TCPServerMultiThread;
+import Server.TCPServerOneThread;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class CommonTest {
         return random.nextInt((MAX_REGISTERED_PORT - MIN_REGISTERED_PORT) + 1) + MIN_REGISTERED_PORT;
     }
 
-    protected Thread CreateServer(String commands, int port) {
+    protected Thread CreateOneThreadServer(String commands, int port) {
         Thread serverThread = new Thread(() -> {
             try {
                 InputStream in;
@@ -27,7 +28,29 @@ public class CommonTest {
                 } else {
                     in = System.in;
                 }
-                TCPServer server = new TCPServer(in, port);
+                TCPServerOneThread server = new TCPServerOneThread(in, port);
+                server.Start();
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        serverThread.start();
+        return serverThread;
+    }
+
+    protected Thread CreateMultiThreadServer(String commands, int port) {
+        Thread serverThread = new Thread(() -> {
+            try {
+                InputStream in;
+                if (commands != null && commands.length() > 0) {
+                    in = new ByteArrayInputStream(commands.getBytes());
+
+                } else {
+                    in = System.in;
+                }
+                TCPServerMultiThread server = new TCPServerMultiThread(in, port);
                 server.Start();
 
             } catch (Exception e) {

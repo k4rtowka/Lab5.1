@@ -1,10 +1,5 @@
 import Client.TCPClient;
-import Commands.CommandReader;
-import IO.InputReader;
-import Models.CollectionManager;
-import Server.TCPServer;
-
-import java.util.Scanner;
+import Server.TCPServerOneThread;
 
 public class Main {
 
@@ -14,7 +9,7 @@ public class Main {
 //            CollectionManager collectionManager = new CollectionManager(path);
 //            CommandReader inputReader = new CommandReader(collectionManager, System.in);
 //            inputReader.Start();
-            TCPServer server = new TCPServer(System.in,8080);
+            TCPServerOneThread server = new TCPServerOneThread(System.in,8080);
             server.Start();
             TCPClient client = new TCPClient();
             client.Start();

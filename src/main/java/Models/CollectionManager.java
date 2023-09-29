@@ -10,9 +10,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;

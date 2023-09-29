@@ -9,7 +9,7 @@ public class ServerTests extends CommonTest {
     @Test
     void TestStartAndExit() {
         try {
-            Thread serverThread = CreateServer("exit\n", 8080);
+            Thread serverThread = CreateOneThreadServer("exit\n", 8080);
             serverThread.join();
             assertEquals(serverThread.getState(), Thread.State.TERMINATED);
         } catch (InterruptedException e) {
@@ -22,7 +22,7 @@ public class ServerTests extends CommonTest {
         try {
             int milliseconds = 1000;
             long startTime = System.currentTimeMillis();
-            Thread serverThread = CreateServer(String.format("wait %d\nexit\n", milliseconds), 8080);
+            Thread serverThread = CreateOneThreadServer(String.format("wait %d\nexit\n", milliseconds), 8080);
             serverThread.join();
             assertEquals(serverThread.getState(), Thread.State.TERMINATED);
             long endTime = System.currentTimeMillis();

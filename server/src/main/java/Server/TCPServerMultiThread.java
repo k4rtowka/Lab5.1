@@ -1,6 +1,6 @@
 package Server;
 
-import Commands.CommandHelp;
+import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
 import Models.CollectionManager;
@@ -8,15 +8,20 @@ import Models.Data;
 
 import java.io.*;
 import java.net.*;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
-public class TCPServer extends TCPUnit {
+public class TCPServerMultiThread extends TCPUnit {
     //region Поля
 
-    private Map<SocketAddress, Integer> clientAddresses;
+    private ConcurrentHashMap<SocketAddress, Integer> clientAddresses;
+    private ExecutorService readPool;
+    private ExecutorService processPool;
+    private ForkJoinPool sendPool;
+
     private String dataFilePath;
     private CollectionManager collectionManager;
     private CommandReaderServer commandReader;
@@ -24,27 +29,29 @@ public class TCPServer extends TCPUnit {
     //endregion
 
     //region Конструкторы
-    public TCPServer(InputStream inputStream, int port) {
+    public TCPServerMultiThread(InputStream inputStream, int port) {
         super(inputStream, port, false, Settings.isDebug);
+        this.readPool = Executors.newFixedThreadPool(10);  // Fixed thread pool for reading requests
+        this.processPool = Executors.newCachedThreadPool();  // Cached thread pool for processing requests
+        this.sendPool = new ForkJoinPool();  // ForkJoinPool for sending responses
+        this.clientAddresses = new ConcurrentHashMap<>();  // Thread-safe map
         try {
             this.dataFilePath = "data.xml";
             this.CheckFile(this.dataFilePath);
             this.collectionManager = new CollectionManager(this.dataFilePath);
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
-            this.clientAddresses = Collections.synchronizedMap(new HashMap<>());
             this.commandReader.SetCurrentThread(Thread.currentThread());
         } catch (Exception ex) {
             this.Print(ex);
         }
     }
 
-    public TCPServer() {
+    public TCPServerMultiThread() {
         this(System.in, 8080);
     }
     //endregion
 
     //region Методы
-
 
     /**
      * Метод для проверки наличия файла и его создания при отсутствии.
@@ -65,6 +72,11 @@ public class TCPServer extends TCPUnit {
         }
     }
 
+    private void Send(ObjectOutputStream output, Object data) throws IOException {
+        output.writeObject(data);
+        output.flush();
+    }
+
     private Object Receive(Socket client, Data data) {
         try {
             InetAddress clientAddress = client.getInetAddress();
@@ -73,17 +85,15 @@ public class TCPServer extends TCPUnit {
             if (data.command == null) {
                 return "Получена не существующая команда!";
             }
-            Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
-            //this.commandReader.Execute(Command.Titles.save,new Object[]{});
-            return result;
+            if (data.command.getName().equals(Command.Titles.save)) {
+                return "Команда запрещена на стороне клиента";
+            }
+            synchronized (collectionManager) {
+                return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void Send(ObjectOutputStream output, Object data) throws IOException {
-        output.writeObject(data);
-        output.flush();
     }
 
     public void Start() throws Exception {
@@ -103,25 +113,40 @@ public class TCPServer extends TCPUnit {
                     Print(result);
                 }
                 //endregion
+
                 //region Обработка сообщений от клиентов
-                try (Socket client = serverSocket.accept()) {
-                    InetAddress clientAddress = client.getInetAddress();
-                    int clientPort = client.getPort();
-                    SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
-                    clientAddresses.put(clientSocketAddress, clientAddresses.size() + 1);
+                Socket client = serverSocket.accept();  // Get the client socket
+                readPool.submit(() -> {
+                    try {
+                        InetAddress clientAddress = client.getInetAddress();
+                        int clientPort = client.getPort();
+                        SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
+                        clientAddresses.put(clientSocketAddress, clientAddresses.size() + 1);
 
-                    try (ObjectInputStream input = new ObjectInputStream(client.getInputStream());
-                         ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream())) {
-
+                        ObjectInputStream input = new ObjectInputStream(client.getInputStream());
                         Data clientData = (Data) input.readObject();
-                        Object result = Receive(client, clientData);
-                        Send(output, result);
-                    } catch (ClassNotFoundException e) {
+
+                        processPool.submit(() -> {
+                            Object result = Receive(client, clientData);
+
+                            sendPool.submit(() -> {
+                                try {
+                                    ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
+                                    Send(output, result);
+                                    // Move input.close() here
+                                    input.close();  // Close the input stream
+                                    output.close();  // Close the output stream
+                                } catch (IOException e) {
+                                    Print("Error sending data to client: " + e.getMessage());
+                                }
+                            });
+
+                        });
+
+                    } catch (IOException | ClassNotFoundException e) {
                         Print("Error reading data from client: " + e.getMessage());
                     }
-                } catch (Exception e) {
-                    Print(e);
-                }
+                });
 
                 //endregion
             }
@@ -130,7 +155,6 @@ public class TCPServer extends TCPUnit {
         } catch (IOException e) {
             Print("Host is busy. Try Later");
             Print(e);
-            //e.printStackTrace();
         } finally {
             try {
                 if (serverSocket != null && !serverSocket.isClosed()) {
@@ -142,6 +166,8 @@ public class TCPServer extends TCPUnit {
             }
         }
     }
+
+
 
     //endregion
 }
