@@ -1,9 +1,10 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandClear extends Command {
-    public CommandClear(CollectionManagerToFile collectionManager) {
+    public CommandClear(CollectionManager collectionManager) {
         super(Titles.clear, Descriptions.clear, collectionManager, 0);
     }
 

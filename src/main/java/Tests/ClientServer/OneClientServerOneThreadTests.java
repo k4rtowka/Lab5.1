@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 public class OneClientServerOneThreadTests extends CommonTest {
 
-    //SCRIPT_PATH=./src/main/java/Scipts/
+    //SCRIPT_PATH=./src/main/java/SciptsToExecute/
     @Test
     public void TestSendHelpCommand() throws InterruptedException {
         int port = this.GetRandomRegisteredPort();

@@ -1,10 +1,11 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 import Models.SpaceMarine;
 
 public class CommandRemoveLower extends Command {
-    public CommandRemoveLower(CollectionManagerToFile collectionManager) {
+    public CommandRemoveLower(CollectionManager collectionManager) {
         super(Titles.removeLower, Descriptions.removeLower, collectionManager, 1);
     }
 

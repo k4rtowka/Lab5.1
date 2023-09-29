@@ -1,10 +1,11 @@
 package Commands;
 
 import Models.Category;
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandFilterByCategory extends Command {
-    public CommandFilterByCategory(CollectionManagerToFile collectionManager) {
+    public CommandFilterByCategory(CollectionManager collectionManager) {
         super(Titles.filterByCategory, Descriptions.filterByCategory, collectionManager, 1);
     }
 

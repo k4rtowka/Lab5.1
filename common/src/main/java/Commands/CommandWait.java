@@ -1,9 +1,10 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandWait extends Command {
-    public CommandWait(CollectionManagerToFile collectionManager) {
+    public CommandWait(CollectionManager collectionManager) {
         super(Titles.wait, Descriptions.wait, collectionManager, 2);
     }
 

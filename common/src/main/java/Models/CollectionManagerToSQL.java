@@ -29,7 +29,7 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
      */
     private final String dbUsername;
     /**
-     * пароль БД
+     * Пароль БД
      * Например "12345678"
      */
     private final String dbPassword;

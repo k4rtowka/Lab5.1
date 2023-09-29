@@ -19,7 +19,7 @@ CREATE TABLE Chapters
 (
     id            integer PRIMARY KEY DEFAULT nextval('marines_id_seq'),
     title         varchar(255) NOT NULL,
-    parent_legion varchar(255) NOT NULL
+    marines_count integer NOT NULL
 );
 
 DROP TABLE IF EXISTS WeaponTypes CASCADE;
@@ -51,8 +51,8 @@ CREATE TABLE Marines
     id           integer PRIMARY KEY DEFAULT nextval('marines_id_seq'),
     name         varchar(255) NOT NULL,
     creationDate timestamp    NOT NULL,
-    health       real         NOT NULL,
-    achievements text,
+    health       real,
+    heartCount   integer	  NOT NULL,
     idCoordinate integer REFERENCES Coordinates (id),
     idCategory   integer REFERENCES Categories (id),
     idWeaponType integer REFERENCES WeaponTypes (id),
@@ -63,36 +63,37 @@ CREATE TABLE Marines
 
 -- Insert Enum values into WeaponTypes table
 INSERT INTO WeaponTypes (title)
-VALUES ('BOLT_RIFLE'),
-       ('COMBI_FLAMER'),
-       ('FLAMER'),
-       ('BOLTGUN');
+VALUES ('CHAIN_SWORD'),
+       ('POWER_SWORD'),
+       ('CHAIN_AXE'),
+	   ('POWER_BLADE'),
+       ('POWER_FIST');
 
 -- Insert Enum values into Categories table
 INSERT INTO Categories (title)
 VALUES ('SCOUT'),
-       ('AGGRESSOR'),
+       ('DREADNOUGHT'),
        ('TACTICAL'),
-       ('CHAPLAIN'),
-       ('APOTHECARY'),
-       ('PRIMARIS');
+       ('ASSAULT'),
+       ('LIBRARIAN'),
+       ('HELIX');
 
 
 -- Drop temporary tables if they exist
 DROP TABLE IF EXISTS temp_weapon, temp_category;
 
 -- Assume we use the same weapon and category for all marines
--- Get the id of the BOLT_RIFLE from WeaponTypes
+-- Get the id of the CHAIN_SWORD from WeaponTypes
 SELECT id
 INTO TEMPORARY TABLE temp_weapon
 FROM WeaponTypes
-WHERE title = 'BOLT_RIFLE';
+WHERE title = 'CHAIN_SWORD';
 
--- Get the id of the SCOUT from Categories
+-- Get the id of the TACTICAL from Categories
 SELECT id
 INTO TEMPORARY TABLE temp_category
 FROM Categories
-WHERE title = 'SCOUT';
+WHERE title = 'TACTICAL';
 
 -- Insert each Marine one by one
 DO
@@ -119,8 +120,8 @@ $$
                 -- Check if the inserted id is not 0
                 IF temp_coordinate_id != 0 THEN
                     -- Insert Chapter
-                    INSERT INTO Chapters (title, parent_legion)
-                    VALUES ('Chapter' || counter, 'ParentLegion' || counter)
+                    INSERT INTO Chapters (title, marines_count)
+                    VALUES ('Chapter' || counter, counter)
                     RETURNING id INTO temp_chapter_id;
 
                     -- Insert User
@@ -131,9 +132,9 @@ $$
                     -- Check if the inserted id is not 0
                     IF temp_chapter_id != 0 AND temp_user_id != 0 THEN
                         -- Insert Marine
-                        INSERT INTO Marines (name, creationDate, health, achievements, idCoordinate, idCategory,
+                        INSERT INTO Marines (name, creationDate, health, heartCount, idCoordinate, idCategory,
                                              idWeaponType, idChapter, idUser)
-                        VALUES ('Marine' || counter, now(), random() * 100 + 50, 'Achievement' || counter,
+                        VALUES ('Marine' || counter, now(), random() * 100 + 50, 2,
                                 temp_coordinate_id, category_id, weapon_id, temp_chapter_id, temp_user_id);
                     END IF;
                 END IF;

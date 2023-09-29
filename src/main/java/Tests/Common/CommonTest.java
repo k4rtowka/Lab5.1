@@ -66,10 +66,10 @@ public class CommonTest {
     }
 
     protected Thread CreateMultiThreadServerFromSQL(String commands, int port) {
-        final String DB_URL = "jdbc:postgresql://localhost:5432/dbmarines";
+        final String DB_URL = "jdbc:postgresql://localhost:5432/DBMarines";
         final String DB_USERNAME = "postgres";
         final String DB_PASSWORD = "AppleFruit1";
-        final int idUser = 11;
+        final int idUser = 14;
         Thread serverThread = new Thread(() -> {
             try {
                 InputStream in;

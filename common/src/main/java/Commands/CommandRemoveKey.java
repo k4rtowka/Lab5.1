@@ -1,9 +1,10 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandRemoveKey extends Command {
-    public CommandRemoveKey(CollectionManagerToFile collectionManager) {
+    public CommandRemoveKey(CollectionManager collectionManager) {
         super(Titles.removeKey, Descriptions.removeKey, collectionManager, 1);
     }
 

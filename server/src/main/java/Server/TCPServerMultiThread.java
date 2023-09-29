@@ -48,8 +48,8 @@ public class TCPServerMultiThread extends TCPUnit {
         }
     }
 
-    public TCPServerMultiThread() {
-        //this(new CollectionManagerToSQL(), System.in, 8080);
+    public TCPServerMultiThread() throws Exception {
+        //this(new CollectionManagerToSQL("jdbc:postgresql://pg:2222/studs", "s388132", "RcCd,8731" , 11), System.in, 8080);
     }
     //endregion
 

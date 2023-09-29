@@ -1,9 +1,10 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandExit extends Command {
-    public CommandExit(CollectionManagerToFile collectionManager) {
+    public CommandExit(CollectionManager collectionManager) {
         super(Titles.exit, Descriptions.exit, collectionManager, 1);
     }
 

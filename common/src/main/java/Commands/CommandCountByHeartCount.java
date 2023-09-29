@@ -1,9 +1,10 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandCountByHeartCount extends Command {
-    public CommandCountByHeartCount(CollectionManagerToFile collectionManager) {
+    public CommandCountByHeartCount(CollectionManager collectionManager) {
         super(Titles.countByHeartCount, Descriptions.countByHeartCount, collectionManager, 1);
     }
 
