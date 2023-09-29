@@ -18,7 +18,7 @@ public class CollectionManagerTests extends BaseTest {
 
     @Test
     public void saveLoadTest() throws Exception {
-        collectionManager.save();
+        collectionManager.Save();
 
         CollectionManagerToFile loadedCollectionManager = new CollectionManagerToFile(savePath);
 

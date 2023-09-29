@@ -1,10 +1,7 @@
 package Commands;
 
 import IO.InputReader;
-import Models.Category;
-import Models.CollectionManagerToFile;
-import Models.CollectionManagerToSQL;
-import Models.SpaceMarine;
+import Models.*;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -16,7 +13,7 @@ public class CommandReader {
     /**
      * Объект для управления коллекцией
      */
-    protected CollectionManagerToSQL collectionManager;
+    protected CollectionManager collectionManager;
     /**
      * Сканер для считывания ввода из заданного потока данных.
      */
@@ -51,7 +48,7 @@ public class CommandReader {
      * @param collectionManager менеджер коллекции
      * @param inputStream       входной поток для чтения команд
      */
-    public CommandReader(CollectionManagerToSQL collectionManager, InputStream inputStream) {
+    public CommandReader(CollectionManager collectionManager, InputStream inputStream) {
         this.collectionManager = collectionManager;
         this.isReadFromFile = inputStream instanceof FileInputStream;
         this.scanner = new Scanner(inputStream);

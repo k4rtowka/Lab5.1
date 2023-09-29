@@ -2,6 +2,7 @@ package Server;
 
 import Commands.Command;
 import Commands.CommandReader;
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 import java.io.InputStream;
@@ -20,7 +21,7 @@ public class CommandReaderServer extends CommandReader {
      * @param collectionManager менеджер коллекции
      * @param inputStream       входной поток для чтения команд
      */
-    public CommandReaderServer(CollectionManagerToFile collectionManager, InputStream inputStream) {
+    public CommandReaderServer(CollectionManager collectionManager, InputStream inputStream) {
         super(collectionManager, inputStream);
     }
     //endregion
@@ -61,17 +62,17 @@ public class CommandReaderServer extends CommandReader {
             if (commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.show)
                     || commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.info)
                     || commandName.equals(Command.Titles.printDescending)) {
-                this.collectionManager.save();
+                this.collectionManager.Save();
                 return currentCommand.Execute(null);
             }
             if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.removeKey)
                     || commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeLower)
                     || commandName.equals(Command.Titles.countByHeartCount)) {
-                this.collectionManager.save();
+                this.collectionManager.Save();
                 return currentCommand.Execute(params[0]);
             }
             if (commandName.equals(Command.Titles.replaceIfLower) || commandName.equals(Command.Titles.update)) {
-                this.collectionManager.save();
+                this.collectionManager.Save();
                 return currentCommand.Execute(params);
             }
             if (commandName.equals(Command.Titles.save)) {
@@ -87,7 +88,7 @@ public class CommandReaderServer extends CommandReader {
 //                }
 //            });
 //            thread.start();
-                this.collectionManager.save();
+                this.collectionManager.Save();
                 return currentCommand.Execute(params);
             }
         }catch (Exception e){

@@ -3,7 +3,9 @@ package Server;
 import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
+import Models.CollectionManagerToSQL;
 import Models.Data;
 
 import java.io.*;
@@ -23,22 +25,22 @@ public class TCPServerMultiThread extends TCPUnit {
     private ForkJoinPool sendPool;
 
     private String dataFilePath;
-    private CollectionManagerToFile collectionManager;
+    private CollectionManager collectionManager;
     private CommandReaderServer commandReader;
     private ServerSocket serverSocket;
     //endregion
 
     //region Конструкторы
-    public TCPServerMultiThread(InputStream inputStream, int port) {
+    public TCPServerMultiThread(CollectionManager collectionManager, InputStream inputStream, int port) {
         super(inputStream, port, false, Settings.isDebug);
         this.readPool = Executors.newFixedThreadPool(10);  // Fixed thread pool for reading requests
         this.processPool = Executors.newCachedThreadPool();  // Cached thread pool for processing requests
         this.sendPool = new ForkJoinPool();  // ForkJoinPool for sending responses
         this.clientAddresses = new ConcurrentHashMap<>();  // Thread-safe map
         try {
-            this.dataFilePath = "data.xml";
-            this.CheckFile(this.dataFilePath);
-            this.collectionManager = new CollectionManagerToFile(this.dataFilePath);
+            if (collectionManager == null)
+                throw new Exception("Не передан объект для управления коллекцией!");
+            this.collectionManager = collectionManager;
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
             this.commandReader.SetCurrentThread(Thread.currentThread());
         } catch (Exception ex) {
@@ -47,7 +49,7 @@ public class TCPServerMultiThread extends TCPUnit {
     }
 
     public TCPServerMultiThread() {
-        this(System.in, 8080);
+        //this(new CollectionManagerToSQL(), System.in, 8080);
     }
     //endregion
 
@@ -166,7 +168,6 @@ public class TCPServerMultiThread extends TCPUnit {
             }
         }
     }
-
 
 
     //endregion

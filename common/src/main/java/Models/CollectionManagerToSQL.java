@@ -11,7 +11,7 @@ import java.util.TreeMap;
 /**
  * Класс, управляющий коллекцией объектов класса SpaceMarine
  */
-public class CollectionManagerToSQL extends CollectionManagerToFile implements Serializable {
+public class CollectionManagerToSQL extends CollectionManager implements Serializable {
 
 
     //region Поля
@@ -238,7 +238,7 @@ public class CollectionManagerToSQL extends CollectionManagerToFile implements S
         return false;
     }
 
-    public boolean Load() throws SQLException {
+    public boolean Load() throws Exception {
         this.clear();
         String query = "SELECT * FROM Marines";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -266,7 +266,7 @@ public class CollectionManagerToSQL extends CollectionManagerToFile implements S
         }
     }
 
-    public void Load(int idUser) throws SQLException {
+    public boolean Load(int idUser) throws Exception {
         String query = "SELECT * FROM Marines WHERE idUser = ?";
 
         query = "SELECT * FROM Marines WHERE idUser = ?";
@@ -290,6 +290,7 @@ public class CollectionManagerToSQL extends CollectionManagerToFile implements S
         } catch (Exception e) {
             System.err.println("Не удалось загрузить данные из БД: " + e.getMessage());
         }
+        return true;
     }
     //endregion
 
@@ -366,7 +367,7 @@ public class CollectionManagerToSQL extends CollectionManagerToFile implements S
         return false;
     }
 
-    public boolean Save() throws SQLException {
+    public boolean Save() throws Exception {
         if (marines.isEmpty()) {
             String cleanTableQuery = "TRUNCATE TABLE Marines";
             try (PreparedStatement statement = connection.prepareStatement(cleanTableQuery)) {

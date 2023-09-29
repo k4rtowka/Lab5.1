@@ -1,10 +1,11 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 public class CommandInfo extends Command {
 
-    public CommandInfo(CollectionManagerToFile collectionManager) {
+    public CommandInfo(CollectionManager collectionManager) {
         super(Titles.info, Descriptions.info, collectionManager, 0);
     }
 

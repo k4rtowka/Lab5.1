@@ -1,5 +1,6 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ public class CommandHelp extends Command {
 
     private ArrayList<Command> commands;
 
-    public CommandHelp(CollectionManagerToFile collectionManager) {
+    public CommandHelp(CollectionManager collectionManager) {
         super(
                 Titles.help,
                 Descriptions.help,

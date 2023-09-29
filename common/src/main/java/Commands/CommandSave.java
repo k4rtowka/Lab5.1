@@ -11,7 +11,7 @@ public class CommandSave extends Command {
     protected Object execute(Object[] params) throws Exception {
         if (this.CheckParams(params, 0)) {
             collectionManager.ClearExecuteScripts();
-            collectionManager.save();
+            collectionManager.Save();
 
             return true;
         }

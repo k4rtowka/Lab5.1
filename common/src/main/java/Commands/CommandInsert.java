@@ -1,10 +1,11 @@
 package Commands;
 
+import Models.CollectionManager;
 import Models.CollectionManagerToFile;
 import Models.SpaceMarine;
 
 public class CommandInsert extends Command {
-    public CommandInsert(CollectionManagerToFile collectionManager) {
+    public CommandInsert(CollectionManager collectionManager) {
         super(Titles.insert, Descriptions.insert, collectionManager, 1);
     }
 

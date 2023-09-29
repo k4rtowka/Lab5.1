@@ -1,6 +1,8 @@
 package Tests.Common;
 
 import Client.TCPClient;
+import Models.CollectionManagerToFile;
+import Models.CollectionManagerToSQL;
 import Server.TCPServerMultiThread;
 import Server.TCPServerOneThread;
 
@@ -40,7 +42,7 @@ public class CommonTest {
         return serverThread;
     }
 
-    protected Thread CreateMultiThreadServer(String commands, int port) {
+    protected Thread CreateMultiThreadServerFromFile(String commands, int port) {
         Thread serverThread = new Thread(() -> {
             try {
                 InputStream in;
@@ -50,7 +52,35 @@ public class CommonTest {
                 } else {
                     in = System.in;
                 }
-                TCPServerMultiThread server = new TCPServerMultiThread(in, port);
+
+                TCPServerMultiThread server = new TCPServerMultiThread(new CollectionManagerToFile("data.xml"), in, port);
+                server.Start();
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        serverThread.start();
+        return serverThread;
+    }
+
+    protected Thread CreateMultiThreadServerFromSQL(String commands, int port) {
+        final String DB_URL = "jdbc:postgresql://localhost:5432/dbmarines";
+        final String DB_USERNAME = "postgres";
+        final String DB_PASSWORD = "AppleFruit1";
+        final int idUser = 11;
+        Thread serverThread = new Thread(() -> {
+            try {
+                InputStream in;
+                if (commands != null && commands.length() > 0) {
+                    in = new ByteArrayInputStream(commands.getBytes());
+
+                } else {
+                    in = System.in;
+                }
+
+                TCPServerMultiThread server = new TCPServerMultiThread(new CollectionManagerToSQL(DB_URL, DB_USERNAME, DB_PASSWORD, idUser), in, port);
                 server.Start();
 
             } catch (Exception e) {

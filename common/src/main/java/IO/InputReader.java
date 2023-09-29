@@ -33,7 +33,7 @@ public class InputReader {
     /**
      * Объект для управления коллекцией
      */
-    private CollectionManagerToFile collectionManager;
+    private CollectionManager collectionManager;
     //endregion
 
     //region Сеттеры
@@ -54,7 +54,7 @@ public class InputReader {
      * @param scanner           Scanner, из которого будет считываться ввод.
      * @param isShowPrompt      флаг, указывающий, нужно ли отображать инструкции по вводу в консоль.
      */
-    public InputReader(CollectionManagerToFile collectionManager, Scanner scanner, boolean isReadFromFile, boolean isShowPrompt) {
+    public InputReader(CollectionManager collectionManager, Scanner scanner, boolean isReadFromFile, boolean isShowPrompt) {
         this.isReadFromFile = isReadFromFile;
         this.collectionManager = collectionManager;
         this.scanner = scanner;
@@ -69,7 +69,7 @@ public class InputReader {
      * @param inputStream       InputStream, из которого будет считываться ввод.
      * @param isShowPrompt      флаг, указывающий, нужно ли отображать инструкции по вводу в консоль.
      */
-    public InputReader(CollectionManagerToFile collectionManager, InputStream inputStream, boolean isShowPrompt) {
+    public InputReader(CollectionManager collectionManager, InputStream inputStream, boolean isShowPrompt) {
         this.isReadFromFile = inputStream instanceof FileInputStream;
         this.collectionManager = collectionManager;
         this.scanner = new Scanner(inputStream);
