@@ -83,8 +83,6 @@ public class TCPServer extends TCPUnit {
 
     private void Send(ObjectOutputStream output, Object data) throws IOException {
         output.writeObject(data);
-        //output.writeObject("LOL_KEK_1234");
-        //output.write("LOL_KEK_1234".getBytes());
         output.flush();
     }
 

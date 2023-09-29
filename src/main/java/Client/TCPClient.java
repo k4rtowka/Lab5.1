@@ -8,13 +8,11 @@ import Models.Data;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
-import java.util.Scanner;
 
 public class TCPClient extends TCPUnit {
 
@@ -22,6 +20,16 @@ public class TCPClient extends TCPUnit {
     private CommandReaderClient commandReader;
     private final String host;
     private SocketChannel socketChannel;
+
+    /**
+     * Задержка перед повторной отправкой запросов
+     */
+    private final int msSleepTimeout = 150;
+
+    /**
+     * Таймаут ожидания сервера
+     */
+    private final int msTimeout = 150;
     //endregion
 
     //region Конструкторы
@@ -77,9 +85,9 @@ public class TCPClient extends TCPUnit {
         socketChannel.register(selector, interestSet);
 
         while (true) {
-            if (selector.select(5000) == 0) {
+            if (selector.select(this.msTimeout) == 0) {
                 Print("Тайм-аут: сервер недоступен или не отвечает");
-                Thread.sleep(1000);
+                Thread.sleep(this.msSleepTimeout);
             }
 
             Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
@@ -112,7 +120,7 @@ public class TCPClient extends TCPUnit {
                         new ByteArrayInputStream(byteStream.toByteArray()))) {
                     return objStream.readObject();
                 } catch (Exception ex) {
-
+                    //Print(ex);
                 }
             }
         }
@@ -128,13 +136,11 @@ public class TCPClient extends TCPUnit {
             try {
                 this.socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
                 this.socketChannel.configureBlocking(false);
-                break;
             } catch (ConnectException ex) {
                 Print("Ошибка подключения, повторное подключение");
-                Thread.sleep(1000);
+                Thread.sleep(this.msSleepTimeout);
+                continue;
             }
-        }
-        while (this.isStarted) {
             try {
                 System.out.println("Введите команду или 'exit', чтобы выйти:");
                 String commandName = scanner.nextLine().trim();
@@ -149,6 +155,7 @@ public class TCPClient extends TCPUnit {
                     System.arraycopy(words, 1, params, 0, words.length - 1);
                     Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
                 }
+                Print("Получен ответ от сервера:");
                 Print(Receive(socketChannel));
             } catch (Exception ex) {
                 this.Print(ex);
