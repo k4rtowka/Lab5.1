@@ -6,9 +6,7 @@ import Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CollectionManagerTests extends BaseTest {
 
@@ -22,23 +20,33 @@ public class CollectionManagerTests extends BaseTest {
     public void saveLoadTest() throws Exception {
         collectionManager.save();
 
-        CollectionManager loadedCollectionManager = new CollectionManager(savePath);
+        CollectionManagerToFile loadedCollectionManager = new CollectionManagerToFile(savePath);
 
         assertEquals(0, collectionManager.compareTo(loadedCollectionManager));
     }
 
     @Test
     public void insertNewElement() {
-        SpaceMarine testMarine = generateRandomSpaceMarine(101);
-        collectionManager.insert(testMarine);
-        assertEquals(0, collectionManager.getMarines().get(101).compareTo(testMarine));
+        SpaceMarine testMarine = null;
+        try {
+            testMarine = GenerateRandomSpaceMarine(101);
+            collectionManager.insert(testMarine);
+            assertEquals(0, collectionManager.getMarines().get(101).compareTo(testMarine));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void updateElement_ValidKey() {
-        SpaceMarine testMarine = generateRandomSpaceMarine(100);
-        collectionManager.update(100, testMarine);
-        assertEquals(0, collectionManager.getMarines().get(100).compareTo(testMarine));
+        SpaceMarine testMarine = null;
+        try {
+            testMarine = GenerateRandomSpaceMarine(100);
+            collectionManager.update(100, testMarine);
+            assertEquals(0, collectionManager.getMarines().get(100).compareTo(testMarine));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -65,26 +73,37 @@ public class CollectionManagerTests extends BaseTest {
 
     @Test
     public void removeLower() {
+
         collectionManager.clear();
-        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 1, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 3, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        collectionManager.insert(lowerMarine);
-        collectionManager.insert(higherMarine);
-        collectionManager.removeLower(higherMarine);
-        assertEquals(1, collectionManager.getMarines().size());
+        SpaceMarine lowerMarine = null;
+        try {
+            lowerMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                    this.GetCurrentTimestamp(), 100, 1, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+            SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                    this.GetCurrentTimestamp(), 100, 3, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+            collectionManager.insert(lowerMarine);
+            collectionManager.insert(higherMarine);
+            collectionManager.removeLower(higherMarine);
+            assertEquals(1, collectionManager.getMarines().size());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void replaceIfLower() {
-        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 1, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 3, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        collectionManager.insert(higherMarine);
-        collectionManager.replaceIfLower(101, lowerMarine);
-        assertEquals(0, collectionManager.getMarines().get(101).compareTo(lowerMarine));
+        SpaceMarine lowerMarine = null;
+        try {
+            lowerMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                    this.GetCurrentTimestamp(), 100, 1, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+            SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                    this.GetCurrentTimestamp(), 100, 3, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+            collectionManager.insert(higherMarine);
+            collectionManager.replaceIfLower(101, lowerMarine);
+            assertEquals(0, collectionManager.getMarines().get(101).compareTo(lowerMarine));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -106,9 +125,13 @@ public class CollectionManagerTests extends BaseTest {
     public void filterByCategory() {
         List<SpaceMarine> testMarines = new ArrayList<>();
         for (SpaceMarine marine : collectionManager.getMarines().values()) {
-            if (marine.getCategory() == AstartesCategory.ASSAULT) testMarines.add(marine);
+            try {
+                if (marine.getCategory() == Category.ASSAULT) testMarines.add(marine);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        assertEquals(collectionManager.filterByCategory(AstartesCategory.ASSAULT), testMarines);
+        assertEquals(collectionManager.filterByCategory(Category.ASSAULT), testMarines);
     }
 
 

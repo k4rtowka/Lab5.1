@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@XmlRootElement(name = "collectionManager")
+@XmlRootElement(name = "CollectionManagerToFile")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CollectionManager implements Comparable<CollectionManager> {
+public class CollectionManagerToFile implements Comparable<CollectionManagerToFile> {
     //region Поля
     /**
      * Коллекция объектов
@@ -28,7 +28,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * Дата инициализации
      */
     @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    private LocalDate initializationDate;
+    protected LocalDate initializationDate;
     /**
      * Файл с данными
      */
@@ -43,7 +43,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * Скрипты выполняемые в данный момента командами execute_script
      */
     @XmlElement(name = "executedScripts")
-    private HashSet<String> executedScripts;
+    protected HashSet<String> executedScripts;
     //endregion
 
     //region Геттеры
@@ -87,7 +87,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * @param filename путь к файлу
      * @throws Exception если не правильный путь к файлу.
      */
-    public CollectionManager(String filename) throws Exception {
+    public CollectionManagerToFile(String filename) throws Exception {
         executedScripts = new HashSet<>();
         marines = new TreeMap<>();
         dataFile = new File(filename);
@@ -96,7 +96,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
             load();
     }
 
-    public CollectionManager() throws Exception {
+    public CollectionManagerToFile() throws Exception {
         executedScripts = new HashSet<>();
         marines = new TreeMap<>();
         dataFile = null;
@@ -241,8 +241,14 @@ public class CollectionManager implements Comparable<CollectionManager> {
      * @param category Значение поля {@code category} для фильтрации.
      * @return Список элементов, соответствующих заданному условию.
      */
-    public List<SpaceMarine> filterByCategory(AstartesCategory category) {
-        return marines.values().stream().filter(marines -> marines.getCategory() == category).collect(Collectors.toList());
+    public List<SpaceMarine> filterByCategory(Category category) {
+        return marines.values().stream().filter(marines -> {
+            try {
+                return marines.getCategory() == category;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -295,7 +301,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
      */
     public void save() {
         try {
-            JAXBContext context = JAXBContext.newInstance(CollectionManager.class);
+            JAXBContext context = JAXBContext.newInstance(CollectionManagerToFile.class);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true); // Для красивого форматирования XML
             // Удаляем файл, если он существует
@@ -314,10 +320,10 @@ public class CollectionManager implements Comparable<CollectionManager> {
      */
     public void load() throws Exception {
         try {
-            JAXBContext context = JAXBContext.newInstance(CollectionManager.class);
+            JAXBContext context = JAXBContext.newInstance(CollectionManagerToFile.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             // Загружаем данные из файла
-            CollectionManager loadedManager = (CollectionManager) unmarshaller.unmarshal(dataFile);
+            CollectionManagerToFile loadedManager = (CollectionManagerToFile) unmarshaller.unmarshal(dataFile);
             // Копирование данных из загруженного объекта в текущий
             this.marines = loadedManager.marines;
             this.initializationDate = loadedManager.initializationDate;
@@ -332,7 +338,7 @@ public class CollectionManager implements Comparable<CollectionManager> {
     }
 
     @Override
-    public int compareTo(CollectionManager other) {
+    public int compareTo(CollectionManagerToFile other) {
         int result = initializationDate.compareTo(other.initializationDate);
         if (result != 0) return result;
         result = dataFile.compareTo(other.dataFile);

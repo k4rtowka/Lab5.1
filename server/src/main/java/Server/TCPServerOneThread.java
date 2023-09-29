@@ -3,7 +3,7 @@ package Server;
 import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 import Models.Data;
 
 import java.io.*;
@@ -15,7 +15,7 @@ public class TCPServerOneThread extends TCPUnit {
 
     private Map<SocketAddress, Integer> clientAddresses;
     private String dataFilePath;
-    private CollectionManager collectionManager;
+    private CollectionManagerToFile collectionManager;
     private CommandReaderServer commandReader;
     private ServerSocket serverSocket;
     //endregion
@@ -26,7 +26,7 @@ public class TCPServerOneThread extends TCPUnit {
         try {
             this.dataFilePath = "data.xml";
             this.CheckFile(this.dataFilePath);
-            this.collectionManager = new CollectionManager(this.dataFilePath);
+            this.collectionManager = new CollectionManagerToFile(this.dataFilePath);
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
             this.clientAddresses = Collections.synchronizedMap(new HashMap<>());
             this.commandReader.SetCurrentThread(Thread.currentThread());

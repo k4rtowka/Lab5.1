@@ -1,6 +1,6 @@
 package Commands;
 
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +9,7 @@ import java.io.IOException;
 public class CommandExecuteScript extends Command {
     private String path = System.getenv("SCRIPT_PATH");
 
-    public CommandExecuteScript(CollectionManager collectionManager) {
+    public CommandExecuteScript(CollectionManagerToFile collectionManager) {
         super(Titles.executeScript, Descriptions.executeScript, collectionManager, 1);
     }
 

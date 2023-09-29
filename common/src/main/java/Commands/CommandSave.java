@@ -1,9 +1,9 @@
 package Commands;
 
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandSave extends Command {
-    public CommandSave(CollectionManager collectionManager) {
+    public CommandSave(CollectionManagerToFile collectionManager) {
         super(Titles.save, Descriptions.save, collectionManager, 0);
     }
 

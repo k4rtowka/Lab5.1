@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class Chapter implements Comparable<Chapter>, Serializable {
 
     //region Поля
+    private Integer id;
     /**
      * Название части.
      * <p>
@@ -46,6 +47,12 @@ public class Chapter implements Comparable<Chapter>, Serializable {
         this.setMarinesCount(marinesCount);
     }
 
+    public Chapter(Integer id, String name, long marinesCount) {
+        this.setId(id);
+        this.setName(name);
+        this.setMarinesCount(marinesCount);
+    }
+
     public Chapter() {
     }
     //endregion
@@ -60,6 +67,10 @@ public class Chapter implements Comparable<Chapter>, Serializable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     /**
@@ -84,6 +95,10 @@ public class Chapter implements Comparable<Chapter>, Serializable {
      */
     public String getName() {
         return name;
+    }
+
+    public Integer getId() {
+        return this.id;
     }
 
     /**

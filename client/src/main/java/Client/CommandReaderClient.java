@@ -2,13 +2,10 @@ package Client;
 
 import Commands.Command;
 import Commands.CommandReader;
-import Models.AstartesCategory;
-import Models.CollectionManager;
+import Models.Category;
 import Models.Data;
-import Models.SpaceMarine;
 
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * Менеджер команд для клиента
@@ -70,7 +67,7 @@ public class CommandReaderClient extends CommandReader {
         }
         if (commandName.equals(Command.Titles.filterByCategory)) {
             this.UpdateReader();
-            return new Data(currentCommand, this.inputReader.GetEnumValue(AstartesCategory.class, false));
+            return new Data(currentCommand, this.inputReader.GetEnumValue(Category.class, false));
         }
         return new Data(currentCommand, null);
     }

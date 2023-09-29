@@ -6,7 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @XmlRootElement(name = "spaceMarine")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -25,6 +25,8 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     @XmlElement(required = true)
     private Integer id;
 
+    private Integer userId;
+
     /**
      * Название.
      * <p>
@@ -42,7 +44,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      * </p>
      */
     @XmlElement(required = true)
-    private Coordinates coordinates;
+    private Coordinate coordinate;
 
     /**
      * Дата создания.
@@ -51,8 +53,8 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      * Значение этого поля должно генерироваться автоматически.
      * </p>
      */
-    @XmlElement(required = true)
-    private Date creationDate;
+    //@XmlElement(required = true)
+    private Timestamp creationDate;
 
     /**
      * Здоровье.
@@ -74,23 +76,6 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     @XmlElement(required = true)
     private long heartCount;
 
-    /**
-     * Категория Astartes.
-     * <p>
-     * Поле не может быть null.
-     * </p>
-     */
-    @XmlElement(required = true)
-    private AstartesCategory category;
-
-    /**
-     * Оружие ближнего боя.
-     * <p>
-     * Поле может быть null.
-     * </p>
-     */
-    @XmlElement(required = true)
-    private MeleeWeapon meleeWeapon;
 
     /**
      * Глава.
@@ -100,6 +85,18 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      */
     @XmlElement(required = true)
     private Chapter chapter;
+
+    /**
+     * Категория Astartes SpaceMarine.
+     */
+    @XmlElement(required = true)
+    private Astartes astartes;
+
+    /**
+     * Тип оружия SpaceMarine.
+     */
+    @XmlElement(required = true)
+    private Weapon weapon;
     //endregion
 
     //region Конструкторы
@@ -120,89 +117,135 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      * @param health       здоровье
      * @param heartCount   количество сердец
      * @param category     категория Astartes
-     * @param meleeWeapon  оружие ближнего боя
+     * @param weaponType   оружие ближнего боя
      * @param chapter      глава
      */
-    public SpaceMarine(int id, String name, Coordinates coordinates, Date creationDate,
-                       Integer health, long heartCount, AstartesCategory category, MeleeWeapon meleeWeapon, Chapter chapter) {
+    public SpaceMarine(int id, String name, Coordinate coordinates, Timestamp creationDate,
+                       Integer health, long heartCount, Category category,
+                       WeaponType weaponType, Chapter chapter) throws Exception {
         this.setId(id);
         this.setName(name);
-        this.setCoordinates(coordinates);
+        this.setCoordinate(coordinates);
         this.setCreationDate(creationDate);
         this.setHealth(health);
         this.setHeartCount(heartCount);
-        this.setCategory(category);
-        this.setMeleeWeapon(meleeWeapon);
+        this.setAstartes(new Astartes(category));
+        this.setWeapon(new Weapon(weaponType));
+        this.setChapter(chapter);
+    }
+
+    public SpaceMarine(int id, int userId, String name, Coordinate coordinates,
+                       Timestamp creationDate,
+                       Integer health, long heartCount,
+                       Category category,
+                       WeaponType weaponType, Chapter chapter) throws Exception {
+        this.setId(id);
+        this.setUserId(userId);
+        this.setName(name);
+        this.setCoordinate(coordinates);
+        this.setCreationDate(creationDate);
+        this.setHealth(health);
+        this.setHeartCount(heartCount);
+        this.setAstartes(new Astartes(category));
+        this.setWeapon(new Weapon(weaponType));
+        this.setChapter(chapter);
+    }
+
+    public SpaceMarine(int id, int userId, String name, Coordinate coordinates,
+                       Timestamp creationDate,
+                       Integer health, long heartCount,
+                       Astartes astartes,
+                       Weapon weapon, Chapter chapter) throws Exception {
+        this.setId(id);
+        this.setUserId(userId);
+        this.setName(name);
+        this.setCoordinate(coordinates);
+        this.setCreationDate(creationDate);
+        this.setHealth(health);
+        this.setHeartCount(heartCount);
+        this.setAstartes(astartes);
+        this.setWeapon(weapon);
         this.setChapter(chapter);
     }
     //endregion
 
-    //region Сеттеры
+    //region Сеттеры и геттеры
 
-    /**
-     * Устанавливает идентификационный номер.
-     *
-     * @param id идентификационный номер
-     * @throws IllegalArgumentException если id равен null или меньше или равен 0
-     */
+    //region ID
+    public int getId() {
+        return id;
+    }
+
     public void setId(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID не может быть null или меньше или равен 0.");
         }
         this.id = id;
     }
+    //endregion
 
-    /**
-     * Устанавливает имя.
-     *
-     * @param name имя
-     * @throws IllegalArgumentException если имя равно null или пустое
-     */
-    public void setName(String name) {
-        if (name == null || name.isEmpty() || name.isBlank()) {
-            throw new IllegalArgumentException("Имя не может быть null или пустым.");
-        }
+    //region ID user
+    public Integer getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+    //endregion
+
+    //region Name
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) throws Exception {
+        if (name == null || name.isEmpty() || name.isBlank())
+            throw new IllegalArgumentException("Имя не может быть пустым");
         this.name = name;
     }
+    //endregion
 
-    /**
-     * Устанавливает координаты.
-     *
-     * @param coordinates координаты
-     * @throws IllegalArgumentException если координаты равны null
-     */
-    public void setCoordinates(Coordinates coordinates) {
-        if (coordinates == null) {
-            throw new IllegalArgumentException("Координаты не могут быть null.");
-        }
-        this.coordinates = coordinates;
+    //region Coordinates
+    public Coordinate getCoordinates() {
+        return coordinate;
     }
 
-    /**
-     * Устанавливает дату создания.
-     *
-     * @param creationDate дата создания
-     * @throws IllegalArgumentException если creationDate равна null
-     */
-    public void setCreationDate(Date creationDate) {
+    public void setCoordinate(Coordinate coordinate) throws Exception {
+        if (coordinate == null) {
+            throw new IllegalArgumentException("Координаты не могут быть null.");
+        }
+        this.coordinate = coordinate;
+    }
+    //endregion
+
+    //region CreationDate
+    public Timestamp getCreationDate() {
+        return this.creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) throws Exception {
         if (creationDate == null) {
             throw new IllegalArgumentException("Дата создания не может быть null.");
         }
         this.creationDate = creationDate;
     }
+    //endregion
 
-    /**
-     * Устанавливает здоровье.
-     *
-     * @param health здоровье
-     * @throws IllegalArgumentException если здоровье не равно null и меньше или равно 0
-     */
+    //region Health
+    public Integer getHealth() {
+        return health;
+    }
+
     public void setHealth(Integer health) {
         if (health != null && health <= 0) {
             throw new IllegalArgumentException("Здоровье, если указано, должно быть больше 0.");
         }
         this.health = health;
     }
+    //endregion
+
+    //region Hearts count
 
     /**
      * Устанавливает количество сердец.
@@ -218,50 +261,6 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     }
 
     /**
-     * Устанавливает категорию Astartes.
-     *
-     * @param category категория Astartes
-     * @throws IllegalArgumentException если категория равна null
-     */
-    public void setCategory(AstartesCategory category) {
-        if (category == null) {
-            throw new IllegalArgumentException("Категория Astartes не может быть null.");
-        }
-        this.category = category;
-    }
-
-    /**
-     * Устанавливает оружие ближнего боя.
-     *
-     * @param meleeWeapon оружие ближнего боя
-     */
-    public void setMeleeWeapon(MeleeWeapon meleeWeapon) {
-        this.meleeWeapon = meleeWeapon;
-    }
-
-    /**
-     * Устанавливает главу.
-     *
-     * @param chapter глава
-     */
-    public void setChapter(Chapter chapter) {
-        this.chapter = chapter;
-    }
-
-    //endregion
-
-    //region Геттеры
-
-    /**
-     * Возвращает идентификационный номер.
-     *
-     * @return идентификационный номер
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
      * Возвращает количество сердец.
      *
      * @return количество сердец
@@ -269,69 +268,56 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
     public long getHeartCount() {
         return heartCount;
     }
+    //endregion
 
-    /**
-     * Возвращает категорию Astartes.
-     *
-     * @return категория Astartes
-     */
-    public AstartesCategory getCategory() {
-        return category;
+    //region AstartesCategory
+
+    public Category getCategory() throws Exception {
+        if (this.astartes == null)
+            throw new Exception("Не указан класс категории!");
+        return this.astartes.getCategory();
     }
 
-    /**
-     * Возвращает здоровье.
-     *
-     * @return здоровье или null, если здоровье не установлено
-     */
-    public Integer getHealth() {
-        return health;
+    public Astartes getAstartes() {
+        return astartes;
     }
 
-    /**
-     * Возвращает имя.
-     *
-     * @return имя
-     */
-    public String getName() {
-        return name;
+    public void setAstartes(Astartes astartes) throws Exception {
+        if (astartes == null)
+            throw new Exception("Категория Astartes не может быть null.");
+        this.astartes = astartes;
+    }
+    //endregion
+
+    //region WeaponType
+
+//    public void setWeaponType(WeaponType meleeWeapon) {
+//        this.meleeWeapon = meleeWeapon;
+//    }
+
+    public WeaponType getWeaponType() {
+        return weapon.getType();
     }
 
-    /**
-     * Возвращает дату создания.
-     *
-     * @return дата создания
-     */
-    public Date getCreationDate() {
-        return this.creationDate;
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
     }
 
-    /**
-     * Возвращает координаты.
-     *
-     * @return координаты
-     */
-    public Coordinates getCoordinates() {
-        return coordinates;
+    public Weapon getWeapon() {
+        return this.weapon;
     }
 
-    /**
-     * Возвращает оружие ближнего боя.
-     *
-     * @return оружие ближнего боя или null, если оружие не установлено
-     */
-    public MeleeWeapon getMeleeWeapon() {
-        return meleeWeapon;
-    }
+    //endregion
 
-    /**
-     * Возвращает главу.
-     *
-     * @return главу или null, если глава не установлена
-     */
+    //region Chapter
     public Chapter getChapter() {
         return chapter;
     }
+
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
+    }
+    //endregion
 
     //endregion
 
@@ -339,74 +325,82 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append("{");
-        result.append("\"SpaceMarine id\": ").append(id).append(", ");
-        result.append("\"SpaceMarine name\": \"").append(name).append("\", ");
-        result.append("\"SpaceMarine coordinates\": ").append(coordinates).append(", ");
-        result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", \n");
-        result.append("\"SpaceMarine health\": ").append((health == null) ? "\"not currently set\"" : health).append(", ");
-        result.append("\"SpaceMarine heartCount\": ").append(heartCount).append(", ");
-        result.append("\"SpaceMarine AstartesCategory\": \"").append(category).append("\", \n");
-        result.append("\"SpaceMarine MeleeWeapon\": ").append((meleeWeapon == null) ? "\"not currently set\"" : "\"" + meleeWeapon + "\"").append(", ");
-        result.append("\"SpaceMarine Chapter\": ").append((chapter == null) ? "\"not currently set\"" : "\"" + chapter + "\"");
-        result.append("}");
+        try {
+            result.append("{");
+            result.append("\"SpaceMarine id\": ").append(id).append(", ");
+            result.append("\"SpaceMarine name\": \"").append(name).append("\", ");
+            result.append("\"SpaceMarine coordinates\": ").append(coordinate).append(", ");
+            result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", \n");
+            result.append("\"SpaceMarine health\": ").append((health == null) ? "\"not currently set\"" : health).append(", ");
+            result.append("\"SpaceMarine heartCount\": ").append(heartCount).append(", ");
+            result.append("\"SpaceMarine AstartesCategory\": \"").append(this.getCategory()).append("\", \n");
+            result.append("\"SpaceMarine MeleeWeapon\": ").append((this.getWeaponType() == null) ? "\"not currently set\"" : "\"" + this.getWeaponType() + "\"").append(", ");
+            result.append("\"SpaceMarine Chapter\": ").append((chapter == null) ? "\"not currently set\"" : "\"" + chapter + "\"");
+            result.append("}");
+        } catch (Exception ex) {
+            return ex.getMessage();
+        }
         return result.toString();
     }
 
 
     @Override
     public int compareTo(SpaceMarine o) {
-        // Сравнение по количеству сердец
-        int result = Long.compare(heartCount, o.heartCount);
-        if (result != 0) return result;
+        try {
+            // Сравнение по количеству сердец
+            int result = Long.compare(heartCount, o.heartCount);
+            if (result != 0) return result;
 
-        // Сравнение по здоровью
-        if (health != null && o.health != null) {
-            result = Integer.compare(health, o.health);
-        } else if (health != null) {
-            return 1;  // текущий объект имеет здоровье, а другой объект - нет
-        } else if (o.health != null) {
-            return -1;  // другой объект имеет здоровье, а текущий объект - нет
-        }
-        if (result != 0) return result;
+            // Сравнение по здоровью
+            if (health != null && o.health != null) {
+                result = Integer.compare(health, o.health);
+            } else if (health != null) {
+                return 1;  // текущий объект имеет здоровье, а другой объект - нет
+            } else if (o.health != null) {
+                return -1;  // другой объект имеет здоровье, а текущий объект - нет
+            }
+            if (result != 0) return result;
 
-        // Сравнение по координатам
-        result = this.coordinates.compareTo(o.coordinates);
-        if (result != 0) return result;
+            // Сравнение по координатам
+            result = this.coordinate.compareTo(o.coordinate);
+            if (result != 0) return result;
 
-        // Сравнение по дате создания
-        result = creationDate.compareTo(o.creationDate);
-        if (result != 0) return result;
+            // Сравнение по дате создания
+            result = creationDate.compareTo(o.creationDate);
+            if (result != 0) return result;
 
-        // Сравнение по имени
-        result = this.name.compareTo(o.name);
-        if (result != 0) return result;
+            // Сравнение по имени
+            result = this.name.compareTo(o.name);
+            if (result != 0) return result;
 
-        // Сравнение по категории Astartes
-        result = this.category.compareTo(o.category);
-        if (result != 0) return result;
+            // Сравнение по категории Astartes
+            result = this.getCategory().compareTo(o.getCategory());
+            if (result != 0) return result;
 
-        // Сравнение по оружию ближнего боя
-        if (meleeWeapon != null && o.meleeWeapon != null) {
-            result = meleeWeapon.compareTo(o.meleeWeapon);
-        } else if (meleeWeapon != null) {
-            return 1;
-        } else if (o.meleeWeapon != null) {
+            // Сравнение по оружию ближнего боя
+            if (this.getWeaponType() != null && o.getWeaponType() != null) {
+                result = getWeaponType().compareTo(o.getWeaponType());
+            } else if (getWeaponType() != null) {
+                return 1;
+            } else if (o.getWeaponType() != null) {
+                return -1;
+            }
+            if (result != 0) return result;
+
+            // Сравнение по главе
+            if (chapter != null && o.chapter != null) {
+                result = chapter.compareTo(o.chapter);
+            } else if (chapter != null) {
+                return 1;
+            } else if (o.chapter != null) {
+                return -1;
+            }
+            if (result != 0) return result;
+
+            return 0;  // Все поля равны
+        } catch (Exception ex) {
             return -1;
         }
-        if (result != 0) return result;
-
-        // Сравнение по главе
-        if (chapter != null && o.chapter != null) {
-            result = chapter.compareTo(o.chapter);
-        } else if (chapter != null) {
-            return 1;
-        } else if (o.chapter != null) {
-            return -1;
-        }
-        if (result != 0) return result;
-
-        return 0;  // Все поля равны
     }
 
     //endregion

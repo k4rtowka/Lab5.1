@@ -1,9 +1,9 @@
 package Commands;
 
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandShow extends Command {
-    public CommandShow(CollectionManager collectionManager) {
+    public CommandShow(CollectionManagerToFile collectionManager) {
         super(Titles.show, Descriptions.show, collectionManager, 0);
     }
 

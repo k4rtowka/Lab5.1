@@ -2,8 +2,7 @@ package Server;
 
 import Commands.Command;
 import Commands.CommandReader;
-import Models.CollectionManager;
-import Models.SpaceMarine;
+import Models.CollectionManagerToFile;
 
 import java.io.InputStream;
 
@@ -21,7 +20,7 @@ public class CommandReaderServer extends CommandReader {
      * @param collectionManager менеджер коллекции
      * @param inputStream       входной поток для чтения команд
      */
-    public CommandReaderServer(CollectionManager collectionManager, InputStream inputStream) {
+    public CommandReaderServer(CollectionManagerToFile collectionManager, InputStream inputStream) {
         super(collectionManager, inputStream);
     }
     //endregion

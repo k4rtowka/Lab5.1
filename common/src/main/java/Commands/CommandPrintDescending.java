@@ -1,9 +1,9 @@
 package Commands;
 
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandPrintDescending extends Command {
-    public CommandPrintDescending(CollectionManager collectionManager) {
+    public CommandPrintDescending(CollectionManagerToFile collectionManager) {
         super(Titles.printDescending, Descriptions.printDescending, collectionManager, 0);
     }
 

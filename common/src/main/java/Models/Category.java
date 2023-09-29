@@ -1,6 +1,6 @@
 package Models;
 
-public enum AstartesCategory {
+public enum Category {
     DREADNOUGHT,
     ASSAULT,
     TACTICAL,

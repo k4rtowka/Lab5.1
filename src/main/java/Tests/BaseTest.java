@@ -1,60 +1,66 @@
 package Tests;
 
 import Models.*;
-import jdk.jshell.spi.ExecutionControl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BaseTest {
-    public CollectionManager collectionManager;
+    public CollectionManagerToFile collectionManager;
     public String savePath;
 
     //region Генерация морпехов
     private static final List<String> NAMES = Arrays.asList("John", "Doe", "James", "Alex", "Chris", "Michael", "David", "Martin");
-    private static final List<AstartesCategory> CATEGORIES = Arrays.asList(AstartesCategory.values());
-    private static final List<MeleeWeapon> MELEE_WEAPONS = Arrays.asList(MeleeWeapon.values());
+    private static final List<Category> CATEGORIES = Arrays.asList(Category.values());
+    private static final List<WeaponType> MELEE_WEAPONS = Arrays.asList(WeaponType.values());
 
-    public  SpaceMarine generateRandomSpaceMarine(int id) {
+    public Timestamp GetCurrentTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
+    }
+
+    public SpaceMarine GenerateRandomSpaceMarine(int id) throws Exception {
         SpaceMarine marine = new SpaceMarine();
 
         marine.setId(id);
         marine.setName(NAMES.get(ThreadLocalRandom.current().nextInt(NAMES.size())));
-        marine.setCoordinates(new Coordinates(
+        marine.setCoordinate(new Coordinate(
                 ThreadLocalRandom.current().nextDouble(-100, 101),
                 ThreadLocalRandom.current().nextInt(-50, 51)
         ));
-        marine.setCreationDate(new Date());
+        marine.setCreationDate(this.GetCurrentTimestamp());
         marine.setHealth(ThreadLocalRandom.current().nextInt(1, 101));
         marine.setHeartCount(ThreadLocalRandom.current().nextInt(1, 4));
-        marine.setCategory(CATEGORIES.get(ThreadLocalRandom.current().nextInt(CATEGORIES.size())));
-        marine.setMeleeWeapon(MELEE_WEAPONS.get(ThreadLocalRandom.current().nextInt(MELEE_WEAPONS.size())));
+        marine.setAstartes(new Astartes(CATEGORIES.get(ThreadLocalRandom.current().nextInt(CATEGORIES.size()))));
+        marine.setWeapon(new Weapon(MELEE_WEAPONS.get(ThreadLocalRandom.current().nextInt(MELEE_WEAPONS.size()))));
         // Не устанавливаем главу (chapter), так как у нас нет информации о том, как генерировать её
 
         return marine;
     }
 
-    public  List<SpaceMarine> generateSpaceMarines(int count) {
+    public List<SpaceMarine> GenerateSpaceMarines(int count) {
         List<SpaceMarine> marines = new ArrayList<>();
         for (int i = 1; i <= count; i++) {
-            marines.add(generateRandomSpaceMarine(i));
+            try {
+                marines.add(GenerateRandomSpaceMarine(i));
+            } catch (Exception ex) {
+                System.out.println(ex);
+                ex.printStackTrace();
+            }
         }
         return marines;
     }
     //endregion
 
-    public void InitCollection(String fileName,Integer size) {
+    public void InitCollection(String fileName, Integer size) {
         try {
             savePath = "./src/main/java/Tests/Data/" + fileName;
             File dataFile = new File(savePath);
             if (dataFile.exists())
                 dataFile.delete();
-            collectionManager = new CollectionManager(savePath);
-            List<SpaceMarine> marines = generateSpaceMarines(size);
+            collectionManager = new CollectionManagerToFile(savePath);
+            List<SpaceMarine> marines = GenerateSpaceMarines(size);
             for (SpaceMarine marine : marines) {
                 collectionManager.insert(marine);
             }
@@ -62,6 +68,7 @@ public class BaseTest {
             throw new RuntimeException(e);
         }
     }
+
     public void ThrowNotImplemented() throws Exception {
         throw new Exception("Тест не реализован");
     }

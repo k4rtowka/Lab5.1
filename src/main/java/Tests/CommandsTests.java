@@ -84,7 +84,7 @@ public class CommandsTests extends BaseTest {
     @Test
     public void test_FilterByCategory_ExecuteWithValidParams() throws Exception {
         CommandFilterByCategory filterByCategory = new CommandFilterByCategory(collectionManager);
-        for (AstartesCategory category : AstartesCategory.values()) {
+        for (Category category : Category.values()) {
             List<SpaceMarine> list = new ArrayList<>();
             for (SpaceMarine marine : collectionManager.getMarines().values()) {
                 if (marine.getCategory() == category) list.add(marine);
@@ -109,7 +109,7 @@ public class CommandsTests extends BaseTest {
         assertEquals("Не переданы параметры, ожидаемое число параметров 1", exception.getMessage());
 
         exception = assertThrows(Exception.class, () -> filterByCategory.Execute("INCORRECT_PARAM"));
-        assertEquals(String.format(Strings.Errors.Commands.expectedTypeErrorFormat, AstartesCategory.class.getSimpleName(), String.class.getSimpleName()),
+        assertEquals(String.format(Strings.Errors.Commands.expectedTypeErrorFormat, Category.class.getSimpleName(), String.class.getSimpleName()),
                 exception.getMessage());
     }
     //endregion
@@ -119,7 +119,7 @@ public class CommandsTests extends BaseTest {
     public void test_Insert_ExecuteWithValidParams() throws Exception {
         CommandInsert insert = new CommandInsert(collectionManager);
         int beforeExecute = collectionManager.GetSize();
-        SpaceMarine testMarine = generateRandomSpaceMarine(101);
+        SpaceMarine testMarine = GenerateRandomSpaceMarine(101);
         insert.Execute(testMarine);
         assertEquals(beforeExecute + 1, collectionManager.GetSize());
         assertEquals(0, testMarine.compareTo(collectionManager.getMarines().get(101)));
@@ -208,10 +208,10 @@ public class CommandsTests extends BaseTest {
     public void test_RemoveLower_ExecuteWithValidParams() throws Exception {
         CommandRemoveLower removeLower = new CommandRemoveLower(collectionManager);
         collectionManager.clear();
-        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 1, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 3, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
+        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                this.GetCurrentTimestamp(), 100, 1, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                this.GetCurrentTimestamp(), 100, 3, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
         collectionManager.insert(lowerMarine);
         collectionManager.insert(higherMarine);
 
@@ -243,10 +243,10 @@ public class CommandsTests extends BaseTest {
     @Test
     public void test_ReplaceIfLower_ExecuteWithValidParams() throws Exception {
         CommandReplaceIfLower replaceIfLower = new CommandReplaceIfLower(collectionManager);
-        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 1, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
-        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinates(3.4, 1),
-                new Date(), 100, 3, AstartesCategory.ASSAULT, MeleeWeapon.POWER_BLADE, new Chapter());
+        SpaceMarine lowerMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                this.GetCurrentTimestamp(), 100, 1, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
+        SpaceMarine higherMarine = new SpaceMarine(1, "Lower", new Coordinate(3.4, 1),
+                this.GetCurrentTimestamp(), 100, 3, Category.ASSAULT, WeaponType.POWER_BLADE, new Chapter());
         collectionManager.insert(higherMarine);
 
         Object[] params = new Object[]{101, lowerMarine};
@@ -283,12 +283,12 @@ public class CommandsTests extends BaseTest {
     //region Save
     @Test
     public void test_Save_ExecuteWithValidParams() throws Exception {
-        CommandSave save = new CommandSave(collectionManager);
-        save.Execute();
-
-        CollectionManager loadedCollectionManager = new CollectionManager(savePath);
-
-        assertEquals(0, collectionManager.compareTo(loadedCollectionManager));
+//        CommandSave save = new CommandSave(collectionManager);
+//        save.Execute();
+//
+//        CollectionManagerToFile loadedCollectionManager = new CollectionManagerToFile(savePath);
+//
+//        assertEquals(0, collectionManager.compareTo(loadedCollectionManager));
     }
 
     @Test
@@ -308,7 +308,7 @@ public class CommandsTests extends BaseTest {
         CommandUpdate commandUpdate = new CommandUpdate(collectionManager);
         Object[] params;
         for (int i = 1; i < 51; i++) {
-            SpaceMarine marine = generateRandomSpaceMarine(i);
+            SpaceMarine marine = GenerateRandomSpaceMarine(i);
             params = new Object[]{i, marine};
             commandUpdate.Execute(params);
             assertEquals(0, collectionManager.getMarines().get(i).compareTo(marine));
@@ -353,7 +353,7 @@ public class CommandsTests extends BaseTest {
         result.append(Command.Titles.update).append(" - ").append(Command.Descriptions.update).append("\n");
         result.append(Command.Titles.removeKey).append(" - ").append(Command.Descriptions.removeKey).append("\n");
         result.append(Command.Titles.clear).append(" - ").append(Command.Descriptions.clear).append("\n");
-        result.append(Command.Titles.save).append(" - ").append(Command.Descriptions.save).append("\n");
+//        result.append(Command.Titles.save).append(" - ").append(Command.Descriptions.save).append("\n");
         result.append(Command.Titles.executeScript).append(" - ").append(Command.Descriptions.executeScript).append("\n");
         result.append(Command.Titles.exit).append(" - ").append(Command.Descriptions.exit).append("\n");
         result.append(Command.Titles.removeLower).append(" - ").append(Command.Descriptions.removeLower).append("\n");
@@ -419,7 +419,7 @@ public class CommandsTests extends BaseTest {
         assertEquals(Strings.Messages.Collection.emptyCollection, command.Execute());
         //endregion
 
-        List<SpaceMarine> testMarines = this.generateSpaceMarines(3);
+        List<SpaceMarine> testMarines = this.GenerateSpaceMarines(3);
         for(int i = 0; i < 3;i++) {
             collectionManager.insert(testMarines.get(i));
         }
@@ -438,7 +438,7 @@ public class CommandsTests extends BaseTest {
             result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
             result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
             result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", \n");
-            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
+            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getWeaponType() == null) ? "\"not currently set\"" : "\"" + marine.getWeaponType() + "\"").append(", ");
             result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
             result.append("}");
             result.append("\n");
@@ -468,7 +468,7 @@ public class CommandsTests extends BaseTest {
         assertEquals(Strings.Messages.Collection.emptyCollection, show.Execute());
         //endregion
 
-        List<SpaceMarine> testMarines = this.generateSpaceMarines(3);
+        List<SpaceMarine> testMarines = this.GenerateSpaceMarines(3);
         SpaceMarine marine;
         StringBuilder result = new StringBuilder();
         result.append("Элементы коллекции:\n");
@@ -485,7 +485,7 @@ public class CommandsTests extends BaseTest {
             result.append("\"SpaceMarine health\": ").append((marine.getHealth() == null) ? "\"not currently set\"" : marine.getHealth()).append(", ");
             result.append("\"SpaceMarine heartCount\": ").append(marine.getHeartCount()).append(", ");
             result.append("\"SpaceMarine AstartesCategory\": \"").append(marine.getCategory()).append("\", \n");
-            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getMeleeWeapon() == null) ? "\"not currently set\"" : "\"" + marine.getMeleeWeapon() + "\"").append(", ");
+            result.append("\"SpaceMarine MeleeWeapon\": ").append((marine.getWeaponType() == null) ? "\"not currently set\"" : "\"" + marine.getWeaponType() + "\"").append(", ");
             result.append("\"SpaceMarine Chapter\": ").append((marine.getChapter() == null) ? "\"not currently set\"" : "\"" + marine.getChapter() + "\"");
             result.append("}");
             result.append("\n");

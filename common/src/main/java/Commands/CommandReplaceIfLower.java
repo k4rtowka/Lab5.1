@@ -1,10 +1,10 @@
 package Commands;
 
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 import Models.SpaceMarine;
 
 public class CommandReplaceIfLower extends Command {
-    public CommandReplaceIfLower(CollectionManager collectionManager) {
+    public CommandReplaceIfLower(CollectionManagerToFile collectionManager) {
         super(Titles.replaceIfLower, Descriptions.replaceIfLower, collectionManager, 2);
     }
 

@@ -6,10 +6,11 @@ import Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
-public class SpaceMarineTests extends  BaseTest {
+public class SpaceMarineTests extends BaseTest {
     private SpaceMarine marine;
 
     @BeforeEach
@@ -33,8 +34,12 @@ public class SpaceMarineTests extends  BaseTest {
     //region Name
     @Test
     public void setName_validName_setsName() {
-        marine.setName("Space Ship");
-        assertEquals("Space Ship", marine.getName());
+        try {
+            marine.setName("Space Ship");
+            assertEquals("Space Ship", marine.getName());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -56,15 +61,19 @@ public class SpaceMarineTests extends  BaseTest {
     //region Coordinates
     @Test
     public void setCoordinate_ValidCoordinates() {
-        Coordinates coordinates = new Coordinates(2.3, 4);
-        marine.setCoordinates(coordinates);
-        assertEquals(coordinates, marine.getCoordinates());
+        Coordinate coordinates = new Coordinate(2.3, 4);
+        try {
+            marine.setCoordinate(coordinates);
+            assertEquals(coordinates, marine.getCoordinates());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void setCoordinate_InvalidCoordinates() {
         Exception exception = assertThrows(Exception.class,
-                () -> marine.setCoordinates(null));
+                () -> marine.setCoordinate(null));
         assertEquals("Координаты не могут быть null.", exception.getMessage());
     }
     //endregion
@@ -72,9 +81,14 @@ public class SpaceMarineTests extends  BaseTest {
     //region Date
     @Test
     public void setDate_ValidDate() {
-        Date date = new Date();
-        marine.setCreationDate(date);
-        assertEquals(date, marine.getCreationDate());
+        //Date date = new Date();
+        Timestamp timestamp = this.GetCurrentTimestamp();
+        try {
+            marine.setCreationDate(timestamp);
+            assertEquals(timestamp, marine.getCreationDate());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -126,14 +140,18 @@ public class SpaceMarineTests extends  BaseTest {
     //region Category
     @Test
     public void setCategory_validCategory() {
-        marine.setCategory(AstartesCategory.ASSAULT);
-        assertEquals(AstartesCategory.ASSAULT, marine.getCategory());
+        try {
+            marine.setAstartes(new Astartes(Category.ASSAULT));
+            assertEquals(Category.ASSAULT, marine.getCategory());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void setCategory_InvalidCategory() {
         Exception exception = assertThrows(Exception.class,
-                () -> marine.setCategory(null));
+                () -> marine.setAstartes(null));
         assertEquals("Категория Astartes не может быть null.", exception.getMessage());
     }
     //endregion
@@ -141,8 +159,8 @@ public class SpaceMarineTests extends  BaseTest {
     //region Weapon
     @Test
     public void setWeapon_validWeapon() {
-        marine.setMeleeWeapon(MeleeWeapon.POWER_BLADE);
-        assertEquals(MeleeWeapon.POWER_BLADE, marine.getMeleeWeapon());
+        marine.setWeapon(new Weapon(WeaponType.POWER_BLADE));
+        assertEquals(WeaponType.POWER_BLADE, marine.getWeaponType());
     }
 
     //endregion

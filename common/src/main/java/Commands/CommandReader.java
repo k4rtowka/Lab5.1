@@ -1,8 +1,9 @@
 package Commands;
 
 import IO.InputReader;
-import Models.AstartesCategory;
-import Models.CollectionManager;
+import Models.Category;
+import Models.CollectionManagerToFile;
+import Models.CollectionManagerToSQL;
 import Models.SpaceMarine;
 
 import java.io.FileInputStream;
@@ -15,7 +16,7 @@ public class CommandReader {
     /**
      * Объект для управления коллекцией
      */
-    protected CollectionManager collectionManager;
+    protected CollectionManagerToSQL collectionManager;
     /**
      * Сканер для считывания ввода из заданного потока данных.
      */
@@ -50,7 +51,7 @@ public class CommandReader {
      * @param collectionManager менеджер коллекции
      * @param inputStream       входной поток для чтения команд
      */
-    public CommandReader(CollectionManager collectionManager, InputStream inputStream) {
+    public CommandReader(CollectionManagerToSQL collectionManager, InputStream inputStream) {
         this.collectionManager = collectionManager;
         this.isReadFromFile = inputStream instanceof FileInputStream;
         this.scanner = new Scanner(inputStream);
@@ -209,7 +210,7 @@ public class CommandReader {
         //endregion
         //region Возвращает список
         if (commandName.equals(Command.Titles.filterByCategory)) {
-            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(AstartesCategory.class, false));
+            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(Category.class, false));
             if (list instanceof List<?>) {
                 List<SpaceMarine> marines = (List<SpaceMarine>) list;
                 StringBuilder result = new StringBuilder();

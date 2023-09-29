@@ -1,10 +1,9 @@
 package Commands;
 
-import Models.AstartesCategory;
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandCountByHeartCount extends Command {
-    public CommandCountByHeartCount(CollectionManager collectionManager) {
+    public CommandCountByHeartCount(CollectionManagerToFile collectionManager) {
         super(Titles.countByHeartCount, Descriptions.countByHeartCount, collectionManager, 1);
     }
 

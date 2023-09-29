@@ -1,4 +1,4 @@
-import Models.MeleeWeapon;
+import Models.WeaponType;
 import Models.SpaceMarine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class SpaceMarineTest {
 
     @Test
     public void getMeleeWeapon(){
-        assertEquals("цепной топор", MeleeWeapon.CHAIN_AXE.getText());
+        assertEquals("цепной топор", WeaponType.CHAIN_AXE.getText());
     }
 
 }

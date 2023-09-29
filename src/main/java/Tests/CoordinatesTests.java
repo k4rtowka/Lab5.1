@@ -3,16 +3,16 @@ package Tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-import Models.Coordinates;
+import Models.Coordinate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CoordinatesTests {
-    private Coordinates coordinates;
+    private Coordinate coordinates;
 
     @BeforeEach
     public void setUp(){
-        coordinates = new Coordinates();
+        coordinates = new Coordinate();
     }
 
     @Test

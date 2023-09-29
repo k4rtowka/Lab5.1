@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
@@ -15,23 +14,25 @@ import java.io.PrintStream;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 enum TestEnum {
     FIRST_OPTION,
     SECOND_OPTION,
     THIRD_OPTION
 }
+
 class InputReaderTest {
     //region Поля
     private Random random = new Random();
     private static final String TEST_FILENAME = "test.json";
     private static final int ITEMS_COUNT = 100;
-    CollectionManager manager;
+    CollectionManagerToFile manager;
     InputReader reader;
     //endregion
 
     @BeforeEach
     void setUp() throws Exception {
-        this.manager = new CollectionManager(TEST_FILENAME);
+        this.manager = new CollectionManagerToFile(TEST_FILENAME);
         this.reader = new InputReader(this.manager, System.in, true);
     }
 
@@ -130,8 +131,8 @@ class InputReaderTest {
     @Test
     public void testGetBooleanValue() {
         String expectedValue = "true";
-    SetSystemInStream(expectedValue);
-    Boolean result = reader.GetValue("Enter boolean: ", Boolean.class, false);
+        SetSystemInStream(expectedValue);
+        Boolean result = reader.GetValue("Enter boolean: ", Boolean.class, false);
         assertTrue(result);
     }
 
@@ -151,6 +152,7 @@ class InputReaderTest {
         TestEnum result = reader.GetEnumValue(TestEnum.class, false);
         assertEquals(TestEnum.SECOND_OPTION, result);
     }
+
     @Test
     void getEnumValue_ValidNameInput_ReturnsCorrectEnum() {
         // Пользователь вводит "FIRST_OPTION", ожидается FIRST_OPTION
@@ -186,7 +188,7 @@ class InputReaderTest {
     }
 
     @Test
-    void getChapterValue_InvalidInput_PromptsAgain(){
+    void getChapterValue_InvalidInput_PromptsAgain() {
         SetSystemInStream("First\n1001\nFirst\n2");
         Chapter testChapter = reader.GetChapter();
         assertEquals("First", testChapter.getName());
@@ -198,7 +200,7 @@ class InputReaderTest {
     @Test
     void getCoordinatesValue_ValidXInput_ReturnCorrectCoordinates() {
         SetSystemInStream("4\n2");
-        Coordinates coordinates = reader.GetCoordinates();
+        Coordinate coordinates = reader.GetCoordinates();
         assertEquals(4.0, coordinates.getX());
         assertEquals(2, coordinates.getY());
     }
@@ -206,7 +208,7 @@ class InputReaderTest {
     @Test
     void getCoordinatesValue_InvalidXInput_PromptsAgain() {
         SetSystemInStream("-1000\n4\n5.0\n2");
-        Coordinates coordinates = reader.GetCoordinates();
+        Coordinate coordinates = reader.GetCoordinates();
         assertEquals(5.0, coordinates.getX());
         assertEquals(2, coordinates.getY());
     }
@@ -215,15 +217,19 @@ class InputReaderTest {
     //region SpaceMarine
     @Test
     void getSpaceMarine() {
-        SetSystemInStream("Maren\n4.0\n2\n100\n2\n1\nCHAIN_SWORD\nfirst\n2");
-        SpaceMarine spaceMarine = reader.GetSpaceMarine();
-        assertEquals("Maren", spaceMarine.getName());
-        assertEquals(new Coordinates(4.0,2).toString(), spaceMarine.getCoordinates().toString());
-        assertEquals(100, spaceMarine.getHealth());
-        assertEquals(2, spaceMarine.getHeartCount());
-        assertEquals(AstartesCategory.DREADNOUGHT, spaceMarine.getCategory());
-        assertEquals(MeleeWeapon.CHAIN_SWORD, spaceMarine.getMeleeWeapon());
-        assertEquals(new Chapter("first",2).toString(), spaceMarine.getChapter().toString());
+        try {
+            SetSystemInStream("Maren\n4.0\n2\n100\n2\n1\nCHAIN_SWORD\nfirst\n2");
+            SpaceMarine spaceMarine = reader.GetSpaceMarine();
+            assertEquals("Maren", spaceMarine.getName());
+            assertEquals(new Coordinate(4.0, 2).toString(), spaceMarine.getCoordinates().toString());
+            assertEquals(100, spaceMarine.getHealth());
+            assertEquals(2, spaceMarine.getHeartCount());
+            assertEquals(Category.DREADNOUGHT, spaceMarine.getCategory());
+            assertEquals(WeaponType.CHAIN_SWORD, spaceMarine.getWeaponType());
+            assertEquals(new Chapter("first", 2).toString(), spaceMarine.getChapter().toString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     //endregion
 

@@ -1,10 +1,9 @@
 package Commands;
 
-import Models.AstartesCategory;
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandRemoveGreaterKey extends Command {
-    public CommandRemoveGreaterKey(CollectionManager collectionManager) {
+    public CommandRemoveGreaterKey(CollectionManagerToFile collectionManager) {
         super(Titles.removeGreaterKey, Descriptions.removeGreaterKey, collectionManager, 1);
     }
 

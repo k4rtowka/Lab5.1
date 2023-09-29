@@ -1,10 +1,9 @@
 package Commands;
 
-import Models.AstartesCategory;
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 public class CommandRemoveKey extends Command {
-    public CommandRemoveKey(CollectionManager collectionManager) {
+    public CommandRemoveKey(CollectionManagerToFile collectionManager) {
         super(Titles.removeKey, Descriptions.removeKey, collectionManager, 1);
     }
 

@@ -1,7 +1,7 @@
 package Commands;
 
 import Common.Strings;
-import Models.CollectionManager;
+import Models.CollectionManagerToFile;
 
 import java.io.Serializable;
 
@@ -64,24 +64,24 @@ public abstract class Command implements Serializable {
     /**
      * Объект для управления коллекцией объектов
      */
-    protected transient CollectionManager collectionManager;
+    protected transient CollectionManagerToFile collectionManager;
 
     private Integer expectedParamsCount;
     //endregion
 
     //region Конструкторы
-    public Command(CollectionManager collectionManager) {
+    public Command(CollectionManagerToFile collectionManager) {
         this.name = null;
         this.description = null;
         this.collectionManager = collectionManager;
     }
 
-    public Command(String name, CollectionManager collectionManager) {
+    public Command(String name, CollectionManagerToFile collectionManager) {
         this.name = name;
         this.collectionManager = collectionManager;
     }
 
-    public Command(String name, String description, CollectionManager collectionManager, int expectedParamsCount) {
+    public Command(String name, String description, CollectionManagerToFile collectionManager, int expectedParamsCount) {
         this.name = name;
         this.description = description;
         this.collectionManager = collectionManager;

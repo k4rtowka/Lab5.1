@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @XmlRootElement(name = "coordinates")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Coordinates implements Comparable<Coordinates>, Serializable {
+public class Coordinate implements Comparable<Coordinate>, Serializable {
 
     //region Поля
     /**
@@ -20,6 +20,8 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
      */
     @XmlElement(required = true)
     private Double x;
+
+    private Integer id;
 
     /**
      * Координата Y.
@@ -38,12 +40,18 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
      * @param x координата Х
      * @param y координата Y
      */
-    public Coordinates(Double x, Integer y) {
+    public Coordinate(Double x, Integer y) {
         this.setX(x);
         this.setY(y);
     }
 
-    public Coordinates() {}
+    public Coordinate(Integer id, Double x, Integer y) {
+        this.setId(id);
+        this.setX(x);
+        this.setY(y);
+    }
+
+    public Coordinate() {}
     //endregion
 
     //region Сеттеры
@@ -58,6 +66,10 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         if(x == null || x < -877)
             throw new IllegalArgumentException("X не может быть null или меньше -877");
         this.x = x;
+    }
+
+    public void setId(Integer id){
+        this.id = id;
     }
 
     /**
@@ -84,6 +96,10 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
         return x;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     /**
      * Возвращает координату Y.
      *
@@ -103,7 +119,7 @@ public class Coordinates implements Comparable<Coordinates>, Serializable {
     }
 
     @Override
-    public int compareTo(Coordinates o) {
+    public int compareTo(Coordinate o) {
         //Сравнение по координате Х
         int result = Double.compare(this.x, o.x);
         if (result != 0) return result;

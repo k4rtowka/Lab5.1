@@ -1,6 +1,6 @@
 package Models;
 
-public enum MeleeWeapon
+public enum WeaponType
 {
     CHAIN_SWORD("цепной меч"),
     POWER_SWORD("силовой меч"),
@@ -10,7 +10,7 @@ public enum MeleeWeapon
 
     private String text;
 
-    MeleeWeapon(String text){
+    WeaponType(String text){
         this.text = text;
     }
 
