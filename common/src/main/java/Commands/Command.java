@@ -31,6 +31,8 @@ public abstract class Command implements Serializable {
         public static String countByHeartCount = "count_by_heart_count";
         public static String filterByCategory = "filter_by_category";
         public static String printDescending = "print_descending";
+        public static String login = "login";
+        public static String register = "register";
     }
 
     public static class Descriptions {
@@ -51,6 +53,8 @@ public abstract class Command implements Serializable {
         public static String countByHeartCount = "вывести количество элементов, значение поля heartCount которых равно заданному";
         public static String filterByCategory = "вывести элементы, значение поля category которых равно заданному";
         public static String printDescending = "вывести элементы коллекции в порядке убывания";
+        public static String login = "Войти со своим логином и паролем";
+        public static String register = "Зарегистрироваться";
     }
     //endregion
 

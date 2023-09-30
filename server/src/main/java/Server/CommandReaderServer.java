@@ -75,23 +75,15 @@ public class CommandReaderServer extends CommandReader {
                 this.collectionManager.Save();
                 return currentCommand.Execute(params);
             }
-            if (commandName.equals(Command.Titles.save)) {
+            if (commandName.equals(Command.Titles.save) || commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
                 return currentCommand.Execute();
             }
 
             if (commandName.equals(Command.Titles.executeScript)) {
-//            Thread thread = new Thread(() -> {
-//                try {
-//                    Object obj = currentCommand.Execute(params);
-//                } catch (Exception e) {
-//                    Print(e.getMessage());
-//                }
-//            });
-//            thread.start();
                 this.collectionManager.Save();
                 return currentCommand.Execute(params);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
 
