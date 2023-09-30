@@ -3,10 +3,7 @@ package Server;
 import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
-import Models.CollectionManager;
-import Models.CollectionManagerToFile;
-import Models.CollectionManagerToSQL;
-import Models.Data;
+import Models.*;
 
 import java.io.*;
 import java.net.*;
@@ -19,7 +16,7 @@ import java.util.concurrent.ForkJoinPool;
 public class TCPServerMultiThread extends TCPUnit {
     //region Поля
 
-    private ConcurrentHashMap<SocketAddress, Integer> clientAddresses;
+    private ConcurrentHashMap<Integer, ClientInfo> clientAddresses;
     private ExecutorService readPool;
     private ExecutorService processPool;
     private ForkJoinPool sendPool;
@@ -81,6 +78,9 @@ public class TCPServerMultiThread extends TCPUnit {
 
     private Object Receive(Socket client, Data data) {
         try {
+            ClientInfo currentClientInfo = null;
+            if (data.user != null)
+                currentClientInfo = this.clientAddresses.get(data.user.getId());
             InetAddress clientAddress = client.getInetAddress();
             int clientPort = client.getPort();
             Print(String.format("Получена команда от клиента %s(%d):\n%s", clientAddress, clientPort, data));
@@ -90,8 +90,22 @@ public class TCPServerMultiThread extends TCPUnit {
             if (data.command.getName().equals(Command.Titles.save)) {
                 return "Команда запрещена на стороне клиента";
             }
-            synchronized (collectionManager) {
-                return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+            if ((currentClientInfo != null)
+                   // && currentClientInfo.isAuthorized()
+            ) {
+                synchronized (collectionManager) {
+                    return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+                }
+            } else {
+                if (data.command.getName().equals(Command.Titles.login) ||
+                        data.command.getName().equals(Command.Titles.register) ||
+                        data.command.getName().equals(Command.Titles.executeScript)) {
+                    synchronized (collectionManager) {
+                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+                    }
+                } else {
+                    return "Вы не авторизованы, используйте команды register или login.";
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -117,39 +131,56 @@ public class TCPServerMultiThread extends TCPUnit {
                 //endregion
 
                 //region Обработка сообщений от клиентов
-                Socket client = serverSocket.accept();  // Get the client socket
-                readPool.submit(() -> {
-                    try {
-                        InetAddress clientAddress = client.getInetAddress();
-                        int clientPort = client.getPort();
-                        SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
-                        clientAddresses.put(clientSocketAddress, clientAddresses.size() + 1);
+                try {
+                    Socket client = serverSocket.accept();  // Get the client socket
+                    readPool.submit(() -> {
+                        try {
+                            InetAddress clientAddress = client.getInetAddress();
+                            int clientPort = client.getPort();
+                            SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
 
-                        ObjectInputStream input = new ObjectInputStream(client.getInputStream());
-                        Data clientData = (Data) input.readObject();
+                            ObjectInputStream input = new ObjectInputStream(client.getInputStream());
+                            Data clientData = (Data) input.readObject();
+                            if (clientData != null && clientData.user != null)
+                                clientAddresses.put(clientData.user.getId(), new ClientInfo(clientAddresses.size() + 1));
 
-                        processPool.submit(() -> {
-                            Object result = Receive(client, clientData);
 
-                            sendPool.submit(() -> {
-                                try {
-                                    ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
-                                    Send(output, result);
-                                    // Move input.close() here
-                                    input.close();  // Close the input stream
-                                    output.close();  // Close the output stream
-                                } catch (IOException e) {
-                                    Print("Error sending data to client: " + e.getMessage());
+                            processPool.submit(() -> {
+                                Object result = Receive(client, clientData);
+                                synchronized (clientAddresses) {
+                                    if (result != null && result.getClass() == User.class) {
+                                        ClientInfo clientInfo = this.clientAddresses.get(result);
+                                        if (clientInfo == null)
+                                            clientAddresses.put(((User) result).getId(), new ClientInfo(clientAddresses.size() + 1));
+                                        clientInfo = this.clientAddresses.get(((User) result).getId());
+                                        clientInfo.setAuthorized(true);
+                                        clientInfo.setIdUser(((User) result).getId());
+                                        clientAddresses.put(((User) result).getId(), clientInfo);
+                                    }
                                 }
+                                sendPool.submit(() -> {
+                                    try {
+                                        ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
+                                        Send(output, result);
+                                        // Move input.close() here
+                                        input.close();  // Close the input stream
+                                        output.close();  // Close the output stream
+                                    } catch (IOException e) {
+                                        Print("Error sending data to client: " + e.getMessage());
+                                    }
+                                });
+
                             });
 
-                        });
-
-                    } catch (IOException | ClassNotFoundException e) {
-                        Print("Error reading data from client: " + e.getMessage());
-                    }
-                });
-
+                        } catch (IOException | ClassNotFoundException e) {
+                            Print("Error reading data from client: " + e.getMessage());
+                        }
+                    });
+                } catch (Exception ex) {
+                    Print(ex);
+                    Thread.sleep(1000);
+                    continue;
+                }
                 //endregion
             }
 

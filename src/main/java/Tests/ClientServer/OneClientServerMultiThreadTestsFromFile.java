@@ -3,7 +3,7 @@ package Tests.ClientServer;
 import Tests.Common.CommonTest;
 import org.junit.jupiter.api.Test;
 
-public class OneClientServerMultiThreadTests extends CommonTest {
+public class OneClientServerMultiThreadTestsFromFile extends CommonTest {
     @Test
     public void TestSendHelpCommand() throws InterruptedException {
         int port = this.GetRandomRegisteredPort();
@@ -14,15 +14,7 @@ public class OneClientServerMultiThreadTests extends CommonTest {
         clientThread.join();
     }
 
-    @Test
-    public void TestSendHelpCommandSQL() throws InterruptedException {
-        int port = this.GetRandomRegisteredPort();
-        Thread serverThread = this.CreateMultiThreadServerFromSQL("wait 1000\nexit\n", port);
-        Thread clientThread = this.CreateClient("help\nshow\nexit", port);
 
-        serverThread.join();
-        clientThread.join();
-    }
 
     @Test
     public void TestExecuteInsert() throws InterruptedException {

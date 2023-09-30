@@ -8,6 +8,7 @@ import java.io.Serializable;
  * Класс Data содержит команды и данные для пересылки информации между сервером и клиентом.
  */
 public class Data implements Serializable {
+    public User user;
     /**
      * Команда, которая будет выполнена на сервере или клиенте.
      */

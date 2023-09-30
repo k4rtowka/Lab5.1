@@ -17,6 +17,8 @@ public class CommandHelp extends Command {
                 0);
         this.commands = new ArrayList<>();
         commands.add(this);
+        commands.add(new CommandLogin(this.collectionManager));
+        commands.add(new CommandRegister(this.collectionManager));
         commands.add(new CommandInfo(this.collectionManager));
         commands.add(new CommandShow(this.collectionManager));
         commands.add(new CommandInsert(this.collectionManager));
@@ -57,7 +59,7 @@ public class CommandHelp extends Command {
         StringBuilder stringBuilder = new StringBuilder();
         if (this.CheckParams(params, 0)) {
             for (Command command : this.commands) {
-                if(command.getName().compareTo(Titles.save) == 0 || command.getName().compareTo(Titles.wait) == 0)
+                if (command.getName().compareTo(Titles.save) == 0 || command.getName().compareTo(Titles.wait) == 0)
                     continue;
                 stringBuilder.append(command);
                 stringBuilder.append("\n");

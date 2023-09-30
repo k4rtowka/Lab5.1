@@ -37,7 +37,13 @@ public class CommandReaderClient extends CommandReader {
     @Override
     public Object Execute(String commandName, Object[] params) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
-
+        if (commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
+            this.UpdateReader();
+            return new Data(currentCommand, new Object[]{
+                    this.inputReader.GetValue("Введите логин", String.class, false),
+                    this.inputReader.GetValue("Введите пароль", String.class, false)}
+            );
+        }
         if (commandName.equals(Command.Titles.exit)) {
             currentCommand.Execute();
             return null;

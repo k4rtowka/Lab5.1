@@ -75,8 +75,11 @@ public class CommandReaderServer extends CommandReader {
                 this.collectionManager.Save();
                 return currentCommand.Execute(params);
             }
-            if (commandName.equals(Command.Titles.save) || commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
+            if (commandName.equals(Command.Titles.save)) {
                 return currentCommand.Execute();
+            }
+            if (commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
+                return currentCommand.Execute(params);
             }
 
             if (commandName.equals(Command.Titles.executeScript)) {

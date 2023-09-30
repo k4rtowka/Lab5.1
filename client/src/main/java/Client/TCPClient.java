@@ -4,6 +4,7 @@ import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
 import Models.Data;
+import Models.User;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -20,16 +21,15 @@ public class TCPClient extends TCPUnit {
     private CommandReaderClient commandReader;
     private final String host;
     private SocketChannel socketChannel;
-
+    private User currentUser;
     /**
      * Задержка перед повторной отправкой запросов
      */
-    private final int msSleepTimeout = 1500;
-
+    private final int msSleepTimeout = 5000;
     /**
      * Таймаут ожидания сервера
      */
-    private final int msTimeout = 3000;
+    private final int msTimeout = 5000;
     //endregion
 
     //region Конструкторы
@@ -53,6 +53,7 @@ public class TCPClient extends TCPUnit {
      * @throws IOException
      */
     private void Send(SocketChannel socketChannel, Data data) throws IOException {
+        data.user = this.currentUser;
         // Сериализация объекта
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -134,8 +135,10 @@ public class TCPClient extends TCPUnit {
         Print("Клиент запущен...");
         while (this.isStarted) {
             try {
+                //if (this.socketChannel == null || !this.socketChannel.isConnected()) {
                 this.socketChannel = SocketChannel.open(new InetSocketAddress(host, port));
                 this.socketChannel.configureBlocking(false);
+                //}
             } catch (ConnectException ex) {
                 Print("Ошибка подключения, повторное подключение");
                 Thread.sleep(this.msSleepTimeout);
@@ -155,8 +158,15 @@ public class TCPClient extends TCPUnit {
                     System.arraycopy(words, 1, params, 0, words.length - 1);
                     Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
                 }
-                Print("Получен ответ от сервера:");
-                Print(Receive(socketChannel));
+                Object serverResponse = Receive(socketChannel);
+                if (serverResponse != null && serverResponse.getClass() == User.class) {
+                    this.currentUser = (User) serverResponse;
+                    System.out.println("Вы авторизованы на сервере!");
+                } else {
+                    Print("Получен ответ от сервера:");
+                    Print(serverResponse);
+                }
+
             } catch (Exception ex) {
                 this.Print(ex);
             }
