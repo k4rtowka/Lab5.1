@@ -1,5 +1,5 @@
 package Common;
 
 public class Settings {
-    public static Boolean isDebug = true;
+    public static Boolean isDebug = false;
 }

@@ -1,8 +1,6 @@
--- Create the sequence
 DROP SEQUENCE IF EXISTS marines_id_seq CASCADE;
 CREATE SEQUENCE marines_id_seq;
 
--- Create the tables
 DROP TABLE IF EXISTS Coordinates CASCADE;
 CREATE TABLE Coordinates
 (
@@ -36,7 +34,6 @@ CREATE TABLE Categories
     title varchar(255) NOT NULL UNIQUE
 );
 
--- Create the table Users
 DROP TABLE IF EXISTS Users CASCADE;
 CREATE TABLE Users
 (
@@ -61,7 +58,6 @@ CREATE TABLE Marines
 );
 
 
--- Insert Enum values into WeaponTypes table
 INSERT INTO WeaponTypes (title)
 VALUES ('CHAIN_SWORD'),
        ('POWER_SWORD'),
@@ -69,7 +65,6 @@ VALUES ('CHAIN_SWORD'),
 	   ('POWER_BLADE'),
        ('POWER_FIST');
 
--- Insert Enum values into Categories table
 INSERT INTO Categories (title)
 VALUES ('SCOUT'),
        ('DREADNOUGHT'),

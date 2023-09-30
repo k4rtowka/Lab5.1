@@ -30,10 +30,10 @@ public class TCPServerMultiThread extends TCPUnit {
     //region Конструкторы
     public TCPServerMultiThread(CollectionManager collectionManager, InputStream inputStream, int port) {
         super(inputStream, port, false, Settings.isDebug);
-        this.readPool = Executors.newFixedThreadPool(10);  // Fixed thread pool for reading requests
-        this.processPool = Executors.newCachedThreadPool();  // Cached thread pool for processing requests
-        this.sendPool = new ForkJoinPool();  // ForkJoinPool for sending responses
-        this.clientAddresses = new ConcurrentHashMap<>();  // Thread-safe map
+        this.readPool = Executors.newFixedThreadPool(10);
+        this.processPool = Executors.newCachedThreadPool();
+        this.sendPool = new ForkJoinPool();
+        this.clientAddresses = new ConcurrentHashMap<>();
         try {
             if (collectionManager == null)
                 throw new Exception("Не передан объект для управления коллекцией!");
@@ -46,7 +46,6 @@ public class TCPServerMultiThread extends TCPUnit {
     }
 
     public TCPServerMultiThread() throws Exception {
-        //this(new CollectionManagerToSQL("jdbc:postgresql://pg:2222/studs", "s388132", "RcCd,8731" , 11), System.in, 8080);
     }
     //endregion
 
