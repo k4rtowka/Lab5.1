@@ -328,6 +328,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
         try {
             result.append("{");
             result.append("\"SpaceMarine id\": ").append(id).append(", ");
+            result.append("\"User id\": ").append(this.userId).append(", ");
             result.append("\"SpaceMarine name\": \"").append(name).append("\", ");
             result.append("\"SpaceMarine coordinates\": ").append(coordinate).append(", ");
             result.append("\"SpaceMarine creation date\": \"").append(creationDate).append("\", \n");

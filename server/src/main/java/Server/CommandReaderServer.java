@@ -65,11 +65,16 @@ public class CommandReaderServer extends CommandReader {
                 this.collectionManager.Save();
                 return currentCommand.Execute(null);
             }
-            if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.removeKey)
+            if (commandName.equals(Command.Titles.removeKey)
                     || commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeLower)
                     || commandName.equals(Command.Titles.countByHeartCount)) {
                 this.collectionManager.Save();
-                return currentCommand.Execute(params[0]);
+                return currentCommand.Execute(params);
+            }
+            if (commandName.equals(Command.Titles.insert)) {
+                Object result = currentCommand.Execute(params);
+                this.collectionManager.Save();
+                return result;
             }
             if (commandName.equals(Command.Titles.replaceIfLower) || commandName.equals(Command.Titles.update)) {
                 this.collectionManager.Save();

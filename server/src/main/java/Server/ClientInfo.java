@@ -36,12 +36,14 @@ public class ClientInfo {
         isAuthorized = authorized;
     }
 
-    public int isIdUser() {
+    public int getIdUser() {
         return idUser;
     }
 
     public void setIdUser(int idUser) {
         this.idUser = idUser;
     }
+
+
     //endregion
 }

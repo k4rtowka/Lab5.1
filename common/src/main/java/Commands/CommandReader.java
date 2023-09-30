@@ -156,7 +156,7 @@ public class CommandReader {
         //region Возвращают число
         if (commandName.equals(Command.Titles.insert)) {
             this.UpdateReader();
-            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine());
+            Object result = currentCommand.Execute(new Object[]{this.inputReader.GetSpaceMarine(), params});
             if (result == null)
                 return "Не удалось добавить объект";
             else

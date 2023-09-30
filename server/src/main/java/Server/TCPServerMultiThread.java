@@ -91,10 +91,17 @@ public class TCPServerMultiThread extends TCPUnit {
                 return "Команда запрещена на стороне клиента";
             }
             if ((currentClientInfo != null)
-                   // && currentClientInfo.isAuthorized()
+                // && currentClientInfo.isAuthorized()
             ) {
                 synchronized (collectionManager) {
-                    return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+                    if (data.command.getName().equals(Command.Titles.insert))
+                        return this.commandReader.Execute(data.command.getName(),
+                                new Object[]{
+                                        data.data[0], data.user.getId()
+                                }
+                        );
+                    else
+                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
                 }
             } else {
                 if (data.command.getName().equals(Command.Titles.login) ||
