@@ -111,9 +111,71 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
     public void Connect() throws SQLException {
         this.Connect(dbURL, dbUsername, dbPassword);
     }
-
     public void Connect(String dataBaseURL, String login, String password) throws SQLException {
         this.connection = DriverManager.getConnection(dataBaseURL, login, password);
+    }
+    /**
+     * Аутентифицирует пользователя по заданному логину и паролю.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Аутентифицированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе аутентификации.
+     */
+    public User Login(String login, String password) throws Exception {
+        User user = GetUser(login, password);
+        if (user == null) {
+            throw new Exception("Пользователь не найден!");
+        }
+        return user;
+    }
+    /**
+     * Регистрирует нового пользователя с заданным логином и паролем.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Зарегистрированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе регистрации.
+     */
+    public User Register(String login, String password) throws Exception {
+        User user = null;
+        PreparedStatement statement = null;
+
+        if (connection == null) {
+            throw new Exception("Не установлено подключение к серверу!");
+        }
+
+        // Hash the password using SHA-224 algorithm
+        String hashedPassword = GetSHA224(password);
+
+        // Prepare the SQL statement
+        String sql = "INSERT INTO Users (login, password) VALUES (?, ?)";
+        statement = connection.prepareStatement(sql);
+        statement.setString(1, login);
+        statement.setString(2, hashedPassword);
+
+        // Execute the query
+        int rowsAffected = statement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            // Get the generated user ID
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1);
+                // Create a new User object
+                user = new User(userId, login, hashedPassword);
+            }
+        }
+
+        // Close the resources
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+
+        return user;
     }
     //endregion
 
@@ -295,7 +357,6 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
     //endregion
 
     //region Сохранение данных в БД
-
     public int saveCoordinate(Coordinate coordinate) throws SQLException {
         String query = "INSERT INTO Coordinates (x, y) VALUES (?, ?) ON CONFLICT (x, y) DO UPDATE SET x = Coordinates.x, y = Coordinates.y RETURNING id";
 
@@ -412,74 +473,6 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
         }
         return true;
     }
-
-
-    /**
-     * Аутентифицирует пользователя по заданному логину и паролю.
-     *
-     * @param login    Логин пользователя.
-     * @param password Пароль пользователя.
-     * @return Аутентифицированный пользователь.
-     * @throws Exception Если произошла ошибка в процессе аутентификации.
-     */
-    public User Login(String login, String password) throws Exception {
-        User user = GetUser(login, password);
-        if (user == null) {
-            throw new Exception("Пользователь не найден!");
-        }
-        return user;
-    }
-
-    /**
-     * Регистрирует нового пользователя с заданным логином и паролем.
-     *
-     * @param login    Логин пользователя.
-     * @param password Пароль пользователя.
-     * @return Зарегистрированный пользователь.
-     * @throws Exception Если произошла ошибка в процессе регистрации.
-     */
-    public User Register(String login, String password) throws Exception {
-        User user = null;
-        PreparedStatement statement = null;
-
-        if (connection == null) {
-            throw new Exception("Не установлено подключение к серверу!");
-        }
-
-        // Hash the password using SHA-224 algorithm
-        String hashedPassword = GetSHA224(password);
-
-        // Prepare the SQL statement
-        String sql = "INSERT INTO Users (login, password) VALUES (?, ?)";
-        statement = connection.prepareStatement(sql);
-        statement.setString(1, login);
-        statement.setString(2, hashedPassword);
-
-        // Execute the query
-        int rowsAffected = statement.executeUpdate();
-
-        if (rowsAffected > 0) {
-            // Get the generated user ID
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int userId = generatedKeys.getInt(1);
-                // Create a new User object
-                user = new User(userId, login, hashedPassword);
-            }
-        }
-
-        // Close the resources
-        if (statement != null) {
-            statement.close();
-        }
-        if (connection != null) {
-            connection.close();
-        }
-
-        return user;
-    }
-
-
     //endregion
 
     //endregion

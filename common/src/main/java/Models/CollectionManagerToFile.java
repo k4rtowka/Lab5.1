@@ -89,6 +89,32 @@ public class CollectionManagerToFile extends CollectionManager
         return true;
     }
 
+    /**
+     * Аутентифицирует пользователя по заданному логину и паролю.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Аутентифицированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе аутентификации.
+     */
+    @Override
+    public User Login(String login, String password) throws Exception {
+        return null;
+    }
+
+    /**
+     * Регистрирует нового пользователя с заданным логином и паролем.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Зарегистрированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе регистрации.
+     */
+    @Override
+    public User Register(String login, String password) throws Exception {
+        return null;
+    }
+
 //    @Override
 //    public int compareTo(CollectionManagerToFile other) {
 //        int result = initializationDate.compareTo(other.initializationDate);

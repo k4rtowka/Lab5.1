@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @XmlRootElement(name = "CollectionManagerToFile")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CollectionManager implements Comparable<CollectionManager> {
+public abstract class CollectionManager implements Comparable<CollectionManager> {
 
     //region Поля
     /**
@@ -302,6 +302,26 @@ public class CollectionManager implements Comparable<CollectionManager> {
     public boolean Load(int idUser) throws Exception {
         throw new Exception("Метод не реализован");
     }
+
+    /**
+     * Аутентифицирует пользователя по заданному логину и паролю.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Аутентифицированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе аутентификации.
+     */
+    public abstract User Login(String login, String password) throws Exception;
+
+    /**
+     * Регистрирует нового пользователя с заданным логином и паролем.
+     *
+     * @param login    Логин пользователя.
+     * @param password Пароль пользователя.
+     * @return Зарегистрированный пользователь.
+     * @throws Exception Если произошла ошибка в процессе регистрации.
+     */
+    public abstract User Register(String login, String password) throws Exception;
 
     @Override
     public int compareTo(CollectionManager other) {
