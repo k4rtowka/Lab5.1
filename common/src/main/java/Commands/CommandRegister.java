@@ -1,6 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
+import Models.Data;
 
 
 public class CommandRegister extends Command {
@@ -9,9 +11,9 @@ public class CommandRegister extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckType(params[0], String.class) && this.CheckType(params[1], String.class))
-            return collectionManager.Register((String) params[0], (String) params[1]);
+    protected Object execute(Data data) throws Exception {
+        if (this.CheckType(data.params[0], String.class) && this.CheckType(data.params[1], String.class))
+            return collectionManager.Register((String) data.params[0], (String) data.params[1]);
         else
             return null;
     }

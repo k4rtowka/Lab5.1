@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandExit extends Command {
     public CommandExit(CollectionManager collectionManager) {
@@ -9,9 +10,9 @@ public class CommandExit extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (params[0] != null && params[0] instanceof Thread) {
-            Thread currentThread = (Thread) params[0];
+    protected Object execute(Data data) throws Exception {
+        if (data.params[0] != null && data.params[0] instanceof Thread) {
+            Thread currentThread = (Thread) data.params[0];
             currentThread.interrupt();
         }
         return "Выход из программы!";

@@ -2,8 +2,7 @@ package Commands;
 
 import Common.Strings;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
-import Models.CollectionManagerToSQL;
+import Models.Data;
 
 import java.io.Serializable;
 
@@ -174,25 +173,15 @@ public abstract class Command implements Serializable {
      * @param params параметры команды
      * @return результат выполнения команды, true - если элемент добавлен
      */
-    public Object Execute(Object[] params) throws Exception {
+    public Object Execute(Data data) throws Exception {
         if (this.collectionManager == null)
-            throw new Exception("Не объект управления коллекцией отсутствует");
-        if (this.CheckParams(params, this.expectedParamsCount)) {
-            return this.execute(params);
+            throw new Exception("Объект управления коллекцией отсутствует");
+        if (this.CheckParams(data.params, this.expectedParamsCount)) {
+            return this.execute(data);
         }
         return null;
     }
 
-    /**
-     * Выполняет команду с указанным параметром.
-     *
-     * @param param параметр команды
-     * @return результат выполнения команды
-     * @throws Exception если произошла ошибка при выполнении команды
-     */
-    public Object Execute(Object param) throws Exception {
-        return this.Execute(new Object[]{param});
-    }
 
     /**
      * Выполняет команду без параметров
@@ -211,7 +200,7 @@ public abstract class Command implements Serializable {
      * @param params параметры команды
      * @return результат выполнения команды
      */
-    protected abstract Object execute(Object[] params) throws Exception;
+    protected abstract Object execute(Data data) throws Exception;
     //endregion
 
 }

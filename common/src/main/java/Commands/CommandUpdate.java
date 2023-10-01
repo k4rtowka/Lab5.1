@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 import Models.SpaceMarine;
 
 public class CommandUpdate extends Command {
@@ -10,12 +11,12 @@ public class CommandUpdate extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 2)
-                && this.CheckType(params[0], Integer.class)
-                && this.CheckType(params[1], SpaceMarine.class)
+    protected Object execute(Data data) throws Exception {
+        if (this.CheckParams(data.params, 2)
+                && this.CheckType(data.params[0], Integer.class)
+                && this.CheckType(data.params[1], SpaceMarine.class)
         ) {
-            return collectionManager.update(Integer.parseInt(params[0].toString()), (SpaceMarine) params[1]);
+            return collectionManager.update(Integer.parseInt(data.params[0].toString()), (SpaceMarine) data.params[1]);
         }
         return null;
     }

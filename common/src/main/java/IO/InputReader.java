@@ -101,11 +101,14 @@ public class InputReader {
     private <T> T GetValue(String message, String errorMessage, Function<String, T> parser, boolean canBeNull) {
         try {
             Print(message);
-
+            if (!this.scanner.hasNextLine()) {
+                if (this.isReadFromFile)
+                    return null;
+                throw new NoSuchElementException("No more lines in the input");
+            }
             String value = this.scanner.nextLine();
             if (canBeNull && (value == null || value.isEmpty() || value.isBlank()))
                 return null;
-
             return parser.apply(value);
         } catch (Exception e) {
             Print(errorMessage != null ? errorMessage : e.getMessage());
@@ -114,6 +117,7 @@ public class InputReader {
             return GetValue(message, errorMessage, parser, canBeNull);
         }
     }
+
 
     /**
      * Получить значение.

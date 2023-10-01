@@ -28,7 +28,7 @@ public class OneClientServerMultiThreadTestsFromSQL extends CommonTest {
     public void TestSendHelpCommandSQL_Authorized() throws InterruptedException {
         int port = this.GetRandomRegisteredPort();
         Thread serverThread = this.CreateMultiThreadServerFromSQL("wait 1000\nexit\n", port);
-        Thread clientThread = this.CreateClient("login\nUser1\n12345678\nhelp\nshow\nexit", port);
+        Thread clientThread = this.CreateClient("login\nUser1\n12345678\nhelp\nshow\nexit\n", port);
 
         serverThread.join();
         clientThread.join();

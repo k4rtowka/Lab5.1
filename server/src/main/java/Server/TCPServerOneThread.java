@@ -43,25 +43,6 @@ public class TCPServerOneThread extends TCPUnit {
     //region Методы
 
 
-    /**
-     * Метод для проверки наличия файла и его создания при отсутствии.
-     *
-     * @param fileName Имя файла.
-     * @throws IOException В случае ошибок ввода/вывода.
-     */
-    public void CheckFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            System.out.println("Файл " + fileName + " уже существует.");
-        } else {
-            if (file.createNewFile()) {
-                System.out.println("Файл " + fileName + " был успешно создан.");
-            } else {
-                System.out.println("Невозможно создать файл " + fileName);
-            }
-        }
-    }
-
     private Object Receive(Socket client, Data data) {
         try {
             InetAddress clientAddress = client.getInetAddress();
@@ -73,7 +54,7 @@ public class TCPServerOneThread extends TCPUnit {
             if (data.command.getName().equals(Command.Titles.save)) {
                 return "Команда запрещена на стороне клиента";
             }
-            Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+            Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
             //this.commandReader.Execute(Command.Titles.save,new Object[]{});
             return result;
         } catch (Exception e) {

@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 import Models.SpaceMarine;
 
 public class CommandRemoveLower extends Command {
@@ -10,9 +11,9 @@ public class CommandRemoveLower extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 1) && this.CheckType(params[0], SpaceMarine.class)) {
-            return collectionManager.removeLower((SpaceMarine) params[0]);
+    protected Object execute(Data data) throws Exception {
+        if (this.CheckType(data.params[0], SpaceMarine.class)) {
+            return collectionManager.removeLower((SpaceMarine) data.params[0]);
         }
         return null;
     }

@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandSave extends Command {
     public CommandSave(CollectionManager collectionManager) {
@@ -9,13 +10,9 @@ public class CommandSave extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 0)) {
-            collectionManager.ClearExecuteScripts();
-            collectionManager.Save();
-
-            return true;
-        }
-        return null;
+    protected Object execute(Data data) throws Exception {
+        collectionManager.ClearExecuteScripts();
+        collectionManager.Save();
+        return true;
     }
 }

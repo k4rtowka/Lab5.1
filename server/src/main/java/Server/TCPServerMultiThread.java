@@ -1,6 +1,7 @@
 package Server;
 
 import Commands.Command;
+import Common.UserInfo;
 import Common.Settings;
 import Common.TCPUnit;
 import Models.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.ForkJoinPool;
 public class TCPServerMultiThread extends TCPUnit {
     //region Поля
 
-    private ConcurrentHashMap<Integer, ClientInfo> clientAddresses;
+    private ConcurrentHashMap<Integer, UserInfo> clientAddresses;
     private ExecutorService readPool;
     private ExecutorService processPool;
     private ForkJoinPool sendPool;
@@ -45,30 +46,14 @@ public class TCPServerMultiThread extends TCPUnit {
         }
     }
 
+
     public TCPServerMultiThread() throws Exception {
+        this(new CollectionManagerToSQL(DB_URL, DB_USERNAME, DB_PASSWORD, -1), System.in, 8080);
     }
     //endregion
 
     //region Методы
 
-    /**
-     * Метод для проверки наличия файла и его создания при отсутствии.
-     *
-     * @param fileName Имя файла.
-     * @throws IOException В случае ошибок ввода/вывода.
-     */
-    public void CheckFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            System.out.println("Файл " + fileName + " уже существует.");
-        } else {
-            if (file.createNewFile()) {
-                System.out.println("Файл " + fileName + " был успешно создан.");
-            } else {
-                System.out.println("Невозможно создать файл " + fileName);
-            }
-        }
-    }
 
     private void Send(ObjectOutputStream output, Object data) throws IOException {
         output.writeObject(data);
@@ -77,7 +62,7 @@ public class TCPServerMultiThread extends TCPUnit {
 
     private Object Receive(Socket client, Data data) {
         try {
-            ClientInfo currentClientInfo = null;
+            UserInfo currentClientInfo = null;
             if (data.user != null)
                 currentClientInfo = this.clientAddresses.get(data.user.getId());
             InetAddress clientAddress = client.getInetAddress();
@@ -96,18 +81,18 @@ public class TCPServerMultiThread extends TCPUnit {
                     if (data.command.getName().equals(Command.Titles.insert))
                         return this.commandReader.Execute(data.command.getName(),
                                 new Object[]{
-                                        data.data[0], data.user.getId()
+                                        data.params[0], data.user.getId()
                                 }
                         );
                     else
-                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
                 }
             } else {
                 if (data.command.getName().equals(Command.Titles.login) ||
                         data.command.getName().equals(Command.Titles.register) ||
                         data.command.getName().equals(Command.Titles.executeScript)) {
                     synchronized (collectionManager) {
-                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.data);
+                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
                     }
                 } else {
                     return "Вы не авторизованы, используйте команды register или login.";
@@ -148,16 +133,16 @@ public class TCPServerMultiThread extends TCPUnit {
                             ObjectInputStream input = new ObjectInputStream(client.getInputStream());
                             Data clientData = (Data) input.readObject();
                             if (clientData != null && clientData.user != null)
-                                clientAddresses.put(clientData.user.getId(), new ClientInfo(clientAddresses.size() + 1));
+                                clientAddresses.put(clientData.user.getId(), new UserInfo(clientAddresses.size() + 1));
 
 
                             processPool.submit(() -> {
                                 Object result = Receive(client, clientData);
                                 synchronized (clientAddresses) {
                                     if (result != null && result.getClass() == User.class) {
-                                        ClientInfo clientInfo = this.clientAddresses.get(result);
+                                        UserInfo clientInfo = this.clientAddresses.get(result);
                                         if (clientInfo == null)
-                                            clientAddresses.put(((User) result).getId(), new ClientInfo(clientAddresses.size() + 1));
+                                            clientAddresses.put(((User) result).getId(), new UserInfo(clientAddresses.size() + 1));
                                         clientInfo = this.clientAddresses.get(((User) result).getId());
                                         clientInfo.setAuthorized(true);
                                         clientInfo.setIdUser(((User) result).getId());

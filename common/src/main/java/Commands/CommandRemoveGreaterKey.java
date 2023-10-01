@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandRemoveGreaterKey extends Command {
     public CommandRemoveGreaterKey(CollectionManager collectionManager) {
@@ -9,9 +10,9 @@ public class CommandRemoveGreaterKey extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
-            return collectionManager.removeGreaterKey(Integer.parseInt(params[0].toString()));
+    protected Object execute(Data data) throws Exception {
+        if (this.CheckType(data.params[0], Integer.class)) {
+            return collectionManager.removeGreaterKey(Integer.parseInt(data.params[0].toString()));
         }
         return null;
     }

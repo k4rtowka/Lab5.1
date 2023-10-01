@@ -1,21 +1,19 @@
-package Server;
+package Common;
 
-public class ClientInfo {
+public class UserInfo {
     //region Поля
     private int id;
     private boolean isAuthorized;
-    private int idUser;
     //endregion
 
     //region Конструкторы
-    public ClientInfo(int id, boolean isAuthorized, int idUser) {
+    public UserInfo(int id, boolean isAuthorized) {
         this.id = id;
         this.isAuthorized = isAuthorized;
-        this.idUser = idUser;
     }
 
-    public ClientInfo(int id) {
-        this(id, false, -1);
+    public UserInfo(int id) {
+        this(id, false);
     }
     //endregion
 
@@ -35,15 +33,6 @@ public class ClientInfo {
     public void setAuthorized(boolean authorized) {
         isAuthorized = authorized;
     }
-
-    public int getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
-
 
     //endregion
 }

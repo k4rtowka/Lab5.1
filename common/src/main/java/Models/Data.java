@@ -1,6 +1,7 @@
 package Models;
 
 import Commands.Command;
+import Common.UserInfo;
 
 import java.io.Serializable;
 
@@ -8,7 +9,10 @@ import java.io.Serializable;
  * Класс Data содержит команды и данные для пересылки информации между сервером и клиентом.
  */
 public class Data implements Serializable {
-    public User user;
+    /**
+     * Информация о пользователе
+     */
+    public UserInfo userInfo;
     /**
      * Команда, которая будет выполнена на сервере или клиенте.
      */
@@ -16,7 +20,7 @@ public class Data implements Serializable {
     /**
      * Данные, связанные с командой.
      */
-    public Object[] data;
+    public Object[] params;
 
     /**
      * Конструктор для создания объекта Data с заданной командой и данными.
@@ -26,7 +30,7 @@ public class Data implements Serializable {
      */
     public Data(Command command, Object[] data) {
         this.command = command;
-        this.data = data;
+        this.params = data;
     }
 
     /**
@@ -37,7 +41,7 @@ public class Data implements Serializable {
      */
     public Data(Command command, Object data) {
         this.command = command;
-        this.data = new Object[]{data};
+        this.params = new Object[]{data};
     }
 
     /**
@@ -49,7 +53,7 @@ public class Data implements Serializable {
     public String toString() {
         return "Data{" +
                 "command=" + command +
-                ", data=" + java.util.Arrays.toString(data) +
+                ", data=" + java.util.Arrays.toString(params) +
                 '}';
     }
 }

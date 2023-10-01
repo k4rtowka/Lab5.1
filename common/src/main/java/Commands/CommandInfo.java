@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandInfo extends Command {
 
@@ -16,10 +17,7 @@ public class CommandInfo extends Command {
      * @return результат выполнения команды
      */
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if(this.CheckParams(params,0)){
-            return this.collectionManager.info();
-        }
-        return null;
+    protected Object execute(Data data) throws Exception {
+        return this.collectionManager.info();
     }
 }

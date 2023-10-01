@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandShow extends Command {
     public CommandShow(CollectionManager collectionManager) {
@@ -9,11 +10,7 @@ public class CommandShow extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if(this.CheckParams(params, 0)){
-            return collectionManager.show();
-
-        }
-        return null;
+    protected Object execute(Data data) throws Exception {
+        return collectionManager.show();
     }
 }

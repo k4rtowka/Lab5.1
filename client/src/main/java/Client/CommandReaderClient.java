@@ -2,6 +2,7 @@ package Client;
 
 import Commands.Command;
 import Commands.CommandReader;
+import Common.UserInfo;
 import Models.Category;
 import Models.Data;
 
@@ -35,7 +36,7 @@ public class CommandReaderClient extends CommandReader {
      * @throws Exception
      */
     @Override
-    public Object Execute(String commandName, Object[] params) throws Exception {
+    public Object Execute(String commandName, Object[] params, UserInfo clientInfo) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
         if (commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
             this.UpdateReader();

@@ -1,5 +1,6 @@
 package Commands;
 
+import Common.UserInfo;
 import IO.InputReader;
 import Models.*;
 
@@ -38,6 +39,11 @@ public class CommandReader {
      * Буфер для хранения ответов команд
      */
     private String commandsBuffer;
+
+    /**
+     * Текущие данные о клиенте
+     */
+    protected UserInfo clientInfo;
     //endregion
 
     //region Конструкторы
@@ -58,15 +64,34 @@ public class CommandReader {
     }
 
     //endregion
+
+    //region Сеттеры/Геттеры
+    public void SetClientInfo(UserInfo clientInfo) {
+        this.clientInfo = clientInfo;
+    }
+
+    public UserInfo GetClientInfo() {
+        return this.clientInfo;
+    }
+    //endregion
+
+    //region Методы
+
+    /**
+     * Очистка вывода команд
+     */
     void ClearCommandsBuffer() {
         this.commandsBuffer = "";
     }
 
+    /**
+     * Получает строку с логом последних выполненных команд
+     *
+     * @return строка с логом последних выполненных команд
+     */
     String GetCommandsBuffer() {
         return commandsBuffer;
     }
-
-    //region Методы
 
     /**
      * Выводит указанное сообщение
@@ -96,8 +121,8 @@ public class CommandReader {
         this.inputReader = new InputReader(this.collectionManager, this.scanner, this.isReadFromFile, !this.isReadFromFile);
     }
 
-    public Object Execute(String commandName) throws Exception {
-        return this.Execute(commandName, "");
+    public Object Execute(String commandName, UserInfo clientInfo) throws Exception {
+        return this.Execute(commandName, "", clientInfo);
     }
 
 
@@ -109,12 +134,12 @@ public class CommandReader {
      * @return объект, который возвращает команда, после выполнения
      * @throws Exception
      */
-    public Object Execute(String commandName, String params) throws Exception {
+    public Object Execute(String commandName, String params, UserInfo clientInfo) throws Exception {
         Command currentCommand = this.commandHelp.GetCommand(commandName);
 
         //region Ничего не возвращают
         if (commandName.equals(Command.Titles.save)) {
-            Object result = currentCommand.Execute(null);
+            Object result = currentCommand.Execute(null, clientInfo);
             if (result == null)
                 return "Не удалось сохранить коллекцию";
             else
@@ -126,18 +151,19 @@ public class CommandReader {
                     new Object[]{
                             params,
                             this.inputReader.GetSpaceMarine()
-                    });
+                    },
+                    clientInfo
+            );
             if (result == null)
                 return "Не удалось обновить указанный элемент";
             else
                 return "Объект успешно обновлен";
         }
         if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.exit)) {
-            return currentCommand.Execute(null);
+            return currentCommand.Execute(null, clientInfo);
         }
         if (commandName.equals(Command.Titles.executeScript)) {
-            currentCommand.Execute(params);
-
+            currentCommand.Execute(params, clientInfo);
             String buffer = this.commandsBuffer;
             this.ClearCommandsBuffer();
             return buffer;
@@ -147,7 +173,7 @@ public class CommandReader {
         if (commandName.equals(Command.Titles.info) || commandName.equals(Command.Titles.help)
                 || commandName.equals(Command.Titles.show) || commandName.equals(Command.Titles.printDescending)) {
 
-            Object result = currentCommand.Execute(null);
+            Object result = currentCommand.Execute(null, clientInfo);
             if (this.isReadFromFile)
                 this.commandsBuffer += result.toString();
             return result;
@@ -156,14 +182,14 @@ public class CommandReader {
         //region Возвращают число
         if (commandName.equals(Command.Titles.insert)) {
             this.UpdateReader();
-            Object result = currentCommand.Execute(new Object[]{this.inputReader.GetSpaceMarine(), params});
+            Object result = currentCommand.Execute(new Object[]{this.inputReader.GetSpaceMarine(), params}, clientInfo);
             if (result == null)
                 return "Не удалось добавить объект";
             else
                 return String.format("Объект добавлен, его ID в коллекции:%d", (Integer) result);
         }
         if (commandName.equals(Command.Titles.countByHeartCount)) {
-            Object result = currentCommand.Execute(params);
+            Object result = currentCommand.Execute(params, clientInfo);
             if (result == null)
                 return "Не удалось найти значение";
             else
@@ -172,21 +198,21 @@ public class CommandReader {
         //endregion
         //region Возвращают булевское значение
         if (commandName.equals(Command.Titles.removeGreaterKey)) {
-            Object result = currentCommand.Execute(params);
+            Object result = currentCommand.Execute(params, clientInfo);
             if (result == null || !(boolean) result)
                 return "Не удалось удалить указанный элемент";
             else
                 return "Объект успешно удален";
         }
         if (commandName.equals(Command.Titles.removeKey)) {
-            Object result = currentCommand.Execute(params);
+            Object result = currentCommand.Execute(params, clientInfo);
             if (result == null || !(boolean) result)
                 return "Не удалось удалить указанный элемент";
             else
                 return "Объект успешно удален";
         }
         if (commandName.equals(Command.Titles.removeLower)) {
-            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine());
+            Object result = currentCommand.Execute(this.inputReader.GetSpaceMarine(), clientInfo);
             if (result == null || !(boolean) result)
                 return "Не удалось удалить указанный элемент";
             else
@@ -198,7 +224,7 @@ public class CommandReader {
                     new Object[]{
                             params,
                             this.inputReader.GetSpaceMarine()
-                    });
+                    }, clientInfo);
             if (result == null || !(boolean) result)
                 return "Не удалось добавить указанный элемент";
             else
@@ -207,7 +233,7 @@ public class CommandReader {
         //endregion
         //region Возвращает список
         if (commandName.equals(Command.Titles.filterByCategory)) {
-            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(Category.class, false));
+            Object list = currentCommand.Execute(this.inputReader.GetEnumValue(Category.class, false), clientInfo);
             if (list instanceof List<?>) {
                 List<SpaceMarine> marines = (List<SpaceMarine>) list;
                 StringBuilder result = new StringBuilder();
@@ -233,7 +259,7 @@ public class CommandReader {
      * @return Объект с результатом
      * @throws Exception Ошибка
      */
-    public Object Execute(String commandName, Object[] params) throws Exception {
+    public Object Execute(String commandName, Object[] params, UserInfo clientInfo) throws Exception {
         throw new Exception("Метод не реализован");
     }
 
@@ -247,7 +273,7 @@ public class CommandReader {
                 String command = scanner.nextLine();
                 String[] splitCommand = command.split(" ", 2);
                 try {
-                    System.out.println(Execute(splitCommand[0], splitCommand.length > 1 ? splitCommand[1] : null));
+                    System.out.println(Execute(splitCommand[0], splitCommand.length > 1 ? splitCommand[1] : null, this.clientInfo));
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }

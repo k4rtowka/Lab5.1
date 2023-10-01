@@ -1,7 +1,7 @@
 package Commands;
 
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,8 +15,8 @@ public class CommandExecuteScript extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        String fileName = params[0].toString();
+    protected Object execute(Data data) throws Exception {
+        String fileName = data.params[0].toString();
 //        File file = new File(path + fileName);
         File file = new File(fileName);
         if (!file.exists())

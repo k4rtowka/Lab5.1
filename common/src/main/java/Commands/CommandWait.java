@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandWait extends Command {
     public CommandWait(CollectionManager collectionManager) {
@@ -15,12 +16,12 @@ public class CommandWait extends Command {
      * @return результат выполнения команды
      */
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (params[0] != null && params[0] instanceof Thread && this.CheckType(params[1], Integer.class)) {
+    protected Object execute(Data data) throws Exception {
+        if (data.params[0] != null && data.params[0] instanceof Thread && this.CheckType(data.params[1], Integer.class)) {
             //Thread currentThread = (Thread) params[0];
             //currentThread.wait(Integer.parseInt(params[1].toString()));
-            Thread.sleep(Integer.parseInt(params[1].toString()));
+            Thread.sleep(Integer.parseInt(data.params[1].toString()));
         }
-        return String.format("Программа была в ожидании %d миллисекунд", Integer.parseInt(params[1].toString()));
+        return String.format("Программа была в ожидании %d миллисекунд", Integer.parseInt(data.params[1].toString()));
     }
 }

@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 import java.util.ArrayList;
 
@@ -55,16 +56,14 @@ public class CommandHelp extends Command {
      * @return результат выполнения команды
      */
     @Override
-    protected Object execute(Object[] params) throws Exception {
+    protected Object execute(Data data) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        if (this.CheckParams(params, 0)) {
             for (Command command : this.commands) {
                 if (command.getName().compareTo(Titles.save) == 0 || command.getName().compareTo(Titles.wait) == 0)
                     continue;
                 stringBuilder.append(command);
                 stringBuilder.append("\n");
             }
-        }
         return stringBuilder.toString();
     }
 }

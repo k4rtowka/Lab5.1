@@ -1,7 +1,7 @@
 package Commands;
 
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandCountByHeartCount extends Command {
     public CommandCountByHeartCount(CollectionManager collectionManager) {
@@ -9,9 +9,9 @@ public class CommandCountByHeartCount extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if (this.CheckParams(params, 1) && this.CheckType(params[0], Integer.class)) {
-            return collectionManager.countByHeartCount(Integer.parseInt(params[0].toString()));
+    protected Object execute(Data data) throws Exception {
+        if (this.CheckType(data.params[0], Integer.class)) {
+            return collectionManager.countByHeartCount(Integer.parseInt(data.params[0].toString()));
         }
         return null;
     }

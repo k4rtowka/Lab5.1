@@ -1,7 +1,8 @@
 package Commands;
 
+import Common.UserInfo;
 import Models.CollectionManager;
-import Models.CollectionManagerToFile;
+import Models.Data;
 
 public class CommandPrintDescending extends Command {
     public CommandPrintDescending(CollectionManager collectionManager) {
@@ -9,10 +10,7 @@ public class CommandPrintDescending extends Command {
     }
 
     @Override
-    protected Object execute(Object[] params) throws Exception {
-        if(this.CheckParams(params, 0)){
-            return collectionManager.printDescending();
-        }
-        return null;
+    protected Object execute(Data data) throws Exception {
+        return collectionManager.printDescending();
     }
 }
