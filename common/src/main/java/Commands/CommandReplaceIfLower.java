@@ -1,5 +1,6 @@
 package Commands;
 
+import Common.Strings;
 import Common.UserInfo;
 import Models.CollectionManager;
 import Models.Data;
@@ -14,8 +15,12 @@ public class CommandReplaceIfLower extends Command {
     protected Object execute(Data data) throws Exception {
         if (this.CheckType(data.getParams(0), Integer.class) &&
                 this.CheckType(data.getParams(1), SpaceMarine.class)) {
-            return collectionManager.replaceIfLower(Integer.parseInt(data.getParams(0).toString()),
-                    (SpaceMarine) data.getParams(1));
+            if (data.getUserInfo() == null) throw new Exception(Strings.Errors.Commands.missedObjectOwnerInfo);
+            return collectionManager.replaceIfLower(
+                    Integer.parseInt(data.getParams(0).toString()),
+                    (SpaceMarine) data.getParams(1),
+                    data.getUserInfo().getId()
+            );
         }
         return null;
     }

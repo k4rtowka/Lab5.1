@@ -1,6 +1,8 @@
 package Common;
 
-public class UserInfo {
+import java.io.Serializable;
+
+public class UserInfo implements Serializable {
     //region Поля
     private int id;
     private boolean isAuthorized;

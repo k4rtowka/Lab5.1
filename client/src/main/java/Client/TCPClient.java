@@ -148,20 +148,24 @@ public class TCPClient extends TCPUnit {
                 System.out.println("Введите команду или 'exit', чтобы выйти:");
                 String commandName = scanner.nextLine().trim();
                 String[] words = commandName.split("\\s+");
-                Data commandParam = new Data(this.currentUserInfo, this.commandHelp.GetCommand(commandName), null);
+                Data commandData = new Data(this.currentUserInfo, this.commandHelp.GetCommand(commandName), null);
+                commandData.setCommand(this.commandHelp.GetCommand(words[0]));
+                if (commandData.getCommand() == null)
+                    throw new Exception("Передана неизвестная команда!");
                 if (words.length == 1) {
                     if (commandName.equals(Command.Titles.exit))
                         return;
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandParam));
+                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
                 }
                 if (words.length > 1) {
                     String[] params = new String[words.length - 1];
                     System.arraycopy(words, 1, params, 0, words.length - 1);
-                    commandParam.Add(params);
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandParam));
+                    commandData.Add(params);
+
+                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
                 }
                 Object serverResponse = Receive(socketChannel);
-                if (serverResponse != null && serverResponse.getClass() == User.class) {
+                if (serverResponse != null && serverResponse.getClass() == UserInfo.class) {
                     this.currentUserInfo = (UserInfo) serverResponse;
                     System.out.println("Вы авторизованы на сервере!");
                 } else {

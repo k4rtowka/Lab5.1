@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -53,8 +54,9 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Serializable {
      * Значение этого поля должно генерироваться автоматически.
      * </p>
      */
-    //@XmlElement(required = true)
+    @XmlJavaTypeAdapter(TimestampAdapter.class)
     private Timestamp creationDate;
+
 
     /**
      * Здоровье.

@@ -26,6 +26,10 @@ public class Astartes implements Serializable {
         this.setCategory(category);
     }
 
+    public Astartes() {
+        this(-1, "No category");
+    }
+
     public Astartes(Category category) {
         this(0, category);
     }
@@ -45,6 +49,7 @@ public class Astartes implements Serializable {
             throw new IllegalArgumentException("Несуществующая категория: " + category);
         }
     }
+
     public boolean isCategory(Category category) {
         return this.getCategory() == category;
     }

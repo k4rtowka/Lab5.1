@@ -2,6 +2,7 @@ package Models;
 
 
 import Common.Strings;
+import Common.UserInfo;
 import Tests.Data.LocalDateAdapter;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@XmlRootElement(name = "CollectionManagerToFile")
+@XmlRootElement(name = "CollectionManager")
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class CollectionManager implements Comparable<CollectionManager> {
 
@@ -172,6 +173,17 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
         }
     }
 
+    public Boolean removeKey(int id, int idUser) throws Exception {
+        if (marines.containsKey(id)) {
+            if (marines.get(id).getUserId() != idUser)
+                throw new Exception(Strings.Errors.Commands.incorrectOwnerUserId);
+            marines.remove(id);
+            return true;
+        } else {
+            throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
+        }
+    }
+
     /**
      * Очистить коллекцию
      */
@@ -187,6 +199,10 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
      */
     public Boolean removeLower(SpaceMarine marine) {
         return this.marines.entrySet().removeIf(x -> x.getValue().compareTo(marine) < 0);
+    }
+
+    public Boolean removeLower(SpaceMarine marine, int idUser) {
+        return this.marines.entrySet().removeIf(x -> x.getValue().compareTo(marine) < 0 && x.getValue().getUserId() == idUser);
     }
 
 
@@ -205,6 +221,17 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
         return false;
     }
 
+    public Boolean replaceIfLower(Integer key, SpaceMarine newMarine, int idUser) throws Exception {
+        SpaceMarine currentMarine = marines.get(key);
+        if (currentMarine.getUserId() != idUser)
+            throw new Exception(Strings.Errors.Commands.incorrectOwnerUserId);
+        if (currentMarine != null && newMarine.compareTo(currentMarine) < 0) {
+            marines.put(key, newMarine);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Удалить из коллекции все элементы, ключ которых превышает заданный
      *
@@ -212,6 +239,10 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
      */
     public Boolean removeGreaterKey(Integer key) {
         return this.marines.entrySet().removeIf(entry -> entry.getKey() > key);
+    }
+
+    public Boolean removeGreaterKey(Integer key, Integer idUser) {
+        return this.marines.entrySet().removeIf(entry -> entry.getKey() > key && entry.getValue().getUserId() == idUser);
     }
 
     /**
@@ -311,7 +342,7 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
      * @return Аутентифицированный пользователь.
      * @throws Exception Если произошла ошибка в процессе аутентификации.
      */
-    public abstract User Login(String login, String password) throws Exception;
+    public abstract UserInfo Login(String login, String password) throws Exception;
 
     /**
      * Регистрирует нового пользователя с заданным логином и паролем.
@@ -321,7 +352,7 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
      * @return Зарегистрированный пользователь.
      * @throws Exception Если произошла ошибка в процессе регистрации.
      */
-    public abstract User Register(String login, String password) throws Exception;
+    public abstract UserInfo Register(String login, String password) throws Exception;
 
     @Override
     public int compareTo(CollectionManager other) {

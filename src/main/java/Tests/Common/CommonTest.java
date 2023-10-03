@@ -8,10 +8,11 @@ import Server.TCPServerOneThread;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.Random;
 
 public class CommonTest {
-
 
     protected int GetRandomRegisteredPort() {
         final int MIN_REGISTERED_PORT = 1024;
@@ -23,21 +24,13 @@ public class CommonTest {
     protected Thread CreateOneThreadServer(String commands, int port) {
         Thread serverThread = new Thread(() -> {
             try {
-                InputStream in;
-                if (commands != null && commands.length() > 0) {
-                    in = new ByteArrayInputStream(commands.getBytes());
-
-                } else {
-                    in = System.in;
-                }
+                InputStream in = getInputStreamForCommands(commands);
                 TCPServerOneThread server = new TCPServerOneThread(in, port);
                 server.Start();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
-
         serverThread.start();
         return serverThread;
     }
@@ -45,22 +38,13 @@ public class CommonTest {
     protected Thread CreateMultiThreadServerFromFile(String commands, int port) {
         Thread serverThread = new Thread(() -> {
             try {
-                InputStream in;
-                if (commands != null && commands.length() > 0) {
-                    in = new ByteArrayInputStream(commands.getBytes());
-
-                } else {
-                    in = System.in;
-                }
-
+                InputStream in = getInputStreamForCommands(commands);
                 TCPServerMultiThread server = new TCPServerMultiThread(new CollectionManagerToFile("data.xml"), in, port);
                 server.Start();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
-
         serverThread.start();
         return serverThread;
     }
@@ -72,43 +56,41 @@ public class CommonTest {
         final int idUser = 14;
         Thread serverThread = new Thread(() -> {
             try {
-                InputStream in;
-                if (commands != null && commands.length() > 0) {
-                    in = new ByteArrayInputStream(commands.getBytes());
-
-                } else {
-                    in = System.in;
-                }
-
+                InputStream in = getInputStreamForCommands(commands);
                 TCPServerMultiThread server = new TCPServerMultiThread(new CollectionManagerToSQL(DB_URL, DB_USERNAME, DB_PASSWORD, idUser), in, port);
                 server.Start();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
-
         serverThread.start();
         return serverThread;
     }
 
     protected Thread CreateClient(String commands, int port) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         Thread clientThread = new Thread(() -> {
             try {
-                InputStream in = new ByteArrayInputStream(commands.getBytes());
+                //InputStream in = getInputStreamForCommands(commands);
+                InputStream in = new StringArrayInputStream(commands.split("\n"));
                 TCPClient client = new TCPClient(in, "localhost", port);
                 client.Start();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
-
         clientThread.start();
         return clientThread;
+    }
+
+    private InputStream getInputStreamForCommands(String commands) throws Exception {
+        if (commands != null && commands.length() > 0) {
+            PipedOutputStream out = new PipedOutputStream();
+            PipedInputStream in = new PipedInputStream(out);
+            out.write(commands.getBytes());
+            out.close();
+            return in;
+        } else {
+            return System.in;
+        }
     }
 }

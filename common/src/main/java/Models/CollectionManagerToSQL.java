@@ -1,5 +1,7 @@
 package Models;
 
+import Common.UserInfo;
+
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -122,12 +124,12 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
      * @return Аутентифицированный пользователь.
      * @throws Exception Если произошла ошибка в процессе аутентификации.
      */
-    public User Login(String login, String password) throws Exception {
+    public UserInfo Login(String login, String password) throws Exception {
         User user = GetUser(login, password);
         if (user == null) {
             throw new Exception("Пользователь не найден!");
         }
-        return user;
+        return new UserInfo(user.getId());
     }
     /**
      * Регистрирует нового пользователя с заданным логином и паролем.
@@ -137,7 +139,7 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
      * @return Зарегистрированный пользователь.
      * @throws Exception Если произошла ошибка в процессе регистрации.
      */
-    public User Register(String login, String password) throws Exception {
+    public UserInfo Register(String login, String password) throws Exception {
         User user = null;
         PreparedStatement statement = null;
 
@@ -175,7 +177,7 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
             connection.close();
         }
 
-        return user;
+        return new UserInfo(user.getId());
     }
     //endregion
 

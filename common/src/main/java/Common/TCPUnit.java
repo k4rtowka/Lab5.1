@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
+import java.util.Set;
 
 
 /**
@@ -26,9 +27,9 @@ public class TCPUnit {
     public UserInfo currentUserInfo;
 
     //region SQL настройки
-    public static String DB_URL = "jdbc:postgresql://localhost:5432/DBMarines";
-    public static String DB_USERNAME = "postgres";
-    public static String DB_PASSWORD = "postgres";
+    public static String DB_URL = Settings.DB_URL;
+    public static String DB_USERNAME = Settings.DB_USERNAME;
+    public static String DB_PASSWORD = Settings.DB_PASSWORD;
     //endregion
 
     //endregion

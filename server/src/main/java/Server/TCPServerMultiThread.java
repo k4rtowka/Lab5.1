@@ -39,6 +39,7 @@ public class TCPServerMultiThread extends TCPUnit {
             if (collectionManager == null)
                 throw new Exception("Не передан объект для управления коллекцией!");
             this.collectionManager = collectionManager;
+            this.collectionManager.Load();
             this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
             this.commandReader.SetCurrentThread(Thread.currentThread());
         } catch (Exception ex) {
@@ -68,7 +69,7 @@ public class TCPServerMultiThread extends TCPUnit {
             InetAddress clientAddress = client.getInetAddress();
             int clientPort = client.getPort();
             Print(String.format("Получена команда от клиента %s(%d):\n%s", clientAddress, clientPort, data));
-            if (data.getCommand() == null) {
+            if (data == null || data.getCommand() == null) {
                 return "Получена не существующая команда!";
             }
             if (data.getCommand().getName().equals(Command.Titles.save)) {
@@ -110,8 +111,13 @@ public class TCPServerMultiThread extends TCPUnit {
                     String commandName = commandItems[0];
                     String[] params = Arrays.stream(commandItems).skip(1).toArray(String[]::new);
                     //TODO: добавиь админа
-                    //Object result = this.commandReader.Execute(new Data(this.cl));
-                    //Print(result);
+                    Object result = this.commandReader.Execute(
+                            new Data(
+                                    new UserInfo(100),
+                                    this.commandHelp.GetCommand(commandName),
+                                    params
+                            ));
+                    Print(result);
                 }
                 //endregion
 
@@ -133,14 +139,10 @@ public class TCPServerMultiThread extends TCPUnit {
                             processPool.submit(() -> {
                                 Object result = Receive(client, clientData);
                                 synchronized (clientAddresses) {
-                                    if (result != null && result.getClass() == User.class) {
-                                        UserInfo clientInfo = this.clientAddresses.get(result);
-                                        if (clientInfo == null)
-                                            clientAddresses.put(((User) result).getId(), new UserInfo(clientAddresses.size() + 1));
-                                        clientInfo = this.clientAddresses.get(((User) result).getId());
-                                        clientInfo.setAuthorized(true);
-                                        clientInfo.setId(((User) result).getId());
-                                        clientAddresses.put(((User) result).getId(), clientInfo);
+                                    if (result != null && result.getClass() == UserInfo.class) {
+                                        UserInfo userInfoResult = (UserInfo) result;
+                                        userInfoResult.setAuthorized(true);
+                                        clientAddresses.put(userInfoResult.getId(), userInfoResult);
                                     }
                                 }
                                 sendPool.submit(() -> {

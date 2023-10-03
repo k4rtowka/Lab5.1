@@ -1,8 +1,9 @@
-package Tests;
+package Tests.Data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import Models.*;
+import Tests.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

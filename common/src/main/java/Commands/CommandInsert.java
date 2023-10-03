@@ -1,5 +1,6 @@
 package Commands;
 
+import Common.Strings;
 import Common.UserInfo;
 import Models.CollectionManager;
 import Models.Data;
@@ -15,7 +16,7 @@ public class CommandInsert extends Command {
         if (this.CheckType(data.getParams(0), SpaceMarine.class)) {
             SpaceMarine marine = (SpaceMarine) data.getParams(0);
             if (data.getUserInfo() == null)
-                throw new Exception("Не указана информация о владельце объекта!");
+                throw new Exception(Strings.Errors.Commands.missedObjectOwnerInfo);
             marine.setUserId(data.getUserInfo().getId());
             return collectionManager.insert(marine);
         }

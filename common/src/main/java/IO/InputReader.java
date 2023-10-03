@@ -15,6 +15,7 @@ public class InputReader {
 
     //region Поля
 
+    private InputStream inputStream;
     /**
      * Сканер для считывания ввода из заданного потока данных.
      */
@@ -72,6 +73,7 @@ public class InputReader {
     public InputReader(CollectionManager collectionManager, InputStream inputStream, boolean isShowPrompt) {
         this.isReadFromFile = inputStream instanceof FileInputStream;
         this.collectionManager = collectionManager;
+        this.inputStream = inputStream;
         this.scanner = new Scanner(inputStream);
         this.isShowPrompt = isShowPrompt;
     }

@@ -23,6 +23,7 @@ dependencies {
     implementation project(":common")
     implementation project(":client")
     implementation project(":server")
+    implementation 'com.github.stefanbirkner:system-rules:1.19.0'
 
     implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

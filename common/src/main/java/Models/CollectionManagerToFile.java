@@ -1,5 +1,6 @@
 package Models;
 
+import Common.UserInfo;
 import jakarta.xml.bind.*;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -98,7 +99,7 @@ public class CollectionManagerToFile extends CollectionManager
      * @throws Exception Если произошла ошибка в процессе аутентификации.
      */
     @Override
-    public User Login(String login, String password) throws Exception {
+    public UserInfo Login(String login, String password) throws Exception {
         return null;
     }
 
@@ -111,7 +112,7 @@ public class CollectionManagerToFile extends CollectionManager
      * @throws Exception Если произошла ошибка в процессе регистрации.
      */
     @Override
-    public User Register(String login, String password) throws Exception {
+    public UserInfo Register(String login, String password) throws Exception {
         return null;
     }
 
