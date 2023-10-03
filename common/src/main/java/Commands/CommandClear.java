@@ -10,10 +10,7 @@ public class CommandClear extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckParams(data.params, 0)) {
-            collectionManager.clear();
-            return "Коллекция очищена!";
-        }
-        return null;
+        collectionManager.clear();
+        return "Коллекция очищена!";
     }
 }

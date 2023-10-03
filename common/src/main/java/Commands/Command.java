@@ -170,18 +170,36 @@ public abstract class Command implements Serializable {
      * Выполняет команду с хранилищем объектов
      * и заносит запись в лог
      *
-     * @param params параметры команды
+     * @param data параметры команды
      * @return результат выполнения команды, true - если элемент добавлен
      */
     public Object Execute(Data data) throws Exception {
         if (this.collectionManager == null)
             throw new Exception("Объект управления коллекцией отсутствует");
-        if (this.CheckParams(data.params, this.expectedParamsCount)) {
+        this.collectionManager.Save();
+        if (this.CheckParams(data == null ? null : data.getParams(), this.expectedParamsCount)) {
             return this.execute(data);
         }
         return null;
     }
 
+    public Object Execute(Object object) throws Exception {
+        if (object != null && object.getClass().isArray()) {
+            int length = java.lang.reflect.Array.getLength(object);
+            Object[] dataArray = new Object[length];
+            for (int i = 0; i < length; i++) {
+                dataArray[i] = java.lang.reflect.Array.get(object, i);
+            }
+            return this.Execute(new Data(null, this, dataArray));
+        } else {
+            return this.Execute(new Data(null, this, object));
+        }
+    }
+
+
+//    public Object Execute(Object[] objects) throws Exception {
+//        return this.Execute(new Data(null, this, objects));
+//    }
 
     /**
      * Выполняет команду без параметров
@@ -193,11 +211,10 @@ public abstract class Command implements Serializable {
         return this.Execute(null);
     }
 
-
     /**
      * Выполняет команду с хранилищем объектов
      *
-     * @param params параметры команды
+     * @param data параметры команды
      * @return результат выполнения команды
      */
     protected abstract Object execute(Data data) throws Exception;

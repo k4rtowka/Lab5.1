@@ -52,18 +52,18 @@ public class CommandHelp extends Command {
     /**
      * Выполняет команду с хранилищем объектов
      *
-     * @param params параметры команды
+     * @param data параметры команды
      * @return результат выполнения команды
      */
     @Override
     protected Object execute(Data data) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-            for (Command command : this.commands) {
-                if (command.getName().compareTo(Titles.save) == 0 || command.getName().compareTo(Titles.wait) == 0)
-                    continue;
-                stringBuilder.append(command);
-                stringBuilder.append("\n");
-            }
+        for (Command command : this.commands) {
+            if (command.getName().equals(Titles.save) || command.getName().equals(Titles.wait))
+                continue;
+            stringBuilder.append(command);
+            stringBuilder.append("\n");
+        }
         return stringBuilder.toString();
     }
 }

@@ -12,10 +12,11 @@ public class CommandInsert extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], SpaceMarine.class)) {
-            SpaceMarine marine = (SpaceMarine) data.params[0];
-            Integer userId = (Integer) data.params[1];
-            marine.setUserId(userId);
+        if (this.CheckType(data.getParams(0), SpaceMarine.class)) {
+            SpaceMarine marine = (SpaceMarine) data.getParams(0);
+            if (data.getUserInfo() == null)
+                throw new Exception("Не указана информация о владельце объекта!");
+            marine.setUserId(data.getUserInfo().getId());
             return collectionManager.insert(marine);
         }
         return null;

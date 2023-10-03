@@ -13,7 +13,7 @@ public class CommandInfo extends Command {
     /**
      * Выполняет команду с хранилищем объектов
      *
-     * @param params параметры команды
+     * @param data параметры команды
      * @return результат выполнения команды
      */
     @Override

@@ -12,8 +12,10 @@ public class CommandReplaceIfLower extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if(this.CheckType(data.params[0], Integer.class) && this.CheckType(data.params[1], SpaceMarine.class)){
-            return collectionManager.replaceIfLower(Integer.parseInt(data.params[0].toString()), (SpaceMarine) data.params[1]);
+        if (this.CheckType(data.getParams(0), Integer.class) &&
+                this.CheckType(data.getParams(1), SpaceMarine.class)) {
+            return collectionManager.replaceIfLower(Integer.parseInt(data.getParams(0).toString()),
+                    (SpaceMarine) data.getParams(1));
         }
         return null;
     }

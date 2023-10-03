@@ -4,6 +4,7 @@ import Commands.Command;
 import Commands.CommandReader;
 import Models.CollectionManager;
 import Models.CollectionManagerToFile;
+import Models.Data;
 
 import java.io.InputStream;
 
@@ -41,74 +42,29 @@ public class CommandReaderServer extends CommandReader {
     /**
      * Выполняет команду с несколькими параметрами в виде строк
      *
-     * @param commandName имя команды
-     * @param params      параметры команды
+     * @param data параметры команды
      * @return объект, который возвращает команда, после выполнения
      * @throws Exception
      */
     @Override
-    public Object Execute(String commandName, Object[] params) throws Exception {
+    public Object Execute(Data data) throws Exception {
         try {
+            String commandName = data.getCommand().getName();
             Command currentCommand = this.commandHelp.GetCommand(commandName);
             if (currentCommand == null) {
                 throw new Exception("Получена несуществующая команда");
             }
             if (commandName.equals(Command.Titles.exit)) {
                 return currentCommand.Execute(this.currentThread);
-            }
-            if (commandName.equals(Command.Titles.wait)) {
-                return currentCommand.Execute(new Object[]{this.currentThread, params[0]});
-            }
-            if (commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.show)
-                    || commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.info)
-                    || commandName.equals(Command.Titles.printDescending)) {
-                this.collectionManager.Save();
-                return currentCommand.Execute(null);
-            }
-            if (commandName.equals(Command.Titles.removeKey)
-                    || commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeLower)
-                    || commandName.equals(Command.Titles.countByHeartCount)) {
-                this.collectionManager.Save();
-                return currentCommand.Execute(params);
-            }
-            if (commandName.equals(Command.Titles.insert)) {
-                Object result = currentCommand.Execute(params);
-                this.collectionManager.Save();
-                return result;
-            }
-            if (commandName.equals(Command.Titles.replaceIfLower) || commandName.equals(Command.Titles.update)) {
-                this.collectionManager.Save();
-                return currentCommand.Execute(params);
-            }
-            if (commandName.equals(Command.Titles.save)) {
-                return currentCommand.Execute();
-            }
-            if (commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
-                return currentCommand.Execute(params);
-            }
-
-            if (commandName.equals(Command.Titles.executeScript)) {
-                this.collectionManager.Save();
-                return currentCommand.Execute(params);
+            } else if (commandName.equals(Command.Titles.wait)) {
+                data.setParams(new Object[]{this.currentThread, data.getParams(0)});
+                return currentCommand.Execute(data);
+            } else {
+                return currentCommand.Execute(data);
             }
         } catch (Exception e) {
             return e.getMessage();
         }
-
-        return "null";
-    }
-
-    /**
-     * Выполняет команду с несколькими параметрами в виде объектов
-     *
-     * @param commandName имя команды
-     * @param params      параметры
-     * @return Объект с результатом
-     * @throws Exception Ошибка
-     */
-    @Override
-    public Object Execute(String commandName, String params) throws Exception {
-        return null;
     }
     //endregion
 

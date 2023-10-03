@@ -16,7 +16,7 @@ public class CommandExecuteScript extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        String fileName = data.params[0].toString();
+        String fileName = data.getParams(0).toString();
 //        File file = new File(path + fileName);
         File file = new File(fileName);
         if (!file.exists())

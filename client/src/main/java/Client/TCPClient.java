@@ -3,6 +3,7 @@ package Client;
 import Commands.Command;
 import Common.Settings;
 import Common.TCPUnit;
+import Common.UserInfo;
 import Models.Data;
 import Models.User;
 
@@ -21,7 +22,6 @@ public class TCPClient extends TCPUnit {
     private CommandReaderClient commandReader;
     private final String host;
     private SocketChannel socketChannel;
-    private User currentUser;
     /**
      * Задержка перед повторной отправкой запросов
      */
@@ -53,7 +53,7 @@ public class TCPClient extends TCPUnit {
      * @throws IOException
      */
     private void Send(SocketChannel socketChannel, Data data) throws IOException {
-        data.user = this.currentUser;
+        data.setUserInfo(this.currentUserInfo);
         // Сериализация объекта
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -148,19 +148,21 @@ public class TCPClient extends TCPUnit {
                 System.out.println("Введите команду или 'exit', чтобы выйти:");
                 String commandName = scanner.nextLine().trim();
                 String[] words = commandName.split("\\s+");
+                Data commandParam = new Data(this.currentUserInfo, this.commandHelp.GetCommand(commandName), null);
                 if (words.length == 1) {
                     if (commandName.equals(Command.Titles.exit))
                         return;
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandName, new Object[]{}));
+                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandParam));
                 }
                 if (words.length > 1) {
                     String[] params = new String[words.length - 1];
                     System.arraycopy(words, 1, params, 0, words.length - 1);
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(words[0], params));
+                    commandParam.Add(params);
+                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandParam));
                 }
                 Object serverResponse = Receive(socketChannel);
                 if (serverResponse != null && serverResponse.getClass() == User.class) {
-                    this.currentUser = (User) serverResponse;
+                    this.currentUserInfo = (UserInfo) serverResponse;
                     System.out.println("Вы авторизованы на сервере!");
                 } else {
                     Print("Получен ответ от сервера:");

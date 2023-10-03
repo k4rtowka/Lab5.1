@@ -12,11 +12,12 @@ public class CommandUpdate extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckParams(data.params, 2)
-                && this.CheckType(data.params[0], Integer.class)
-                && this.CheckType(data.params[1], SpaceMarine.class)
+        if (this.CheckType(data.getParams(0), Integer.class)
+                && this.CheckType(data.getParams(1), SpaceMarine.class)
         ) {
-            return collectionManager.update(Integer.parseInt(data.params[0].toString()), (SpaceMarine) data.params[1]);
+            return collectionManager.update(Integer.parseInt(
+                    data.getParams(0).toString()),
+                    (SpaceMarine) data.getParams(1));
         }
         return null;
     }

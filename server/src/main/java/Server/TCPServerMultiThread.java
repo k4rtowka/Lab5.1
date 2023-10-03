@@ -63,36 +63,29 @@ public class TCPServerMultiThread extends TCPUnit {
     private Object Receive(Socket client, Data data) {
         try {
             UserInfo currentClientInfo = null;
-            if (data.user != null)
-                currentClientInfo = this.clientAddresses.get(data.user.getId());
+            if (data.getUserInfo() != null)
+                currentClientInfo = this.clientAddresses.get(data.getUserInfo().getId());
             InetAddress clientAddress = client.getInetAddress();
             int clientPort = client.getPort();
             Print(String.format("Получена команда от клиента %s(%d):\n%s", clientAddress, clientPort, data));
-            if (data.command == null) {
+            if (data.getCommand() == null) {
                 return "Получена не существующая команда!";
             }
-            if (data.command.getName().equals(Command.Titles.save)) {
+            if (data.getCommand().getName().equals(Command.Titles.save)) {
                 return "Команда запрещена на стороне клиента";
             }
             if ((currentClientInfo != null)
                 // && currentClientInfo.isAuthorized()
             ) {
                 synchronized (collectionManager) {
-                    if (data.command.getName().equals(Command.Titles.insert))
-                        return this.commandReader.Execute(data.command.getName(),
-                                new Object[]{
-                                        data.params[0], data.user.getId()
-                                }
-                        );
-                    else
-                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
+                    return this.commandReader.Execute(data);
                 }
             } else {
-                if (data.command.getName().equals(Command.Titles.login) ||
-                        data.command.getName().equals(Command.Titles.register) ||
-                        data.command.getName().equals(Command.Titles.executeScript)) {
+                if (data.getCommand().getName().equals(Command.Titles.login) ||
+                        data.getCommand().getName().equals(Command.Titles.register) ||
+                        data.getCommand().getName().equals(Command.Titles.executeScript)) {
                     synchronized (collectionManager) {
-                        return this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
+                        return this.commandReader.Execute(data);
                     }
                 } else {
                     return "Вы не авторизованы, используйте команды register или login.";
@@ -112,12 +105,13 @@ public class TCPServerMultiThread extends TCPUnit {
             while (isStarted && !Thread.currentThread().isInterrupted()) {
                 //region Чтение команд с клавиатуры
                 if (this.inputStream.available() > 0) {
-                    String command = this.scanner.nextLine().trim();
-                    String[] commandItems = command.split("\\s+");
-                    command = commandItems[0];
+                    String line = this.scanner.nextLine().trim();
+                    String[] commandItems = line.split("\\s+");
+                    String commandName = commandItems[0];
                     String[] params = Arrays.stream(commandItems).skip(1).toArray(String[]::new);
-                    Object result = this.commandReader.Execute(command, params);
-                    Print(result);
+                    //TODO: добавиь админа
+                    //Object result = this.commandReader.Execute(new Data(this.cl));
+                    //Print(result);
                 }
                 //endregion
 
@@ -132,8 +126,8 @@ public class TCPServerMultiThread extends TCPUnit {
 
                             ObjectInputStream input = new ObjectInputStream(client.getInputStream());
                             Data clientData = (Data) input.readObject();
-                            if (clientData != null && clientData.user != null)
-                                clientAddresses.put(clientData.user.getId(), new UserInfo(clientAddresses.size() + 1));
+                            if (clientData != null && clientData.getUserInfo() != null)
+                                clientAddresses.put(clientData.getUserInfo().getId(), new UserInfo(clientAddresses.size() + 1));
 
 
                             processPool.submit(() -> {
@@ -145,7 +139,7 @@ public class TCPServerMultiThread extends TCPUnit {
                                             clientAddresses.put(((User) result).getId(), new UserInfo(clientAddresses.size() + 1));
                                         clientInfo = this.clientAddresses.get(((User) result).getId());
                                         clientInfo.setAuthorized(true);
-                                        clientInfo.setIdUser(((User) result).getId());
+                                        clientInfo.setId(((User) result).getId());
                                         clientAddresses.put(((User) result).getId(), clientInfo);
                                     }
                                 }

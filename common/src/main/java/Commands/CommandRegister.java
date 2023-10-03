@@ -7,13 +7,16 @@ import Models.Data;
 
 public class CommandRegister extends Command {
     CommandRegister(CollectionManager collectionManager) {
-        super(Titles.login, Descriptions.login, collectionManager, 2);
+        super(Titles.register, Descriptions.register, collectionManager, 2);
     }
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], String.class) && this.CheckType(data.params[1], String.class))
-            return collectionManager.Register((String) data.params[0], (String) data.params[1]);
+        if (this.CheckType(data.getParams(0), String.class) &&
+                this.CheckType(data.getParams(1), String.class))
+            return collectionManager.Register(
+                    (String) data.getParams(0),
+                    (String) data.getParams(1));
         else
             return null;
     }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import Commands.*;
 import Common.Strings;
+import Common.UserInfo;
 import Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,7 @@ public class CommandsTests extends BaseTest {
         });
         assertEquals("Ожидаемое число параметров 1, переданное число параметров 2", exception.getMessage());
 
+
         exception = assertThrows(Exception.class, () -> {
             countByHeartCount.Execute(null);
         });
@@ -120,7 +122,7 @@ public class CommandsTests extends BaseTest {
         CommandInsert insert = new CommandInsert(collectionManager);
         int beforeExecute = collectionManager.GetSize();
         SpaceMarine testMarine = GenerateRandomSpaceMarine(101);
-        insert.Execute(testMarine);
+        insert.Execute(new Data(new UserInfo(1),insert,testMarine));
         assertEquals(beforeExecute + 1, collectionManager.GetSize());
         assertEquals(0, testMarine.compareTo(collectionManager.getMarines().get(101)));
     }
@@ -347,13 +349,18 @@ public class CommandsTests extends BaseTest {
 
         StringBuilder result = new StringBuilder();
         result.append(Command.Titles.help).append(" - ").append(Command.Descriptions.help).append("\n");
+        result.append(Command.Titles.login).append(" - ").append(Command.Descriptions.login).append("\n");
+        result.append(Command.Titles.register).append(" - ").append(Command.Descriptions.register).append("\n");
         result.append(Command.Titles.info).append(" - ").append(Command.Descriptions.info).append("\n");
         result.append(Command.Titles.show).append(" - ").append(Command.Descriptions.show).append("\n");
         result.append(Command.Titles.insert).append(" - ").append(Command.Descriptions.insert).append("\n");
         result.append(Command.Titles.update).append(" - ").append(Command.Descriptions.update).append("\n");
         result.append(Command.Titles.removeKey).append(" - ").append(Command.Descriptions.removeKey).append("\n");
         result.append(Command.Titles.clear).append(" - ").append(Command.Descriptions.clear).append("\n");
-//        result.append(Command.Titles.save).append(" - ").append(Command.Descriptions.save).append("\n");
+        //region отключены
+        //result.append(Command.Titles.save).append(" - ").append(Command.Descriptions.save).append("\n");
+        //result.append(Command.Titles.wait).append(" - ").append(Command.Descriptions.wait).append("\n");
+        //endregion
         result.append(Command.Titles.executeScript).append(" - ").append(Command.Descriptions.executeScript).append("\n");
         result.append(Command.Titles.exit).append(" - ").append(Command.Descriptions.exit).append("\n");
         result.append(Command.Titles.removeLower).append(" - ").append(Command.Descriptions.removeLower).append("\n");
@@ -367,7 +374,7 @@ public class CommandsTests extends BaseTest {
     }
 
     @Test
-    public void test_Help_ExecuteWithInvalidParams(){
+    public void test_Help_ExecuteWithInvalidParams() {
         CommandHelp command = new CommandHelp(collectionManager);
         Object[] params = new Object[]{"some"};
 
@@ -379,7 +386,7 @@ public class CommandsTests extends BaseTest {
     @Test
     public void test_Help_GetCommand() throws Exception {
         CommandHelp command = new CommandHelp(collectionManager);
-        for(Command value : command.GetCommands()){
+        for (Command value : command.GetCommands()) {
             assertEquals(value.toString(), command.GetCommand(value.getName()).toString());
         }
     }
@@ -398,7 +405,7 @@ public class CommandsTests extends BaseTest {
     }
 
     @Test
-    public void test_Info_ExecuteWithInvalidParams(){
+    public void test_Info_ExecuteWithInvalidParams() {
         CommandInfo command = new CommandInfo(collectionManager);
         Object[] params = new Object[]{"some"};
 
@@ -420,18 +427,18 @@ public class CommandsTests extends BaseTest {
         //endregion
 
         List<SpaceMarine> testMarines = this.GenerateSpaceMarines(3);
-        for(int i = 0; i < 3;i++) {
+        for (int i = 0; i < 3; i++) {
             collectionManager.insert(testMarines.get(i));
         }
 
         testMarines = testMarines.stream().sorted(Comparator.reverseOrder()).toList();
         StringBuilder result = new StringBuilder();
-        SpaceMarine marine = new SpaceMarine();
-        for (int i = 0; i < 3; i++){
-            marine = testMarines.get(i);
+        for (int i = 0; i < 3; i++) {
+            SpaceMarine marine = testMarines.get(i);
 
             result.append("{");
             result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
+            result.append("\"User id\": ").append(marine.getUserId()).append(", ");
             result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
             result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
             result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", \n");
@@ -449,7 +456,7 @@ public class CommandsTests extends BaseTest {
     }
 
     @Test
-    public void test_PrintDescending_ExecuteWithInvalidParams(){
+    public void test_PrintDescending_ExecuteWithInvalidParams() {
         CommandPrintDescending command = new CommandPrintDescending(collectionManager);
         Object[] params = new Object[]{"some"};
 
@@ -472,13 +479,14 @@ public class CommandsTests extends BaseTest {
         SpaceMarine marine;
         StringBuilder result = new StringBuilder();
         result.append("Элементы коллекции:\n");
-        for(int i = 0; i < 3;i++) {
+        for (int i = 0; i < 3; i++) {
             marine = testMarines.get(i);
             this.collectionManager.insert(marine);
 
 
             result.append("{");
             result.append("\"SpaceMarine id\": ").append(marine.getId()).append(", ");
+            result.append("\"User id\": ").append(marine.getUserId()).append(", ");
             result.append("\"SpaceMarine name\": \"").append(marine.getName()).append("\", ");
             result.append("\"SpaceMarine coordinates\": ").append(marine.getCoordinates()).append(", ");
             result.append("\"SpaceMarine creation date\": \"").append(marine.getCreationDate()).append("\", \n");
@@ -497,7 +505,7 @@ public class CommandsTests extends BaseTest {
     }
 
     @Test
-    public void test_Show_ExecuteWithInvalidParams(){
+    public void test_Show_ExecuteWithInvalidParams() {
         CommandShow command = new CommandShow(collectionManager);
         Object[] params = new Object[]{"some"};
 

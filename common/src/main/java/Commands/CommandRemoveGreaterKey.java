@@ -11,8 +11,8 @@ public class CommandRemoveGreaterKey extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], Integer.class)) {
-            return collectionManager.removeGreaterKey(Integer.parseInt(data.params[0].toString()));
+        if (this.CheckType(data.getParams(0), Integer.class)) {
+            return collectionManager.removeGreaterKey(Integer.parseInt(data.getParams(0).toString()));
         }
         return null;
     }

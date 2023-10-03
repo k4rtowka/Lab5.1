@@ -12,8 +12,8 @@ public class CommandFilterByCategory extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], Category.class)) {
-            return collectionManager.filterByCategory((Category) data.params[0]);
+        if (this.CheckType(data.getParams(0), Category.class)) {
+            return collectionManager.filterByCategory((Category) data.getParams(0));
         }
         return null;
     }

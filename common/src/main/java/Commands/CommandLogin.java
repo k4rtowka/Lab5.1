@@ -13,8 +13,9 @@ public class CommandLogin extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], String.class) && this.CheckType(data.params[1], String.class))
-            return collectionManager.Login((String) data.params[0], (String) data.params[1]);
+        if (this.CheckType(data.getParams(0), String.class) &&
+                this.CheckType(data.getParams(1), String.class))
+            return collectionManager.Login((String) data.getParams(0), (String) data.getParams(1));
         else
             return null;
     }

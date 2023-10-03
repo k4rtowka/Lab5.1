@@ -1,5 +1,7 @@
 package Common;
 
+import Commands.CommandHelp;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,8 @@ public class TCPUnit {
     public int port;
     public boolean isStarted;
     public boolean isDebug;
+    public CommandHelp commandHelp = new CommandHelp(null);
+    public UserInfo currentUserInfo;
 
     //region SQL настройки
     public static String DB_URL = "jdbc:postgresql://localhost:5432/DBMarines";

@@ -30,67 +30,37 @@ public class CommandReaderClient extends CommandReader {
     /**
      * Выполняет команду с несколькими параметрами в виде строк
      *
-     * @param commandName имя команды
-     * @param params      параметры команды
+     * @param data параметры команды
      * @return объект, который возвращает команда, после выполнения
      * @throws Exception
      */
     @Override
-    public Object Execute(String commandName, Object[] params, UserInfo clientInfo) throws Exception {
+    public Object Execute(Data data) throws Exception {
+        String commandName = data.getCommand().getName();
         Command currentCommand = this.commandHelp.GetCommand(commandName);
+        Data result = new Data(this.userInfo, currentCommand, data.getParams());
         if (commandName.equals(Command.Titles.login) || commandName.equals(Command.Titles.register)) {
-            this.UpdateReader();
-            return new Data(currentCommand, new Object[]{
-                    this.inputReader.GetValue("Введите логин", String.class, false),
-                    this.inputReader.GetValue("Введите пароль", String.class, false)}
-            );
-        }
-        if (commandName.equals(Command.Titles.exit)) {
-            currentCommand.Execute();
-            return null;
+            //this.UpdateReader();
+            result.Add(this.inputReader.GetValue("Введите логин", String.class, false));
+            result.Add(this.inputReader.GetValue("Введите пароль", String.class, false));
         }
         if (commandName.equals(Command.Titles.update)) {
             this.UpdateReader();
-            return new Data(currentCommand, new Object[]{
-                    this.inputReader.GetValue("Введите ID объекта, который хотите обновить",
-                            Integer.class, false),
-                    this.inputReader.GetSpaceMarine()}
-            );
-        }
-        if (commandName.equals(Command.Titles.clear) || commandName.equals(Command.Titles.info)
-                || commandName.equals(Command.Titles.help) || commandName.equals(Command.Titles.show) ||
-                commandName.equals(Command.Titles.printDescending)) {
-            return new Data(currentCommand, null);
-        }
-        if (commandName.equals(Command.Titles.executeScript) || commandName.equals(Command.Titles.countByHeartCount) ||
-                commandName.equals(Command.Titles.removeGreaterKey) || commandName.equals(Command.Titles.removeKey)
-        ) {
-            return new Data(currentCommand, params[0]);
+            result.Add(this.inputReader.GetValue("Введите ID объекта, который хотите обновить", Integer.class, false));
+            result.Add(this.inputReader.GetSpaceMarine());
         }
         if (commandName.equals(Command.Titles.insert) || commandName.equals(Command.Titles.replaceIfLower) ||
                 commandName.equals(Command.Titles.removeLower)) {
-            this.UpdateReader();
-            return new Data(currentCommand, this.inputReader.GetSpaceMarine());
+//            this.UpdateReader();
+            result.Add(this.inputReader.GetSpaceMarine());
         }
         if (commandName.equals(Command.Titles.filterByCategory)) {
-            this.UpdateReader();
-            return new Data(currentCommand, this.inputReader.GetEnumValue(Category.class, false));
+            //this.UpdateReader();
+            result.Add(this.inputReader.GetEnumValue(Category.class, false));
         }
-        return new Data(currentCommand, null);
+        return result;
     }
 
-    /**
-     * Выполняет команду с несколькими параметрами в виде объектов
-     *
-     * @param commandName имя команды
-     * @param params      параметры
-     * @return Объект с результатом
-     * @throws Exception Ошибка
-     */
-    @Override
-    public Object Execute(String commandName, String params) throws Exception {
-        return null;
-    }
     //endregion
 
 }

@@ -31,6 +31,28 @@ public class SpaceMarineTests extends BaseTest {
     }
     //endregion
 
+    //region ID user
+    @Test
+    public void testSetAndGetUserId() {
+        // Проверка значения по умолчанию (предположим, что это null)
+        assertNull(marine.getUserId());
+
+        // Установка и получение значения
+        Integer expectedUserId = 42;
+        marine.setUserId(expectedUserId);
+        assertEquals(expectedUserId, marine.getUserId());
+
+        // Установка и получение другого значения
+        expectedUserId = 100;
+        marine.setUserId(expectedUserId);
+        assertEquals(expectedUserId, marine.getUserId());
+
+        // Проверка на null
+        marine.setUserId(null);
+        assertNull(marine.getUserId());
+    }
+    //endregion
+
     //region Name
     @Test
     public void setName_validName_setsName() {

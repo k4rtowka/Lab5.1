@@ -48,14 +48,13 @@ public class TCPServerOneThread extends TCPUnit {
             InetAddress clientAddress = client.getInetAddress();
             int clientPort = client.getPort();
             Print(String.format("Получена команда от клиента %s(%d):\n%s", clientAddress, clientPort, data));
-            if (data.command == null) {
+            if (data.getCommand() == null) {
                 return "Получена не существующая команда!";
             }
-            if (data.command.getName().equals(Command.Titles.save)) {
+            if (data.getCommand().getName().equals(Command.Titles.save)) {
                 return "Команда запрещена на стороне клиента";
             }
-            Object result = this.commandReader.Execute(data.command.getName(), data == null ? null : data.params);
-            //this.commandReader.Execute(Command.Titles.save,new Object[]{});
+            Object result = this.commandReader.Execute(data);
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -76,11 +75,16 @@ public class TCPServerOneThread extends TCPUnit {
             while (isStarted && !Thread.currentThread().isInterrupted()) {
                 //region Чтение команд с клавиатуры
                 if (this.inputStream.available() > 0) {
-                    String command = this.scanner.nextLine().trim();
-                    String[] commandItems = command.split("\\s+");
-                    command = commandItems[0];
+                    String line = this.scanner.nextLine().trim();
+                    String[] commandItems = line.split("\\s+");
+                    String commandName = commandItems[0];
                     String[] params = Arrays.stream(commandItems).skip(1).toArray(String[]::new);
-                    Object result = this.commandReader.Execute(command, params);
+                    Object result = this.commandReader.Execute(
+                            new Data(
+                                    this.currentUserInfo,
+                                    this.commandHelp.GetCommand(commandName),
+                                    params
+                            ));
                     Print(result);
                 }
                 //endregion

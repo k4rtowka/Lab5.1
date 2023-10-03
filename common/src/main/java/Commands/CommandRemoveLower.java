@@ -12,8 +12,8 @@ public class CommandRemoveLower extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], SpaceMarine.class)) {
-            return collectionManager.removeLower((SpaceMarine) data.params[0]);
+        if (this.CheckType(data.getParams(0), SpaceMarine.class)) {
+            return collectionManager.removeLower((SpaceMarine) data.getParams(0));
         }
         return null;
     }

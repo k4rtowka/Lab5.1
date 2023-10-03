@@ -10,8 +10,8 @@ public class CommandCountByHeartCount extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (this.CheckType(data.params[0], Integer.class)) {
-            return collectionManager.countByHeartCount(Integer.parseInt(data.params[0].toString()));
+        if (this.CheckType(data.getParams(0), Integer.class)) {
+            return collectionManager.countByHeartCount(Integer.parseInt(data.getParams(0).toString()));
         }
         return null;
     }

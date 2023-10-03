@@ -10,7 +10,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -234,4 +236,97 @@ class InputReaderTest {
     //endregion
 
     //endregion
+
+    @Test
+    public void testGetStringValueFromByteArrayInputStream() {
+        String input = "Hello, World!";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        String result = reader.GetValue("Enter a string: ", String.class, false);
+
+        assertEquals("Hello, World!", result);
+    }
+
+    @Test
+    public void testGetIntValueFromByteArrayInputStream() {
+        String input = "42";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        Integer result = reader.GetValue("Enter an integer: ", Integer.class, false);
+
+        assertEquals(42, result);
+    }
+
+    @Test
+    public void testGetEnumValueFromByteArrayInputStream() {
+        String input = "POWER_BLADE";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        WeaponType result = reader.GetEnumValue(WeaponType.class, false);
+
+        assertEquals(WeaponType.POWER_BLADE, result);
+    }
+
+    @Test
+    public void testGetChapterFromByteArrayInputStream() {
+        String nameInput = "ChapterName";
+        String countInput = "42";
+        InputStream inputStream = new ByteArrayInputStream((nameInput + "\n" + countInput).getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        Chapter result = reader.GetChapter();
+
+        assertEquals(nameInput, result.getName());
+        assertEquals(42, result.getMarinesCount());
+    }
+
+    @Test
+    public void testGetCoordinatesFromByteArrayInputStream() {
+        String xInput = "3.14";
+        String yInput = "42";
+        InputStream inputStream = new ByteArrayInputStream((xInput + "\n" + yInput).getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        Coordinate result = reader.GetCoordinates();
+
+        assertEquals(3.14, result.getX());
+        assertEquals(42, result.getY());
+    }
+
+    @Test
+    public void testGetValueWithRetryFromByteArrayInputStream() {
+        String input = "not an integer\n42";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        Integer result = reader.GetValue("Enter an integer: ", Integer.class, false);
+
+        assertEquals(42, result);
+    }
+
+    @Test
+    public void testGetValueCanBeNullFromByteArrayInputStream() {
+        String input = "\n";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        String result = reader.GetValue("Enter a string (can be null): ", String.class, true);
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testGetValueFromEmptyByteArrayInputStream() {
+        String input = "";
+        InputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        reader = new InputReader(manager, inputStream, false);
+
+        assertThrows(NoSuchElementException.class, () -> {
+            reader.GetValue("Enter a string: ", String.class, false);
+        });
+    }
+
 }

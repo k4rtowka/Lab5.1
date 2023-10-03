@@ -11,8 +11,8 @@ public class CommandExit extends Command {
 
     @Override
     protected Object execute(Data data) throws Exception {
-        if (data.params[0] != null && data.params[0] instanceof Thread) {
-            Thread currentThread = (Thread) data.params[0];
+        if (data.getParams(0) != null && data.getParams(0) instanceof Thread) {
+            Thread currentThread = (Thread) data.getParams(0);
             currentThread.interrupt();
         }
         return "Выход из программы!";
