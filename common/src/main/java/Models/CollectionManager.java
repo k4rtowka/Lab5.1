@@ -158,6 +158,25 @@ public abstract class CollectionManager implements Comparable<CollectionManager>
         }
     }
 
+    public Boolean update(int id, SpaceMarine marine, int idUser) throws Exception {
+        if (marine == null) {
+            throw new IllegalArgumentException("SpaceMarine не может быть null.");
+        }
+        SpaceMarine currentMarine = marines.get(id);
+        if(currentMarine ==null)
+            throw new Exception("Элемент с указанным ID не найден!");
+        if (currentMarine.getUserId() != idUser)
+            throw new Exception(Strings.Errors.Commands.incorrectOwnerUserId);
+        if (marines.containsKey(id)) {
+
+            marines.put(id, marine);
+            marine.setId(id);
+            return true;
+        } else {
+            throw new NoSuchElementException("Элемент с ID " + id + " не найден в коллекции.");
+        }
+    }
+
     /**
      * Удалить элемент из коллекции по его ключу
      *

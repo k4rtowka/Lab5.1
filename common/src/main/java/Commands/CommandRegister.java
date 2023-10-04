@@ -13,11 +13,15 @@ public class CommandRegister extends Command {
     @Override
     protected Object execute(Data data) throws Exception {
         if (this.CheckType(data.getParams(0), String.class) &&
-                this.CheckType(data.getParams(1), String.class))
-            return collectionManager.Register(
+                this.CheckType(data.getParams(1), String.class)) {
+            Object userInfo = collectionManager.Register(
                     (String) data.getParams(0),
                     (String) data.getParams(1));
-        else
+            if (userInfo == null)
+                return "Не удалось зарегистрировать пользователя";
+            else
+                return userInfo;
+        } else
             return null;
     }
 

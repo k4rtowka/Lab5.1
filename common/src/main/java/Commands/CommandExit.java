@@ -14,6 +14,7 @@ public class CommandExit extends Command {
         if (data.getParams(0) != null && data.getParams(0) instanceof Thread) {
             Thread currentThread = (Thread) data.getParams(0);
             currentThread.interrupt();
+            System.exit(0);
         }
         return "Выход из программы!";
     }

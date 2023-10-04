@@ -113,9 +113,11 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
     public void Connect() throws SQLException {
         this.Connect(dbURL, dbUsername, dbPassword);
     }
+
     public void Connect(String dataBaseURL, String login, String password) throws SQLException {
         this.connection = DriverManager.getConnection(dataBaseURL, login, password);
     }
+
     /**
      * Аутентифицирует пользователя по заданному логину и паролю.
      *
@@ -131,6 +133,7 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
         }
         return new UserInfo(user.getId());
     }
+
     /**
      * Регистрирует нового пользователя с заданным логином и паролем.
      *
@@ -147,12 +150,23 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
             throw new Exception("Не установлено подключение к серверу!");
         }
 
+        // Проверьте, существует ли пользователь с таким логином
+        String checkUserSQL = "SELECT id FROM Users WHERE login = ?";
+        PreparedStatement checkStatement = connection.prepareStatement(checkUserSQL);
+        checkStatement.setString(1, login);
+        ResultSet checkResult = checkStatement.executeQuery();
+        if (checkResult.next()) {  // если пользователь с таким логином уже существует
+            checkStatement.close();
+            return null;
+        }
+        checkStatement.close();
+
         // Hash the password using SHA-224 algorithm
         String hashedPassword = GetSHA224(password);
 
         // Prepare the SQL statement
         String sql = "INSERT INTO Users (login, password) VALUES (?, ?)";
-        statement = connection.prepareStatement(sql);
+        statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, login);
         statement.setString(2, hashedPassword);
 
@@ -177,8 +191,13 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
             connection.close();
         }
 
-        return new UserInfo(user.getId());
+        if (user != null) {
+            return new UserInfo(user.getId(), true);
+        } else {
+            return null;
+        }
     }
+
     //endregion
 
     //region Загрузка данных из БД
@@ -432,12 +451,13 @@ public class CollectionManagerToSQL extends CollectionManager implements Seriali
 
     public boolean Save() throws Exception {
         if (marines.isEmpty()) {
-            String cleanTableQuery = "TRUNCATE TABLE Marines";
-            try (PreparedStatement statement = connection.prepareStatement(cleanTableQuery)) {
-                statement.executeUpdate();
-            } catch (Exception e) {
-                System.err.println("Не удалось очистить таблицу Marines: " + e.getMessage());
-            }
+//            String cleanTableQuery = "TRUNCATE TABLE Marines";
+//            try (PreparedStatement statement = connection.prepareStatement(cleanTableQuery)) {
+//                statement.executeUpdate();
+//            } catch (Exception e) {
+//                System.err.println("Не удалось очистить таблицу Marines: " + e.getMessage());
+//            }
+            this.Load();
         } else {
             String query = "INSERT INTO Marines (id, name, idCoordinate, creationDate, " +
                     "health, heartCount, idCategory, idWeaponType, idChapter,idUser) " +

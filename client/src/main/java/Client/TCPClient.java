@@ -15,6 +15,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.Set;
 
 public class TCPClient extends TCPUnit {
 
@@ -22,14 +23,6 @@ public class TCPClient extends TCPUnit {
     private CommandReaderClient commandReader;
     private final String host;
     private SocketChannel socketChannel;
-    /**
-     * Задержка перед повторной отправкой запросов
-     */
-    private final int msSleepTimeout = 5000;
-    /**
-     * Таймаут ожидания сервера
-     */
-    private final int msTimeout = 5000;
     //endregion
 
     //region Конструкторы
@@ -86,9 +79,9 @@ public class TCPClient extends TCPUnit {
         socketChannel.register(selector, interestSet);
 
         while (true) {
-            if (selector.select(this.msTimeout) == 0) {
+            if (selector.select(Settings.Timeouts.Client.connectionTimeout) == 0) {
                 Print("Тайм-аут: сервер недоступен или не отвечает");
-                Thread.sleep(this.msSleepTimeout);
+                Thread.sleep(Settings.Timeouts.Client.requestTimeout);
             }
 
             Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
@@ -127,6 +120,41 @@ public class TCPClient extends TCPUnit {
         }
     }
 
+    private void ProcessCommand() throws Exception {
+        System.out.println("Введите команду или 'exit', чтобы выйти:");
+        String commandName = scanner.nextLine().trim();
+        if (commandName.equals(Command.Titles.exit)) {
+            this.isStarted = false;
+            return;
+        }
+        String[] words = commandName.split("\\s+");
+        Data commandData = new Data(this.currentUserInfo, this.commandHelp.GetCommand(commandName), null);
+        commandData.setCommand(this.commandHelp.GetCommand(words[0]));
+        if (commandData.getCommand() == null)
+            throw new Exception("Передана неизвестная команда!");
+        if (words.length == 1) {
+            if (commandName.equals(Command.Titles.exit))
+                return;
+            Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
+        }
+        if (words.length > 1) {
+            String[] params = new String[words.length - 1];
+            System.arraycopy(words, 1, params, 0, words.length - 1);
+            commandData.Add(params);
+
+            Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
+        }
+        Object serverResponse = Receive(socketChannel);
+        if (serverResponse != null && serverResponse.getClass() == UserInfo.class) {
+            this.currentUserInfo = (UserInfo) serverResponse;
+            System.out.println("Вы авторизованы на сервере!");
+        } else {
+            Print("Получен ответ от сервера:");
+            Print(serverResponse);
+        }
+    }
+
+
     /**
      * @throws Exception
      */
@@ -141,40 +169,14 @@ public class TCPClient extends TCPUnit {
                 //}
             } catch (ConnectException ex) {
                 Print("Ошибка подключения, повторное подключение");
-                Thread.sleep(this.msSleepTimeout);
+                Thread.sleep(Settings.Timeouts.Client.requestTimeout);
                 continue;
             }
             try {
-                System.out.println("Введите команду или 'exit', чтобы выйти:");
-                String commandName = scanner.nextLine().trim();
-                String[] words = commandName.split("\\s+");
-                Data commandData = new Data(this.currentUserInfo, this.commandHelp.GetCommand(commandName), null);
-                commandData.setCommand(this.commandHelp.GetCommand(words[0]));
-                if (commandData.getCommand() == null)
-                    throw new Exception("Передана неизвестная команда!");
-                if (words.length == 1) {
-                    if (commandName.equals(Command.Titles.exit))
-                        return;
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
-                }
-                if (words.length > 1) {
-                    String[] params = new String[words.length - 1];
-                    System.arraycopy(words, 1, params, 0, words.length - 1);
-                    commandData.Add(params);
-
-                    Send(this.socketChannel, (Data) this.commandReader.Execute(commandData));
-                }
-                Object serverResponse = Receive(socketChannel);
-                if (serverResponse != null && serverResponse.getClass() == UserInfo.class) {
-                    this.currentUserInfo = (UserInfo) serverResponse;
-                    System.out.println("Вы авторизованы на сервере!");
-                } else {
-                    Print("Получен ответ от сервера:");
-                    Print(serverResponse);
-                }
-
+                this.ProcessCommand();
             } catch (Exception ex) {
                 this.Print(ex);
+
             }
 
         }

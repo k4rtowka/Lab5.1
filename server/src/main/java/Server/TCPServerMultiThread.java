@@ -1,177 +1,76 @@
 package Server;
 
 import Commands.Command;
-import Common.UserInfo;
 import Common.Settings;
 import Common.TCPUnit;
-import Models.*;
+import Common.UserInfo;
+import Models.CollectionManager;
+import Models.CollectionManagerToSQL;
+import Models.Data;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 
 public class TCPServerMultiThread extends TCPUnit {
-    //region Поля
 
     private ConcurrentHashMap<Integer, UserInfo> clientAddresses;
-    private ExecutorService readPool;
-    private ExecutorService processPool;
-    private ForkJoinPool sendPool;
-
-    private String dataFilePath;
-    private CollectionManager collectionManager;
-    private CommandReaderServer commandReader;
+    private ExecutorService clientHandlingPool;
     private ServerSocket serverSocket;
-    //endregion
+    private ClientHandler clientHandler;
+    private CommandReaderServer commandReader;
 
-    //region Конструкторы
     public TCPServerMultiThread(CollectionManager collectionManager, InputStream inputStream, int port) {
         super(inputStream, port, false, Settings.isDebug);
-        this.readPool = Executors.newFixedThreadPool(10);
-        this.processPool = Executors.newCachedThreadPool();
-        this.sendPool = new ForkJoinPool();
         this.clientAddresses = new ConcurrentHashMap<>();
-        try {
-            if (collectionManager == null)
-                throw new Exception("Не передан объект для управления коллекцией!");
-            this.collectionManager = collectionManager;
-            this.collectionManager.Load();
-            this.commandReader = new CommandReaderServer(this.collectionManager, System.in);
-            this.commandReader.SetCurrentThread(Thread.currentThread());
-        } catch (Exception ex) {
-            this.Print(ex);
-        }
+        this.clientHandlingPool = Executors.newFixedThreadPool(10);
+        this.commandReader = new CommandReaderServer(collectionManager, System.in);
+        this.clientHandler = new ClientHandler(collectionManager, commandReader, clientAddresses);
     }
-
 
     public TCPServerMultiThread() throws Exception {
         this(new CollectionManagerToSQL(DB_URL, DB_USERNAME, DB_PASSWORD, -1), System.in, 8080);
-    }
-    //endregion
-
-    //region Методы
-
-
-    private void Send(ObjectOutputStream output, Object data) throws IOException {
-        output.writeObject(data);
-        output.flush();
-    }
-
-    private Object Receive(Socket client, Data data) {
-        try {
-            UserInfo currentClientInfo = null;
-            if (data.getUserInfo() != null)
-                currentClientInfo = this.clientAddresses.get(data.getUserInfo().getId());
-            InetAddress clientAddress = client.getInetAddress();
-            int clientPort = client.getPort();
-            Print(String.format("Получена команда от клиента %s(%d):\n%s", clientAddress, clientPort, data));
-            if (data == null || data.getCommand() == null) {
-                return "Получена не существующая команда!";
-            }
-            if (data.getCommand().getName().equals(Command.Titles.save)) {
-                return "Команда запрещена на стороне клиента";
-            }
-            if ((currentClientInfo != null)
-                // && currentClientInfo.isAuthorized()
-            ) {
-                synchronized (collectionManager) {
-                    return this.commandReader.Execute(data);
-                }
-            } else {
-                if (data.getCommand().getName().equals(Command.Titles.login) ||
-                        data.getCommand().getName().equals(Command.Titles.register) ||
-                        data.getCommand().getName().equals(Command.Titles.executeScript)) {
-                    synchronized (collectionManager) {
-                        return this.commandReader.Execute(data);
-                    }
-                } else {
-                    return "Вы не авторизованы, используйте команды register или login.";
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void Start() throws Exception {
         try {
             serverSocket = new ServerSocket(this.port);
-            serverSocket.setSoTimeout(3000);
+            serverSocket.setSoTimeout(Settings.Timeouts.Server.socketTimeout);
             Print("Сервер запущен...");
             this.isStarted = true;
+
             while (isStarted && !Thread.currentThread().isInterrupted()) {
-                //region Чтение команд с клавиатуры
+
+                // Чтение команд с клавиатуры
                 if (this.inputStream.available() > 0) {
                     String line = this.scanner.nextLine().trim();
                     String[] commandItems = line.split("\\s+");
                     String commandName = commandItems[0];
                     String[] params = Arrays.stream(commandItems).skip(1).toArray(String[]::new);
-                    //TODO: добавиь админа
-                    Object result = this.commandReader.Execute(
-                            new Data(
-                                    new UserInfo(100),
-                                    this.commandHelp.GetCommand(commandName),
-                                    params
-                            ));
+                    //TODO: добавить админа
+                    Object result = this.commandReader.Execute(new Data(new UserInfo(100), this.commandHelp.GetCommand(commandName), params));
+                    if (commandName.equals(Command.Titles.exit)) {
+                        isStarted = false;
+                        break;
+                    }
                     Print(result);
                 }
-                //endregion
 
-                //region Обработка сообщений от клиентов
+                // Обработка сообщений от клиентов
                 try {
-                    Socket client = serverSocket.accept();  // Get the client socket
-                    readPool.submit(() -> {
-                        try {
-                            InetAddress clientAddress = client.getInetAddress();
-                            int clientPort = client.getPort();
-                            SocketAddress clientSocketAddress = new InetSocketAddress(clientAddress, clientPort);
-
-                            ObjectInputStream input = new ObjectInputStream(client.getInputStream());
-                            Data clientData = (Data) input.readObject();
-                            if (clientData != null && clientData.getUserInfo() != null)
-                                clientAddresses.put(clientData.getUserInfo().getId(), new UserInfo(clientAddresses.size() + 1));
-
-
-                            processPool.submit(() -> {
-                                Object result = Receive(client, clientData);
-                                synchronized (clientAddresses) {
-                                    if (result != null && result.getClass() == UserInfo.class) {
-                                        UserInfo userInfoResult = (UserInfo) result;
-                                        userInfoResult.setAuthorized(true);
-                                        clientAddresses.put(userInfoResult.getId(), userInfoResult);
-                                    }
-                                }
-                                sendPool.submit(() -> {
-                                    try {
-                                        ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
-                                        Send(output, result);
-                                        // Move input.close() here
-                                        input.close();  // Close the input stream
-                                        output.close();  // Close the output stream
-                                    } catch (IOException e) {
-                                        Print("Error sending data to client: " + e.getMessage());
-                                    }
-                                });
-
-                            });
-
-                        } catch (IOException | ClassNotFoundException e) {
-                            Print("Error reading data from client: " + e.getMessage());
-                        }
-                    });
+                    Socket client = serverSocket.accept();
+                    clientHandlingPool.submit(() -> clientHandler.handleClient(client));
                 } catch (Exception ex) {
                     Print(ex);
                     Thread.sleep(1000);
-                    continue;
                 }
-                //endregion
             }
 
             Print("Остановка сервера...");
+            System.exit(0);
         } catch (IOException e) {
             Print("Host is busy. Try Later");
             Print(e);
@@ -186,7 +85,4 @@ public class TCPServerMultiThread extends TCPUnit {
             }
         }
     }
-
-
-    //endregion
 }
